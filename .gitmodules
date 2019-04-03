@@ -4,3 +4,6 @@
 [submodule ".zprezto"]
 	path = .zprezto
 	url = https://github.com/sorin-ionescu/prezto
+[submodule ".config/kak/plugins/plug.kak"]
+	path = .config/kak/plugins/plug.kak
+	url = https://github.com/andreyorst/plug.kak
