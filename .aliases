@@ -1,0 +1,84 @@
+# reload zsh config
+alias reload!='source ~/.zshrc'
+
+# Unix
+alias u='ls -1A'         # Lists in one column, hidden files.
+alias uh='ls -lh'        # Lists human readable sizes.
+alias ur='uu -R'         # Lists human readable sizes, recursively.
+alias ua='uh -A'         # Lists human readable sizes, hidden files.
+alias um='ua | "$PAGER"' # Lists human readable sizes, hidden files through pager.
+alias uk='uh -Sr'        # Lists sorted by size, largest last.
+alias ut='uh -tr'        # Lists sorted by date, most recent last.
+alias uc='ut -c'         # Lists sorted by date, most recent last, shows change time.
+alias uu='ut -u'         # Lists sorted by date, most recent last, shows access time.
+
+alias rmm="rm -rf"
+alias q='exit'
+alias md='mkdcd'
+
+# Pretty print the path
+# alias path='echo $PATH | tr -s ":" "\n"'
+alias path='echo -e ${PATH//:/\\n}'
+
+# Pretty print the path
+alias fpath='echo $FPATH | tr -s ":" "\n"'
+
+# ps aux | grep [h]ttpd
+# Eliminates second instance of grep -v (Inverted search)
+# http://www.commandlinefu.com/commands/view/402/exclude-grep-from-your-grepped-output-of-ps-alias-included-in-description
+# http://www.manpagez.com/info/grep/grep-2.5.4/grep_21.php#SEC21 paragraph 7
+alias psg='ps aux | grep $(echo $1 | sed "s/^\(.\)/[\1]/g")'
+
+# alias header='curl -I'
+alias c='curl -s --dump-header /dev/stderr'
+alias myip='curl icanhazip.com'
+alias showip='dig +short myip.opendns.com @resolver1.opendns.com'
+alias t2='tree -Fth -L 2 --du |less' #see tree with size up to 2 levels deep
+
+# tmux
+alias tma='tmux attach -d -t'
+alias tmn='tmux new -s $(basename $(pwd))'
+alias tmu='tmux list-sessions'
+
+# rg
+# alias rg='rg --type-add "proto:*.proto"'
+
+# convenience
+alias eA='kak ~/.aliases'
+alias eV='cd ~/dotfiles/config/nvim && nvim init.vim'
+alias eT='cd ~/dotfiles/tmux && kak tmux.conf'
+alias eH='cd ~/dotfiles/hammerspoon && kak init.lua'
+alias eS='cd ~/.ssh && kak config'
+alias eD='cd ~/.zprezto/modules/docker && kak alias.zsh'
+alias cdGosrc='cd /usr/local/opt/go/libexec/src'
+alias cdPlug='cd ~/.config/nvim/plugged'
+alias cdGist='cd ~/go/src/github.com/vbauerster/gists'
+
+# http://grml.org/zsh/zsh-lovers.html [Aliases section]
+alias -s md=nvim
+alias -g C='| wc -l'
+alias -g L="| less"
+alias -g LS='| less -S'
+alias -g G='| rg'
+alias -g Sk="*~(*.bz2|*.gz|*.tgz|*.zip|*.z)"
+
+# Mac
+alias pbsort='pbpaste | sort | pbcopy'
+# Hide/show all desktop icons (useful when presenting)
+alias hidedesktop='defaults write com.apple.finder CreateDesktop -bool false && killall Finder'
+alias showdesktop='defaults write com.apple.finder CreateDesktop -bool true && killall Finder'
+# Empty the Trash on all mounted volumes and the main HDD
+# alias emptytrash='sudo rm -rfv /Volumes/*/.Trashes; rm -rfv ~/.Trash'
+alias pxon='networksetup -setsocksfirewallproxystate "Wi-Fi" on'
+alias pxoff='networksetup -setsocksfirewallproxystate "Wi-Fi" off'
+
+# AirPort Utility
+alias airport='/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport'
+
+# tcpdump
+alias sniff="sudo ngrep -d 'en0' -t '^(GET|POST) ' 'tcp and port 80'"
+alias dnsdump="sudo tcpdump -lvi any 'udp port 53'"
+alias httpdump="sudo tcpdump -i en0 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+
+# Convert YouTube link to mp3
+alias ytmp3='youtube-dl --extract-audio --audio-format mp3 --audio-quality 0'
