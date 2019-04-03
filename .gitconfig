@@ -1,0 +1,61 @@
+[user]
+	name = Vladimir Bauer
+	email = vbauerster@gmail.com
+[color]
+    ui = auto
+[push]
+    default = current
+# https://hackernoon.com/lesser-known-git-commands-151a1918a60
+[alias]
+    ua = ls-files
+    co = checkout
+    ci = commit -v
+    st = status --short --branch
+    stt = status --branch
+    pp = pull
+    bb = branch -v
+    bba = branch -av
+    bbh = for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
+    diffw = diff -w
+    diffc = diff --cached
+    rr = remote -v
+    rau = remote add upstream
+    stat = log --pretty=format:\"[%h] %ae, %ar: %s\" --stat
+    last = cat-file commit HEAD
+    ignored = ls-files -o -i --exclude-standard
+    ii = !git init && git commit -m “root” --allow-empty
+    commend = commit --amend --no-edit
+    stsh = stash --keep-index
+    staash = stash --include-untracked
+    staaash = stash --all
+    mgnff = merge --no-ff
+[credential]
+    helper = osxkeychain
+[core]
+	excludesfile = /Users/vbauer/.gitignore
+    editor = nvim
+[filter "lfs"]
+    clean = git-lfs clean %f
+    smudge = git-lfs smudge %f
+    required = true
+[github]
+    user = vbauerster
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[diff]
+    tool = sourcetree
+    compactionHeuristic = true
+[mergetool "sourcetree"]
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[mergetool "nvimdiff"]
+    cmd = nvim -d -c \"wincmd J\" \"$MERGED\" \"$LOCAL\" \"$BASE\" \"$REMOTE\"
+[mergetool "gitmerge"]
+    cmd = $HOME/bin/gitmerge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+[merge]
+    tool = gitmerge
+[color "diff"]
+    new = green italic
+[commit]
+	template = /Users/vbauer/.stCommitMsg
