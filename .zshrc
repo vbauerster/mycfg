@@ -15,17 +15,7 @@ setopt HIST_IGNORE_SPACE   # does not record an event starting with a space
 SAVEHIST=8192
 HISTSIZE=8192              # stores the maximum number of events to save in the internal history
 
-# The time the shell waits, in hundredths of seconds, (default is 40)
-# for another key to be pressed when reading bound multi-character sequences.
-# 100ms for key sequences
-export KEYTIMEOUT=10
-
-export BACKGROUND="light"
-
-# http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html
-# http://zsh.sourceforge.net/Guide/zshguide04.html
-# http://www.geekmind.net/2011/01/shortcuts-to-improve-your-bash-zsh.html
-# export DOTFILES="$HOME/dotfiles"
+# export BACKGROUND="light"
 
 # https://github.com/BurntSushi/ripgrep
 [ -f "$HOME/.rgrc" ] && export RIPGREP_CONFIG_PATH="$HOME/.rgrc"
@@ -56,11 +46,6 @@ command -v bat > /dev/null && export FZF_CTRL_T_OPTS="--preview 'bat --color=alw
 # fi
 
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview' --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort' --header 'Press CTRL-Y to copy command into clipboard' --border"
-
-# check for user bin directory and add to path
-if [[ ! "$PATH" == *$HOME/bin* && -d $HOME/bin ]]; then
-    export PATH="$PATH:$HOME/bin"
-fi
 
 # Bindings
 # http://zsh.sourceforge.net/Intro/intro_11.html#SEC11
@@ -119,6 +104,7 @@ bindkey -s '^x_' '/dev/null'
 # [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
 
 # Source functions
+[ -f ~/.myfuncs.zsh ] && source ~/.myfuncs.zsh
 [ -f ~/dotfiles/.myfuncs.zsh ] && source ~/dotfiles/.myfuncs.zsh
 
 # Source aliases
