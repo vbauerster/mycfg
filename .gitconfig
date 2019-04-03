@@ -20,6 +20,7 @@
     diffc = diff --cached
     rr = remote -v
     rau = remote add upstream
+    rao = remote add origin
     stat = log --pretty=format:\"[%h] %ae, %ar: %s\" --stat
     last = cat-file commit HEAD
     ignored = ls-files -o -i --exclude-standard
