@@ -141,6 +141,8 @@ plug "alexherbo2/distraction-free.kak" config %{
 
 plug "occivink/kakoune-find"
 
+plug "occivink/kakoune-sudo-write"
+
 plug "occivink/kakoune-filetree" config %{
     map global normal '<a-minus>' ': change-directory-current-buffer;filetree<ret>' -docstring 'filetree in current buf dir'
     map global normal '<a-plus>' ': filetree<ret>' -docstring 'filetree'
