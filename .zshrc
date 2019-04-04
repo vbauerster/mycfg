@@ -3,6 +3,9 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+### Disable CTRL-S and CTRL-Q
+[[ $- =~ i ]] && stty -ixoff -ixon
+
 # use the Dvorak keyboard for the basis for examining spelling mistakes
 setopt DVORAK
 
