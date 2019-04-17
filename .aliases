@@ -29,7 +29,7 @@ alias fpath='echo $FPATH | tr -s ":" "\n"'
 alias psg='ps aux | grep $(echo $1 | sed "s/^\(.\)/[\1]/g")'
 
 # alias header='curl -I'
-# alias c='curl -s --dump-header /dev/stderr'
+alias c='curl -s --dump-header /dev/stderr'
 alias myip='curl icanhazip.com'
 alias showip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias t2='tree -Fth -L 2 --du |less' #see tree with size up to 2 levels deep
