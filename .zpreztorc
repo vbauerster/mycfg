@@ -36,6 +36,8 @@ zstyle ':prezto:load' pmodule \
   'utility' \
   'completion' \
   'fasd' \
+  'homebrew' \
+  'osx' \
   'archive' \
   'docker' \
   'syntax-highlighting' \
