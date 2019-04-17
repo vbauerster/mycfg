@@ -6,14 +6,12 @@
 
 # Auto-completion
 # ---------------
-[[ $- == *i* ]] && source "/usr/share/fzf/completion.zsh" 2> /dev/null
+[[ $- == *i* ]] && source "/usr/local/opt/fzf/shell/completion.zsh" 2> /dev/null
 
 # Key bindings
 # ------------
-source "/usr/share/fzf/key-bindings.zsh"
+source "/usr/local/opt/fzf/shell/key-bindings.zsh"
 
-# Customization
-# ------------
 # export FZF_DEFAULT_COMMAND='ag --nocolor --hidden --ignore .git --ignore vendor -g ""'
 # export FZF_DEFAULT_COMMAND="rg -uu -g '!vendor' -g '!.git' --files"
 # export FZF_DEFAULT_COMMAND='pt --nocolor --hidden --home-ptignore -U -g ""'
