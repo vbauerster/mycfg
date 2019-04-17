@@ -84,7 +84,6 @@ bindkey -s '^x_' '/dev/null'
 
 # Source functions
 [ -f ~/.myfuncs.zsh ] && source ~/.myfuncs.zsh
-[ -f ~/dotfiles/.myfuncs.zsh ] && source ~/dotfiles/.myfuncs.zsh
 
 # Source aliases
 [ -f ~/.aliases ] && source ~/.aliases
