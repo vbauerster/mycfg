@@ -57,14 +57,6 @@ fzf-gs() {
   cut -d: -f1
 }
 
-# A helper function to join multi-line output from fzf
-# join-lines() {
-# local item
-# while read item; do
-#   echo -n "${(q)item} "
-# done
-# }
-
 fzf-gt-widget() {
     LBUFFER+=$(fzf-gt)
     zle reset-prompt
@@ -136,17 +128,6 @@ ghh() {
                  xargs -I % sh -c 'git show --color=always % | head -200 '" \
       --bind "enter:execute:echo {} | grep -o '[a-f0-9]\{7\}' | head -1 |
               xargs -I % sh -c 'nvim fugitive://\$(git rev-parse --show-toplevel)/.git//% < /dev/tty'"
-}
-
-# tags - search ctags
-ftags() {
-  local line
-  [ -e tags ] &&
-  line=$(
-    awk 'BEGIN { FS="\t" } !/^!/ {print toupper($4)"\t"$1"\t"$2"\t"$3}' tags |
-    cut -c1-$COLUMNS | fzf --nth=2 --tiebreak=begin
-  ) && $EDITOR $(cut -f3 <<< "$line") -c "set nocst" \
-                                      -c "silent tag $(cut -f2 <<< "$line")"
 }
 
 # ee [FUZZY PATTERN] - Open the selected file with the default editor
@@ -276,3 +257,4 @@ up() {
 catconf() {
     cat "$@" | sed '/ *#/d; /^ *$/d'
 }
+
