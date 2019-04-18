@@ -9,10 +9,10 @@ set-option global scrolloff 2,2
 # set-option global disabled_hooks .*-trim-indent
 
 # Grep
-try %{ set global grepcmd 'ag --filename --column --ignore tags --ignore build --ignore buildDebug' }
-# evaluate-commands %sh{
-#     [ ! -z "$(command -v rg)" ] && printf "%s\n" "set-option global grepcmd 'rg -L --with-filename --column'"
-# }
+# try %{ set global grepcmd 'ag --filename --column --ignore tags --ignore build --ignore buildDebug' }
+evaluate-commands %sh{
+    [ ! -z "$(command -v rg)" ] && printf "%s\n" "set-option global grepcmd 'rg -L --with-filename --column'"
+}
 
 # Use main client as jumpclient
 set-option global jumpclient client0
