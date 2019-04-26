@@ -70,8 +70,8 @@ map -docstring "avoid escape key"            global prompt '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global insert '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global user   '<c-g>' '<esc>'
 
-map global normal 'J' '3j'
-map global normal 'K' '3k'
+map global normal 'J' '4j'
+map global normal 'K' '4k'
 map global normal '<plus>' 'J'
 map global normal '<minus>' 'K'
 
