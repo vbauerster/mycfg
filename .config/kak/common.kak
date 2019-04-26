@@ -32,19 +32,6 @@ hook global WinCreate .* %{
     search-highlighting-enable; face window Search default,rgb:EDF97D+bi
 }
 
-# Stolen from mawww
-# declare-option -hidden regex curword
-# set-face global CurWord default,rgb:4a4a4a
-# hook global NormalIdle .* %{
-#     eval -draft %{ try %{
-#         exec <space><a-i>w <a-k>\A\w+\z<ret>
-#         set-option buffer curword "\b\Q%val{selection}\E\b"
-#     } catch %{
-#         set-option buffer curword ''
-#     } }
-# }
-# add-highlighter global/ dynregex '%opt{curword}' 0:CurWord
-
 # escape hatch
 # https://github.com/mawww/kakoune/wiki/Avoid-the-escape-key
 hook global InsertChar \. %{ try %{
