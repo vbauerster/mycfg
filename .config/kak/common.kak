@@ -156,6 +156,7 @@ map -docstring 'smart expand'               global anchor '<space>' ': expand<re
 map -docstring 'shrink selection'           global anchor '<minus>' ': shrink-selection<ret>'
 map -docstring 'enlarge selection'          global anchor '<plus>'  ': enlarge-selection<ret>'
 map -docstring 'flip cursor and anchor'     global anchor '.'       '<a-;>'
+map -docstring 'select-complement'          global anchor 'm'       ': select-complement<ret>'
 map -docstring 'ensure anchor after cursor' global anchor 'h'       '<a-:><a-;>'
 map -docstring 'ensure cursor after anchor' global anchor 'u'       '<a-:>'
 map -docstring 'select cursor and anchor'   global anchor 's'       '<a-S>'
