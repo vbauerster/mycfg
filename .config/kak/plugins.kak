@@ -4,7 +4,7 @@ source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
 
 plug "occivink/kakoune-vertical-selection" config %{
-    map global normal '^' ': select-vertically<ret>'
+    map global normal '%' ': vertical-selection-up-and-down<ret>'
 }
 
 plug "delapouite/kakoune-text-objects"
@@ -24,13 +24,14 @@ plug "occivink/kakoune-expand" config %{
 
 plug "delapouite/kakoune-buffers" config %{
     hook global WinDisplay .* info-buffers
-    map global user b ': enter-user-mode buffers<ret>' -docstring 'buffers'
-    map global user B ': enter-user-mode -lock buffers<ret>' -docstring 'buffers (lock)'
+    map -docstring 'buffers'        global user b ': enter-user-mode buffers<ret>'
+    map -docstring 'buffers (lock)' global user B ': enter-user-mode -lock buffers<ret>'
 }
 
 plug "delapouite/kakoune-cd" config %{
-    map global goto '.' '<esc>: change-directory-current-buffer<ret>' -docstring 'current buffer dir'
+    map global goto c '<esc>: change-directory-current-buffer<ret>' -docstring 'current buffer dir'
     map global goto p '<esc>: cd ..;print-working-directory<ret>' -docstring 'parent dir'
+    alias global pwd print-working-directory
 }
 
 plug "andreyorst/smarttab.kak" %{
@@ -66,24 +67,13 @@ plug "andreyorst/fzf.kak" config %{
 # }
 
 plug "occivink/kakoune-phantom-selection" config %{
-    # declare-user-mode phantom
-    # map -docstring 'phantom-sel add'       global phantom '<plus>'  ': phantom-sel-add-selection<ret>'
-    # map -docstring 'phantom-sel clear all' global phantom '<minus>' ': phantom-sel-select-all; phantom-sel-clear<ret>'
-    # map -docstring 'phantom-sel n'         global phantom 'n'     ': phantom-sel-iterate-next<ret>'
-    # map -docstring 'phantom-sel p'         global phantom 'p'     ': phantom-sel-iterate-prev<ret>'
-    # map -docstring 'phantom-selection'     global user    'm'       ': enter-user-mode phantom<ret>'
+    # map -docstring 'phantom-selection add'   global user 'm' ': phantom-selection-add-selection<ret>'
+    map -docstring 'phantom-selection clear' global user 'q' ': phantom-selection-select-all; phantom-selection-clear<ret>'
+    map -docstring 'phantom-selection n'     global user ')' ': phantom-selection-iterate-next<ret>'
+    map -docstring 'phantom-selection p'     global user '(' ': phantom-selection-iterate-prev<ret>'
 
-    map -docstring 'phantom-sel add'       global user 'm' ': phantom-sel-add-selection<ret>'
-    map -docstring 'phantom-sel clear all' global user 'M' ': phantom-sel-select-all; phantom-sel-clear<ret>'
-    map -docstring 'phantom-sel n'         global user ')' ': phantom-sel-iterate-next<ret>'
-    map -docstring 'phantom-sel p'         global user '(' ': phantom-sel-iterate-prev<ret>'
-}
-
-plug "alexherbo2/auto-pairs.kak" config %{
-    # hook global WinSetOption filetype=(c|cpp|go|rust) %{
-    #     auto-pairs-enable
-    # }
-    # hook global WinCreate .* %{ auto-pairs-enable }
+    map global insert '<a-)>' "<esc>: phantom-selection-iterate-next<ret>"
+    map global insert '<a-(>' "<esc>: phantom-selection-iterate-prev<ret>"
 }
 
 plug "occivink/kakoune-snippets" config %{
@@ -135,10 +125,6 @@ plug "occivink/kakoune-snippets" config %{
 
 plug "andreyorst/kakoune-snippet-collection"
 
-plug "alexherbo2/distraction-free.kak" config %{
-    alias global df distraction-free-toggle
-}
-
 plug "occivink/kakoune-find"
 
 plug "occivink/kakoune-sudo-write"
@@ -148,7 +134,7 @@ plug "occivink/kakoune-filetree" config %{
     map global normal '<a-plus>' ': filetree<ret>' -docstring 'filetree'
 }
 
-plug "ul/kak-tree" noload config %{
+plug "ul/kak-tree" config %{
     # set global tree_cmd 'kak-tree -c /Users/vbauer/dotfiles/config/kak/kak-tree.toml'
     hook global WinSetOption filetype=(go) %{
         declare-user-mode syntax-tree-children
@@ -216,7 +202,7 @@ plug "ul/kak-tree" noload config %{
 plug "ul/kak-lsp" do %{
     cargo build --release --locked
     cargo install --force --path .
-} noload config %{
+} config %{
     set-face global Reference default,rgb:EDF97D
     set-option global lsp_diagnostic_line_error_sign '║'
     set-option global lsp_diagnostic_line_warning_sign '┊'
@@ -261,17 +247,55 @@ plug "ul/kak-lsp" do %{
 plug "https://gitlab.com/Screwtapello/kakoune-state-save.git" noload
 plug "danr/kakoune-easymotion" noload
 
-plug "andreyorst/tagbar.kak"
+plug "andreyorst/tagbar.kak" noload config %{
+    set-option global tagbar_sort false
+    set-option global tagbar_size 40
+    set-option global tagbar_display_anon false
+    map global user "<c-t>" ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
+    hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
+        tagbar-enable
+    }
+    hook global WinSetOption filetype=tagbar %{
+        remove-highlighter window/numbers
+        remove-highlighter window/matching
+        remove-highlighter window/wrap
+        remove-highlighter window/show-whitespaces
+    }
+}
+
 
 plug "Delapouite/kakoune-auto-percent"
+plug "Delapouite/kakoune-auto-star"
+
+plug "alexherbo2/auto-pairs.kak" config %{
+    # hook global WinSetOption filetype=(c|cpp|go|rust) %{
+    #     auto-pairs-enable
+    # }
+    # hook global WinCreate .* %{ auto-pairs-enable }
+}
+
+# plug "alexherbo2/phantom.kak" config %{
+#     hook global WinCreate .* %{
+#       phantom-enable -with-maps
+#     }
+# }
+
+plug "alexherbo2/distraction-free.kak" config %{
+    alias global df distraction-free-toggle
+}
+
+plug "alexherbo2/connect.kak"
 
 plug "alexherbo2/bc.kak"
 
 plug "alexherbo2/word-movement.kak" config %{
-    # map -docstring 'word-movement-map' global user 'W' ':word-movement-map next w;word-movement-map previous b'
     word-movement-map next w
     word-movement-map previous b
     word-movement-map skip e
+}
+
+plug "alexherbo2/yank-ring.kak" config %{
+    map -docstring 'yank ring' global user 'y' ': yank-ring<ret>'
 }
 
 source "%val{config}/scripts/colorscheme-browser.kak"
