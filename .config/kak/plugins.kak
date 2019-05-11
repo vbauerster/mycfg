@@ -7,7 +7,10 @@ plug "occivink/kakoune-vertical-selection" config %{
     map global normal '%' ': vertical-selection-up-and-down<ret>'
 }
 
-plug "delapouite/kakoune-text-objects"
+plug "delapouite/kakoune-text-objects" config %{
+    unmap global object '<tab>'
+    map global object 'P' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
+}
 
 plug "occivink/kakoune-expand" config %{
     set-option global expand_commands %{
