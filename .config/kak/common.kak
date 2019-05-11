@@ -152,7 +152,6 @@ map -docstring 'replace selection with tmux buffer' global tmux-clipboard 'r' '|
 
 declare-user-mode anchor
 map -docstring 'slice by word'              global anchor ','       ': slice-by-camel<ret>'
-map -docstring 'smart expand'               global anchor '<space>' ': expand<ret>'
 map -docstring 'shrink selection'           global anchor '<minus>' ': shrink-selection<ret>'
 map -docstring 'enlarge selection'          global anchor '<plus>'  ': enlarge-selection<ret>'
 map -docstring 'flip cursor and anchor'     global anchor '.'       '<a-;>'
