@@ -128,8 +128,8 @@ plug "occivink/kakoune-find"
 plug "occivink/kakoune-sudo-write"
 
 plug "occivink/kakoune-filetree" config %{
-    map global normal '<a-minus>' ': change-directory-current-buffer;filetree<ret>' -docstring 'filetree in current buf dir'
-    map global normal '<a-plus>' ': filetree<ret>' -docstring 'filetree'
+    map global user '<minus>' ': change-directory-current-buffer;filetree<ret>' -docstring 'filetree in current buf dir'
+    # map global normal '<a-plus>' ': filetree<ret>' -docstring 'filetree'
 }
 
 plug "ul/kak-tree" config %{
@@ -242,28 +242,28 @@ plug "ul/kak-lsp" do %{
     hook global KakEnd .* lsp-exit
 }
 
-plug "https://gitlab.com/Screwtapello/kakoune-state-save.git" noload
+# plug "https://gitlab.com/Screwtapello/kakoune-state-save.git" noload
 plug "danr/kakoune-easymotion" noload
 
 plug "andreyorst/tagbar.kak" noload config %{
     set-option global tagbar_sort false
     set-option global tagbar_size 40
     set-option global tagbar_display_anon false
-    map global user "<c-t>" ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
+    map global user 't' ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
     hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
         tagbar-enable
     }
     hook global WinSetOption filetype=tagbar %{
-        remove-highlighter window/numbers
-        remove-highlighter window/matching
-        remove-highlighter window/wrap
-        remove-highlighter window/show-whitespaces
+        remove-highlighter buffer/numbers
+        remove-highlighter buffer/matching
+        remove-highlighter buffer/wrap
+        remove-highlighter buffer/show-whitespaces
     }
 }
 
-
-plug "Delapouite/kakoune-auto-percent"
-plug "Delapouite/kakoune-auto-star"
+plug "delapouite/kakoune-auto-percent"
+plug "delapouite/kakoune-auto-star"
+plug 'delapouite/kakoune-palette'
 
 plug "alexherbo2/auto-pairs.kak" config %{
     # hook global WinSetOption filetype=(c|cpp|go|rust) %{
@@ -272,19 +272,14 @@ plug "alexherbo2/auto-pairs.kak" config %{
     # hook global WinCreate .* %{ auto-pairs-enable }
 }
 
-# plug "alexherbo2/phantom.kak" config %{
-#     hook global WinCreate .* %{
-#       phantom-enable -with-maps
-#     }
-# }
-
 plug "alexherbo2/distraction-free.kak" config %{
-    alias global df distraction-free-toggle
+    alias global dt distraction-free-toggle
 }
 
-plug "alexherbo2/connect.kak"
-
-plug "alexherbo2/bc.kak"
+plug "alexherbo2/connect.kak" config %{
+    define-command ranger -params .. -file-completion %(connect ranger %arg(@))
+    map global normal '<plus>' ' :ranger<ret>'
+}
 
 plug "alexherbo2/word-movement.kak" config %{
     word-movement-map next w
@@ -292,9 +287,21 @@ plug "alexherbo2/word-movement.kak" config %{
     word-movement-map skip e
 }
 
-plug "alexherbo2/yank-ring.kak" config %{
-    map -docstring 'yank ring' global user 'y' ': yank-ring<ret>'
+plug "alexherbo2/split-object.kak" config %{
+    map -docstring "split object" global normal '<a-I>' ': enter-user-mode split-object<ret>'
 }
 
-source "%val{config}/scripts/colorscheme-browser.kak"
+plug "alexherbo2/yank-ring.kak" config %{
+    map -docstring 'yank ring' global clipboard 'r' ': yank-ring<ret>'
+}
+
+plug "fsub/kakoune-mark.git" domain "gitlab.com"
+
+# plug "alexherbo2/bc.kak"
+plug "screwtapello/kakoune-inc-dec" domain "gitlab.com" config %{
+    map -docstring "decrement selection" global normal '<C-x>' ': inc-dec-modify-numbers - %val{count}<ret>'
+    map -docstring "increment selection" global normal '<C-a>' ': inc-dec-modify-numbers + %val{count}<ret>'
+}
+
 # source "%val{config}/scripts/bc.kak"
+source "%val{config}/scripts/colorscheme-browser.kak"
