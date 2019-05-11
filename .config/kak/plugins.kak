@@ -53,21 +53,16 @@ plug "andreyorst/fzf.kak" config %{
     map global fzf g ': fzf-vcs<ret>' -docstring 'edit file from vcs repo'
     map global fzf <a-g> ': fzf-vcs-mode<ret>' -docstring 'switch to vcs selection mode'
     evaluate-commands %sh{
-        if command -v fd > /dev/null; then
+        if command -v fd >/dev/null 2>/dev/null; then
             # echo "set-option global fzf_file_command 'fd . --no-ignore --type f --follow'"
             echo "set-option global fzf_file_command %{fd . --type f --follow --exclude .git --exclude .svn --exclude TAGS}"
         fi
-        command -v blsd > /dev/null && echo "set-option global fzf_cd_command '(echo .. && blsd)'"
-        command -v bat > /dev/null && echo "set-option global fzf_highlight bat"
-        command -v tree > /dev/null && echo "set-option global fzf_cd_preview true"
+        command -v blsd >/dev/null 2>/dev/null && echo "set-option global fzf_cd_command '(echo .. && blsd)'"
+        command -v bat >/dev/null 2>/dev/null && echo "set-option global fzf_highlight bat"
+        command -v tree >/dev/null 2>/dev/null && echo "set-option global fzf_cd_preview true"
         # [ -n "${kak_opt_grepcmd}" ] && echo "set-option global fzf_sk_grep_command %{${kak_opt_grepcmd}}"
     }
 }
-
-# plug "TeddyDD/kakoune-edit-or-dir" config %{
-#     unalias global e edit
-#     alias global e edit-or-dir
-# }
 
 plug "occivink/kakoune-phantom-selection" config %{
     # map -docstring 'phantom-selection add'   global user 'm' ': phantom-selection-add-selection<ret>'
