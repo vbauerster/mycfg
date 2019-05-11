@@ -20,11 +20,11 @@ set-option global jumpclient client0
 colorscheme github-custom
 
 hook global WinCreate .* %{
-    add-highlighter window/numbers    number-lines -hlcursor -separator ' '
-    add-highlighter window/matching   show-matching
-    add-highlighter window/show-whitespaces show-whitespaces -tab '›' -tabpad '⋅' -spc ' ' -nbsp '⍽'
-    add-highlighter window/wrap       wrap -word -indent -marker ↪
-    add-highlighter window/VisibleWords regex \b(?:FIXME|TODO|XXX)\b 0:default+rb
+    add-highlighter buffer/numbers    number-lines -hlcursor -separator ' '
+    add-highlighter buffer/matching   show-matching
+    add-highlighter buffer/show-whitespaces show-whitespaces -tab '›' -tabpad '⋅' -spc ' ' -nbsp '⍽'
+    add-highlighter buffer/wrap       wrap -word -indent -marker ↪
+    add-highlighter buffer/VisibleWords regex \b(?:FIXME|TODO|XXX)\b 0:default+rb
 
     tab-completion-enable
     # show-trailing-whitespace-enable; face window TrailingWhitespace default,red
