@@ -57,11 +57,21 @@ map -docstring "avoid escape key"            global prompt '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global insert '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global user   '<c-g>' '<esc>'
 
+map global normal t l
+map global normal l t
+map global normal T L
+map global normal L T
+map global normal <a-t> <a-l>
+map global normal <a-l> <a-t>
+map global normal <a-T> <a-L>
+map global normal <a-L> <a-T>
 map global normal 'J' '4j'
 map global normal 'K' '4k'
-map global normal '<plus>' 'J'
-map global normal '<minus>' 'K'
-
+map global normal '<a-plus>' 'J'
+map global normal '<a-minus>' 'K'
+map global normal '<minus>' '_'
+map global normal '_' '<a-_>'
+# map global normal '<plus>' ':'
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
 map global normal x ': extend-line-down %val{count}<ret>'
@@ -112,7 +122,9 @@ map -docstring 'select all'       global search 'a' ': smart-select word<ret>*%s
 map -docstring 'search mode'      global user   '/' ': enter-user-mode search<ret>'
 
 ## Goto
-map -docstring 'last buffer change'             global goto ';'      '.'
+map -docstring 'window center'                  global goto 'u'      'c'
+map -docstring 'window top'                     global goto 'k'      't'
+map -docstring 'window bottom'                  global goto 'j'      'b'
 map -docstring 'switch to [+] buffer'           global goto '<plus>' '<esc>: switch-to-modified-buffer<ret>'
 map -docstring "file non-recursive"             global goto '<a-f>'  '<esc>gf'
 map -docstring "file recursive"                 global goto 'f'      '<esc>: smart-select WORD; search-file %val{selection}<ret>'
