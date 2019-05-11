@@ -101,8 +101,9 @@ map -docstring 'print working dir' global user '.'       ': print-working-direct
 map -docstring 'Reload buffer'     global user 'R'       ': e!<ret>'
 map -docstring 'man'               global user 'k'       ': smart-select word; man-selection-with-count<ret>'
 map -docstring 'selection hull'    global user 'h'       ': hull<ret>'
-map -docstring 'tmux-focus'        global user 'o'       ':tmux-focus '
+map -docstring 'tmux-focus'        global user 'o'       ': tmux-focus '
 map -docstring 'enter-user-mode'   global user 'u'       ':u '
+map -docstring 'quit!'             global user 'Q'       ':q!<ret>'
 
 map global normal '0' ': zero select-or-add-cursor<ret>'
 # map global normal <*> ': smart-select word<ret>*'
