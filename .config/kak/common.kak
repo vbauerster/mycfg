@@ -20,11 +20,13 @@ set-option global jumpclient client0
 colorscheme github-custom
 
 hook global WinCreate .* %{
-    add-highlighter buffer/numbers    number-lines -hlcursor -separator ' '
-    add-highlighter buffer/matching   show-matching
-    add-highlighter buffer/show-whitespaces show-whitespaces -tab '›' -tabpad '⋅' -spc ' ' -nbsp '⍽'
-    add-highlighter buffer/wrap       wrap -word -indent -marker ↪
-    add-highlighter buffer/VisibleWords regex \b(?:FIXME|TODO|XXX)\b 0:default+rb
+    try %{
+        add-highlighter buffer/numbers    number-lines -hlcursor -separator ' '
+        add-highlighter buffer/matching   show-matching
+        add-highlighter buffer/show-whitespaces show-whitespaces -tab '›' -tabpad '⋅' -spc ' ' -nbsp '⍽'
+        add-highlighter buffer/wrap       wrap -word -indent -marker ↪
+        add-highlighter buffer/VisibleWords regex \b(?:FIXME|TODO|XXX)\b 0:default+rb
+    }
 
     tab-completion-enable
     # show-trailing-whitespace-enable; face window TrailingWhitespace default,red
@@ -57,14 +59,14 @@ map -docstring "avoid escape key"            global prompt '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global insert '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global user   '<c-g>' '<esc>'
 
-map global normal t l
-map global normal l t
-map global normal T L
-map global normal L T
-map global normal <a-t> <a-l>
-map global normal <a-l> <a-t>
-map global normal <a-T> <a-L>
-map global normal <a-L> <a-T>
+# map global normal t l
+# map global normal l t
+# map global normal T L
+# map global normal L T
+# map global normal <a-t> <a-l>
+# map global normal <a-l> <a-t>
+# map global normal <a-T> <a-L>
+# map global normal <a-L> <a-T>
 map global normal 'J' '4j'
 map global normal 'K' '4k'
 map global normal '<a-plus>' 'J'
@@ -97,7 +99,6 @@ map global view l lv
 
 ## Some User
 map -docstring 'command prompt'    global user '<space>' ':'
-map -docstring 'print working dir' global user '.'       ': print-working-directory<ret>'
 map -docstring 'Reload buffer'     global user 'R'       ': e!<ret>'
 map -docstring 'man'               global user 'k'       ': smart-select word; man-selection-with-count<ret>'
 map -docstring 'selection hull'    global user 'h'       ': hull<ret>'
@@ -122,10 +123,17 @@ map -docstring 'case insensitive' global search 'i' '/(?i)'
 map -docstring 'select all'       global search 'a' ': smart-select word<ret>*%s<ret>'
 map -docstring 'search mode'      global user   '/' ': enter-user-mode search<ret>'
 
+declare-user-mode toggle
+map -docstring 'toggle' global user 't' ': enter-user-mode toggle<ret>'
+
 ## Goto
-map -docstring 'window center'                  global goto 'u'      'c'
-map -docstring 'window top'                     global goto 'k'      't'
-map -docstring 'window bottom'                  global goto 'j'      'b'
+map -docstring 'window top'                     global goto 'g'      't'
+map -docstring 'line end'                       global goto 'u'      'l'
+map -docstring 'buffer top'                     global goto 'G'      'k'
+map -docstring 'buffer bottom'                  global goto 'B'      'j'
+# map -docstring 'window center'                  global goto 'u'      'c'
+# map -docstring 'window top'                     global goto 'k'      't'
+# map -docstring 'window bottom'                  global goto 'j'      'b'
 map -docstring 'switch to [+] buffer'           global goto '<plus>' '<esc>: switch-to-modified-buffer<ret>'
 map -docstring "file non-recursive"             global goto '<a-f>'  '<esc>gf'
 map -docstring "file recursive"                 global goto 'f'      '<esc>: smart-select WORD; search-file %val{selection}<ret>'
@@ -141,7 +149,7 @@ map -docstring 'replace selection with sysclipboard' global clipboard 'r' '|pbpa
 map -docstring 'import from sysclipboard'            global clipboard 'i' ': clipboard-import<ret>'
 map -docstring 'export to sysclipboard'              global clipboard 'e' ': clipboard-export<ret>'
 map -docstring 'tmux-clipboard menu'                 global clipboard 't' ': enter-user-mode tmux-clipboard<ret>'
-map -docstring 'clipboard mode'                      global normal    'Y' ': enter-user-mode clipboard<ret>'
+map -docstring 'clipboard mode'                      global user      'y' ': enter-user-mode clipboard<ret>'
 
 declare-user-mode tmux-clipboard
 # map -docstring 'yank to tmux buffer'                global tmux-clipboard 'y' '<a-|>tmux setb -b kak "$kak_selection"<ret>'
