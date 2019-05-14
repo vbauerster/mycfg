@@ -33,14 +33,14 @@ plug "delapouite/kakoune-buffers" config %{
 }
 
 plug "delapouite/kakoune-cd" config %{
-    map global goto c '<esc>: change-directory-current-buffer<ret>' -docstring 'current buffer dir'
-    map global goto p '<esc>: cd ..;print-working-directory<ret>' -docstring 'parent dir'
+    map global cd <space> '<esc>: print-working-directory<ret>' -docstring 'print working dir'
+    map global goto <space> '<esc>: enter-user-mode cd<ret>' -docstring 'kakoune-cd'
     alias global pwd print-working-directory
 }
 
-plug "andreyorst/smarttab.kak" %{
+plug "andreyorst/smarttab.kak" config %{
     set-option global softtabstop 4
-    hook global WinSetOption filetype=(rust|markdown|kak|lisp|scheme|sh) expandtab
+    hook global WinSetOption filetype=(rust|markdown|kak|lisp|scheme|sh|perl) expandtab
     hook global WinSetOption filetype=(makefile) noexpandtab
     hook global WinSetOption filetype=(c|cpp|go) smarttab
 }
@@ -206,13 +206,15 @@ plug "ul/kak-lsp" do %{
     set-option global lsp_diagnostic_line_error_sign '║'
     set-option global lsp_diagnostic_line_warning_sign '┊'
 
-    define-command ne -docstring 'go to next error/warning from lsp' %{ lsp-find-error --include-warnings }
-    define-command pe -docstring 'go to previous error/warning from lsp' %{ lsp-find-error --previous --include-warnings }
-    define-command ee -docstring 'go to current error/warning from lsp' %{ lsp-find-error --include-warnings; lsp-find-error --previous --include-warnings }
+    # define-command ne -docstring 'go to next error/warning from lsp' %{ lsp-find-error --include-warnings }
+    # define-command pe -docstring 'go to previous error/warning from lsp' %{ lsp-find-error --previous --include-warnings }
+    # define-command ee -docstring 'go to current error/warning from lsp' %{ lsp-find-error --include-warnings; lsp-find-error --previous --include-warnings }
 
     define-command lsp-restart -docstring 'restart lsp server' %{ lsp-stop; lsp-start }
 
     hook global WinSetOption filetype=(c|cpp|go|rust) %{
+        map -docstring 'lsp-references-next-match'     global lsp ']' ': lsp-references-next-match;enter-user-mode lsp<ret>'
+        map -docstring 'lsp-references-previous-match' global lsp '[' ': lsp-references-previous-match;enter-user-mode lsp<ret>'
         map -docstring 'LSP mode' window user 'a' ': enter-user-mode lsp<ret>'
         set-option window lsp_auto_highlight_references true
         set-option window lsp_hover_anchor false
@@ -246,23 +248,31 @@ plug "ul/kak-lsp" do %{
 # plug "https://gitlab.com/Screwtapello/kakoune-state-save.git" noload
 plug "danr/kakoune-easymotion" noload
 
-plug "andreyorst/tagbar.kak" noload config %{
-    set-option global tagbar_sort false
-    set-option global tagbar_size 40
-    set-option global tagbar_display_anon false
-    map global user 't' ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
-    hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
-        tagbar-enable
-    }
-    hook global WinSetOption filetype=tagbar %{
-        remove-highlighter buffer/numbers
-        remove-highlighter buffer/matching
-        remove-highlighter buffer/wrap
-        remove-highlighter buffer/show-whitespaces
-    }
+plug "andreyorst/powerline.kak" noload config %{
+    # set-option global powerline_ignore_warnings true
+    # set-option global powerline_format 'git bufname smarttab mode_info filetype client session position'
+    # hook -once global WinDisplay .* %{
+    #     powerline-theme github
+    # }
 }
 
-plug "delapouite/kakoune-auto-percent"
+plug "andreyorst/tagbar.kak" noload config %{
+    # set-option global tagbar_sort false
+    # set-option global tagbar_size 40
+    # set-option global tagbar_display_anon false
+    # map global user 't' ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
+    # hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
+    #     tagbar-enable
+    # }
+    # hook global WinSetOption filetype=tagbar %{
+    #     remove-highlighter buffer/numbers
+    #     remove-highlighter buffer/matching
+    #     remove-highlighter buffer/wrap
+    #     remove-highlighter buffer/show-whitespaces
+    # }
+}
+
+plug "delapouite/kakoune-auto-percent" noload
 plug "delapouite/kakoune-auto-star"
 plug 'delapouite/kakoune-palette'
 
@@ -270,7 +280,7 @@ plug "alexherbo2/auto-pairs.kak" config %{
     # hook global WinSetOption filetype=(c|cpp|go|rust) %{
     #     auto-pairs-enable
     # }
-    # hook global WinCreate .* %{ auto-pairs-enable }
+    map global toggle p '<esc>: auto-pairs-toggle<ret>' -docstring 'auto pairs toggle'
 }
 
 plug "alexherbo2/distraction-free.kak" config %{
