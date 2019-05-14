@@ -3,7 +3,6 @@ evaluate-commands %sh{
         common.kak
         commands.kak
         languages.kak
-        tmux.kak
         plugins.kak
     "
 
@@ -11,7 +10,7 @@ evaluate-commands %sh{
         printf "%s\n" "try %{
             source '$HOME/.config/kak/$file'
         } catch %{
-            echo -debug \"%val{error}\"
+            echo -debug %val{error}
         } catch %{
             echo -debug 'Error sourcing $file'
         }"
