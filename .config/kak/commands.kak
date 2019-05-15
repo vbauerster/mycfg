@@ -1,70 +1,81 @@
-define-command -override -hidden \
+define-command -hidden \
 -docstring "smart-select: select WORD if current selection is only one character" \
 smart-select -params 1 %{ evaluate-commands %sh{
-    if [ "$1" = "WORD" ]; then
-        keys="<a-w>"
-    elif [ "$1" = "word" ]; then
-        keys="w"
-    else
-        printf "%s\n" "fail %{wrong word type '$1'}"
-    fi
-    if [ $(expr $(printf "%s\n" $kak_selection | wc -m) - 1) -eq 1 ]; then
+    case $1 in
+        WORD) keys="<a-w>" ;;
+        word) keys="w" ;;
+        *)    printf "%s\n" "fail %{wrong word type '$1'}"; exit ;;
+    esac
+    if [ $(printf "%s\n" ${kak_selection} | wc -m) -eq 2 ]; then
         printf "%s\n" "execute-keys -save-regs '' <a-i>${keys}"
     fi
 }}
 
-define-command -override -docstring \
+define-command -docstring \
 "search-file <filename>: search for file recusively under path option: %opt{path}" \
 search-file -params 1 %{ evaluate-commands %sh{
-    file=$(printf "%s\n" $1 | sed -E "s:^~/:$HOME/:")
-    eval "set -- $kak_buflist"
+    if [ -n "$(command -v fd)" ]; then                          # create find command template
+        find='fd -L --type f "${file}" "${path}"'               # if `fd' is installed it will
+    else                                                        # be used because it is faster
+        find='find -L "${path}" -mount -type f -name "${file}"' # if not, we fallback to find.
+    fi
+
+    file=$(printf "%s\n" $1 | sed -E "s:^~/:$HOME/:") # we want full path
+
+    eval "set -- ${kak_buflist}"
     while [ $# -gt 0 ]; do            # Check if buffer with this
-        if [ "$file" = "$1" ]; then   # file already exists. Basically
+        if [ "${file}" = "$1" ]; then # file already exists. Basically
             printf "%s\n" "buffer $1" # emulating what edit command does
             exit
         fi
         shift
     done
-    if [ -e "$file" ]; then                     # Test if file exists under
-        printf "%s\n" "edit -existing %{$file}" # servers' working directory
-        exit                                    # this is last resort until
-    fi                                          # we start recursive searchimg
 
-    # if everthing  above fails - search for file under path
-    eval "set -- $kak_opt_path"
-    while [ $# -gt 0 ]; do
-        case $1 in                        # Since we want to check fewer places
-            ./) path=${kak_buffile%/*} ;; # I've swapped ./ and %/ because
-            %/) path=$PWD ;;              # %/ usually has smaller scope. So
-            *)  path=$1 ;;                # this trick is a speedi-up hack.
-        esac
-        if [ -z "${file##*/*}" ]; then # test if filename contains path
-            if [ -e "$path/$file" ]; then
-                printf "%s\n" "edit -existing %{$path/$file}"
-                exit
-            fi
-        else # build list of candidates or automatically select if only one found
+    if [ -e "${file}" ]; then                     # Test if file exists under
+        printf "%s\n" "edit -existing %{${file}}" # servers' working directory
+        exit                                      # this is last resort until
+    fi                                            # we start recursive searchimg
+
+    # if everthing  above fails - search for file under `path'
+    eval "set -- ${kak_opt_path}"
+    while [ $# -gt 0 ]; do                # Since we want to check fewer places,
+        case $1 in                        # I've swapped ./ and %/ because
+            ./) path=${kak_buffile%/*} ;; # %/ usually has smaller scope. So
+            %/) path=${PWD}            ;; # this trick is a speedi-up hack.
+            *)  path=$1                ;; # This means that `path' option should
+        esac                              # first contain `./' and then `%/'
+
+        if [ -z "${file##*/*}" ] && [ -e "${path}/${file}" ]; then
+            printf "%s\n" "edit -existing %{${path}/${file}}"
+            exit
+        else
+            # build list of candidates or automatically select if only one found
+            # this doesn't support files with newlines in them unfortunately
             IFS='
 '
-            for candidate in $(find -L $path -mount -type f -name "$file"); do
-                if [ -n "$candidate" ]; then
-                    candidates="$candidates %{$candidate} %{evaluate-commands %{edit -existing %{$candidate}}}"
-                fi
+            for candidate in $(eval "${find}"); do
+                [ -n "${candidate}" ] && candidates="${candidates} %{${candidate}} %{evaluate-commands %{edit -existing %{${candidate}}}}"
             done
-            if [ -n "$candidates" ]; then
-                printf "%s\n" "menu -auto-single $candidates"
+
+            # we want to get out as early as possible
+            # so if any candidate found in current cycle
+            # we prompt it in menu and exit
+            if [ -n "${candidates}" ]; then
+                printf "%s\n" "menu -auto-single ${candidates}"
                 exit
             fi
         fi
+
         shift
     done
-    printf "%s\n" "echo -markup %{{Error}unable to find file '$file'}"
+
+    printf "%s\n" "echo -markup %{{Error}unable to find file '${file}'}"
 }}
 
-define-command -override -docstring \
+define-command -docstring \
 "select a word under cursor, or add cursor on next occurrence of current selection" \
 select-or-add-cursor %{ execute-keys -save-regs '' %sh{
-    if [ $(expr $(printf "%s\n" $kak_selection | wc -m) - 1) -eq 1 ]; then
+    if [ $(printf "%s\n" ${kak_selection} | wc -m) -eq 2 ]; then
         printf "%s\n" "<a-i>w*"
     else
         printf "%s\n" "*<s-n>"
@@ -113,6 +124,16 @@ If no symbol given, current selection is used as a symbol name" \
         }
         END { print ( length(out) == 0 ? "echo -markup %{{Error}no such tag " ENVIRON["tagname"] "}" : "menu -markup -auto-single " out ) }'
 }}
+
+define-command -docstring "evaluate-buffer: evaluate current buffer contents as kakscript" \
+evaluate-buffer %{
+    execute-keys -draft '%:<space><c-r>.<ret>'
+}
+
+define-command -docstring "evaluate-selection: evaluate current sellection contents as kakscript" \
+evaluate-selection %{
+    execute-keys -itersel -draft ':<space><c-r>.<ret>'
+}
 
 # Tab completion.
 define-command tab-completion-enable %{
