@@ -75,54 +75,27 @@ plug "occivink/kakoune-phantom-selection" config %{
     map global insert '<a-(>' "<esc>: phantom-selection-iterate-prev<ret>"
 }
 
-plug "occivink/kakoune-snippets" config %{
+plug "andreyorst/kakoune-snippet-collection"
+
+plug "occivink/kakoune-snippets" branch "auto-discard" config %{
     set-option -add global snippets_directories "%opt{plug_install_dir}/kakoune-snippet-collection/snippets"
     set-option global snippets_auto_expand false
-    # map -docstring 'snippets-menu' global user 's' ': snippets-menu<ret>'
+    # map global normal '<ret>' ":      expand-or-jump-or-key ret<ret>"
+    map global insert '<a-n>' "<a-;>: expand-or-jump-or-key a-n<ret>"
     map -docstring 'snippets-info' global user 'i' ': snippets-info<ret>'
-    map global insert '<tab>' "z<a-;>: snippets-expand-or-jump 'tab'<ret>"
-    # map global normal '<tab>' ": snippets-select-next-placeholders<ret>"
-    map global normal '<tab>' ": snippets-expand-or-jump 'tab'<ret>"
 
-    hook global InsertCompletionShow .* %{
+    define-command -hidden \
+    expand-or-jump-or-key -params 1 %{
         try %{
-            execute-keys -draft 'h<a-K>\h<ret>'
-            map window insert '<ret>' "z<a-;>: snippets-expand-or-jump 'ret'<ret>"
-        }
-    }
-
-    hook global InsertCompletionHide .* %{
-        unmap window insert '<ret>' "z<a-;>: snippets-expand-or-jump 'ret'<ret>"
-    }
-
-    define-command snippets-expand-or-jump -params 1 %{
-        execute-keys <backspace>
-        try %{
-            snippets-expand-trigger %{
-                set-register / "%opt{snippets_triggers_regex}\z"
-                execute-keys 'hGhs<ret>'
-            }
-            evaluate-commands %sh{
-                if [ ${#kak_selection} -gt 1 ]; then
-                    echo "execute-keys <esc>"
-                fi
-            }
-        } catch %{
             snippets-select-next-placeholders
-            evaluate-commands %sh{
-                if [ ${#kak_selection} -gt 1 ]; then
-                    echo "execute-keys <esc>"
-                fi
-            }
-        } catch %sh{
+        } catch %{ snippets-expand-trigger %{
+            set-register / "%opt{snippets_triggers_regex}\z"
+            execute-keys 'hGhs<ret>'
+        }} catch %sh{
             printf "%s\n" "execute-keys -with-hooks <$1>"
-        } catch %{
-            echo -debug "snippets-expand-or-jump:%val{error}"
         }
     }
 }
-
-plug "andreyorst/kakoune-snippet-collection"
 
 plug "occivink/kakoune-find"
 
