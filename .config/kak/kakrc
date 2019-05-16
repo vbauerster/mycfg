@@ -2,6 +2,7 @@ evaluate-commands %sh{
     config_files="
         common.kak
         commands.kak
+        tmux.kak
         languages.kak
         plugins.kak
     "
