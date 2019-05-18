@@ -199,6 +199,12 @@ define-command enlarge-selection %{
 define-command shrink-selection %{
   exec '<a-:>H<a-;>L<a-:>'
 }
+define-command shift-selection-left %{
+  exec '<a-:>H<a-;>H<a-:>'
+}
+define-command shift-selection-right %{
+  exec '<a-:>L<a-;>L<a-:>'
+}
 define-command slice-by-camel %{
   exec s[A-Z][a-z]+|[A-Z]+|[a-z]+<ret>
 }
