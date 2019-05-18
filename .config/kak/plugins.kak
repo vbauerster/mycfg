@@ -23,7 +23,7 @@ plug "occivink/kakoune-expand" config %{
         expand-impl %{ execute-keys '<a-:><a-;>k<a-K>^$<ret><a-i>i' } # previous indent level (upward)
         expand-impl %{ execute-keys '<a-:>j<a-K>^$<ret><a-i>i' }      # previous indent level (downward)
     }
-    map -docstring 'smart expand' global anchor '<space>' ': expand<ret>'
+    map -docstring 'smart expand' global normal '<a-space>' '<c-s>: expand<ret>'
 }
 
 plug "delapouite/kakoune-buffers" config %{
@@ -67,9 +67,9 @@ plug "andreyorst/fzf.kak" config %{
 
 plug "occivink/kakoune-phantom-selection" config %{
     # map -docstring 'phantom-selection add'   global user 'm' ': phantom-selection-add-selection<ret>'
-    map -docstring 'phantom-selection clear' global user 'q' ': phantom-selection-select-all; phantom-selection-clear<ret>'
-    map -docstring 'phantom-selection n'     global user ')' ': phantom-selection-iterate-next<ret>'
-    map -docstring 'phantom-selection p'     global user '(' ': phantom-selection-iterate-prev<ret>'
+    map -docstring 'phantom-selection n'     global anchor ')' ': phantom-selection-iterate-next<ret>'
+    map -docstring 'phantom-selection p'     global anchor '(' ': phantom-selection-iterate-prev<ret>'
+    map -docstring 'phantom-selection clear' global anchor '<space>' ': phantom-selection-select-all; phantom-selection-clear<ret>'
 
     map global insert '<a-)>' "<esc>: phantom-selection-iterate-next<ret>"
     map global insert '<a-(>' "<esc>: phantom-selection-iterate-prev<ret>"
