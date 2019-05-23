@@ -22,13 +22,6 @@ hook global WinSetOption filetype=(rust) %{
     set-option buffer matching_pairs '{' '}' '[' ']' '(' ')'
 
     evaluate-commands %sh{
-        # Common highlightings for Rust
-        printf "%s\n" "add-highlighter shared/rust/code/field     regex ((?<!\.\.)(?<=\.))[a-zA-Z](\w+)?\b(?![>\"\(]) 0:meta
-                       add-highlighter shared/rust/code/method    regex ((?<!\.\.)(?<=\.))[a-zA-Z](\w+)?(\h+)?(?=\() 0:function
-                       add-highlighter shared/rust/code/return    regex \breturn\b 0:meta
-                       add-highlighter shared/rust/code/usertype  regex \b[A-Z]\w*\b 0:type
-                       add-highlighter shared/rust/code/namespace regex [a-zA-Z](\w+)?(\h+)?(?=::) 0:module"
-
         # Taken from rc/filetype/rust.kak
         rust_keywords="let as fn return match if else loop for in while
                        break continue move box where impl dyn pub unsafe"
@@ -36,7 +29,14 @@ hook global WinSetOption filetype=(rust) %{
         join() { sep=$2; eval set -- $1; IFS="$sep"; echo "$*"; }
 
         # Highlight functions ignoring Rust specific keywords
-        printf "%s\n" "add-highlighter shared/rust/code/functions regex (\w*?)\b($(join '${rust_keywords}' '|'))?\h*(?=\() 1:function"
+        printf "%s\n" "add-highlighter shared/rust/code/functions regex ([_a-z]?\w*)\b($(join '${rust_keywords}' '|'))?\h*(?=\() 1:function"
+
+        # Common highlightings for Rust
+        printf "%s\n" "add-highlighter shared/rust/code/field     regex ((?<!\.\.)(?<=\.))[_a-zA-Z](\w+)?\b(?![>\"\(]) 0:meta
+                       add-highlighter shared/rust/code/method    regex ((?<!\.\.)(?<=\.))[_a-zA-Z](\w+)?(\h+)?(?=\() 0:function
+                       add-highlighter shared/rust/code/return    regex \breturn\b 0:meta
+                       add-highlighter shared/rust/code/usertype  regex \b[A-Z]\w*\b 0:type
+                       add-highlighter shared/rust/code/namespace regex [a-zA-Z](\w+)?(\h+)?(?=::) 0:module"
     }
 }
 
