@@ -59,14 +59,14 @@ map -docstring "avoid escape key"            global prompt '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global insert '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global user   '<c-g>' '<esc>'
 
-# map global normal t l
-# map global normal l t
-# map global normal T L
-# map global normal L T
-# map global normal <a-t> <a-l>
-# map global normal <a-l> <a-t>
-# map global normal <a-T> <a-L>
-# map global normal <a-L> <a-T>
+map global normal t l
+map global normal l t
+map global normal T L
+map global normal L T
+map global normal <a-t> <a-l>
+map global normal <a-l> <a-t>
+map global normal <a-T> <a-L>
+map global normal <a-L> <a-T>
 map global normal 'J' '4j'
 map global normal 'K' '4k'
 map global normal '<a-plus>' 'J'
