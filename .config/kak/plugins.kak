@@ -34,7 +34,7 @@ plug "delapouite/kakoune-buffers" config %{
 
 plug "delapouite/kakoune-cd" config %{
     map global cd <space> '<esc>: print-working-directory<ret>' -docstring 'print working dir'
-    map global goto <space> '<esc>: enter-user-mode cd<ret>' -docstring 'kakoune-cd'
+    map global goto o '<esc>: enter-user-mode cd<ret>' -docstring 'kakoune-cd'
     alias global pwd print-working-directory
 }
 
