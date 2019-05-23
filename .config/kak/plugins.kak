@@ -245,7 +245,9 @@ plug "andreyorst/tagbar.kak" noload config %{
     # }
 }
 
-plug "delapouite/kakoune-auto-percent" noload
+plug "delapouite/kakoune-auto-percent" config %{
+    map -docstring 'select-complement' global anchor 'p' ': select-complement<ret>'
+}
 plug "delapouite/kakoune-auto-star"
 plug 'delapouite/kakoune-palette'
 
@@ -269,6 +271,8 @@ plug "alexherbo2/word-movement.kak" config %{
     word-movement-map next w
     word-movement-map previous b
     word-movement-map skip e
+    map -docstring 'reduce and wm w' global anchor 'w' ';: word-movement-next-word<ret>'
+    map -docstring 'reduce and wm b' global anchor 'b' ';: word-movement-previous-word<ret>'
 }
 
 plug "alexherbo2/split-object.kak" config %{
