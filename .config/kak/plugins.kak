@@ -47,21 +47,20 @@ plug "andreyorst/smarttab.kak" config %{
 
 plug "andreyorst/fzf.kak" config %{
     map -docstring 'fzf-mode'  global user 'p' ': fzf-mode<ret>'
-    map -docstring 'fzf-ctags' global user 'c' ': enter-user-mode fzf-ctags<ret>'
+} defer fzf %{
     set-option global fzf_preview_width '65%'
     unmap global fzf v
     unmap global fzf <a-v>
     map global fzf g ': fzf-vcs<ret>' -docstring 'edit file from vcs repo'
     map global fzf <a-g> ': fzf-vcs-mode<ret>' -docstring 'switch to vcs selection mode'
     evaluate-commands %sh{
-        if command -v fd >/dev/null 2>/dev/null; then
-            # echo "set-option global fzf_file_command 'fd . --no-ignore --type f --follow'"
-            echo "set-option global fzf_file_command %{fd . --type f --follow --exclude .git --exclude .svn --exclude TAGS}"
+        if [ -n "$(command -v fd)" ]; then
+            echo "set-option global fzf_file_command %{fd . --no-ignore --type f --follow --exclude .git --exclude .svn --exclude TAGS}"
         fi
-        command -v blsd >/dev/null 2>/dev/null && echo "set-option global fzf_cd_command '(echo .. && blsd)'"
-        command -v bat >/dev/null 2>/dev/null && echo "set-option global fzf_highlight bat"
-        command -v tree >/dev/null 2>/dev/null && echo "set-option global fzf_cd_preview true"
-        # [ -n "${kak_opt_grepcmd}" ] && echo "set-option global fzf_sk_grep_command %{${kak_opt_grepcmd}}"
+        [ -n "$(command -v blsd)" ] && echo "set-option global fzf_cd_command '(echo .. && blsd)'"
+        [ -n "$(command -v bat)" ] && echo "set-option global fzf_highlight_cmd bat"
+        [ -n "${kak_opt_grepcmd}" ] && echo "set-option global fzf_sk_grep_command %{${kak_opt_grepcmd}}"
+        # command -v tree >/dev/null 2>/dev/null && echo "set-option global fzf_cd_preview true"
     }
 }
 
