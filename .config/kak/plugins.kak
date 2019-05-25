@@ -228,20 +228,21 @@ plug "andreyorst/powerline.kak" noload config %{
     # }
 }
 
-plug "andreyorst/tagbar.kak" noload config %{
-    # set-option global tagbar_sort false
-    # set-option global tagbar_size 40
-    # set-option global tagbar_display_anon false
-    # map global user 't' ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
-    # hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
-    #     tagbar-enable
-    # }
-    # hook global WinSetOption filetype=tagbar %{
-    #     remove-highlighter buffer/numbers
-    #     remove-highlighter buffer/matching
-    #     remove-highlighter buffer/wrap
-    #     remove-highlighter buffer/show-whitespaces
-    # }
+plug "andreyorst/tagbar.kak" defer tagbar %{
+    set-option global tagbar_sort false
+    set-option global tagbar_size 40
+    set-option global tagbar_display_anon false
+} config %{
+    map global toggle 't' ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
+    hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
+        tagbar-enable
+    }
+    hook global WinSetOption filetype=tagbar %{
+        remove-highlighter buffer/numbers
+        remove-highlighter buffer/matching
+        remove-highlighter buffer/wrap
+        remove-highlighter buffer/show-whitespaces
+    }
 }
 
 plug "delapouite/kakoune-auto-percent" config %{
