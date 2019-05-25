@@ -1,3 +1,2 @@
 # https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#configuration-file
---type-add=proto:*.proto
 --smart-case
