@@ -65,10 +65,10 @@ plug "andreyorst/fzf.kak" config %{
 }
 
 plug "occivink/kakoune-phantom-selection" config %{
-    # map -docstring 'phantom-selection add'   global user 'm' ': phantom-selection-add-selection<ret>'
+    map -docstring 'phantom-selection add'   global anchor '*' ': phantom-selection-add-selection<ret>'
     map -docstring 'phantom-selection n'     global anchor ')' ': phantom-selection-iterate-next<ret>'
     map -docstring 'phantom-selection p'     global anchor '(' ': phantom-selection-iterate-prev<ret>'
-    map -docstring 'phantom-selection clear' global anchor '<space>' ': phantom-selection-select-all; phantom-selection-clear<ret>'
+    map -docstring 'phantom-selection clear' global anchor ',' ': phantom-selection-select-all; phantom-selection-clear<ret>'
 
     map global insert '<a-)>' "<esc>: phantom-selection-iterate-next<ret>"
     map global insert '<a-(>' "<esc>: phantom-selection-iterate-prev<ret>"
