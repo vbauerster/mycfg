@@ -23,7 +23,7 @@ plug "occivink/kakoune-expand" config %{
         expand-impl %{ execute-keys '<a-:><a-;>k<a-K>^$<ret><a-i>i' } # previous indent level (upward)
         expand-impl %{ execute-keys '<a-:>j<a-K>^$<ret><a-i>i' }      # previous indent level (downward)
     }
-    map -docstring 'smart expand' global normal '<a-space>' '<c-s>: expand<ret>'
+    map -docstring 'smart expand' global anchor '<space>' '<c-s>: expand<ret>'
 }
 
 plug "delapouite/kakoune-buffers" config %{
