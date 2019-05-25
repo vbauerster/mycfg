@@ -171,8 +171,10 @@ plug "ul/kak-tree" config %{
 }
 
 plug "ul/kak-lsp" do %{
-    cargo build --release --locked
-    cargo install --force --path .
+    if [ $(uname -m) != "aarch64" ]; then
+        cargo build --release --locked
+        cargo install --force --path .
+    fi
 } config %{
     set-face global Reference default,rgb:EDF97D
     set-option global lsp_diagnostic_line_error_sign '║'
@@ -208,6 +210,7 @@ plug "ul/kak-lsp" do %{
                 test -f rustfmt.toml && printf lsp-formatting-sync
             }
         }
+        set-register @ 'A;<esc>'
     }
 
     # hook global WinSetOption filetype=(go) %{
