@@ -71,9 +71,13 @@ map global normal 'J' '4j'
 map global normal 'K' '4k'
 map global normal '<a-plus>' 'J'
 map global normal '<a-minus>' 'K'
-map global normal '<minus>' '_'
-map global normal '_' '<a-_>'
+# map global normal '<minus>' '_'
+# map global normal '_' '<a-_>'
 # map global normal '<plus>' ':'
+map global normal p <a-p>
+map global normal <a-p> p
+map global normal P <a-P>
+map global normal <a-P> P
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
 map global normal x ': extend-line-down %val{count}<ret>'
