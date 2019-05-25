@@ -1,5 +1,6 @@
 # https://news.ycombinator.com/item?id=11070797
-alias config='git --git-dir=$HOME/.mycfg/ --work-tree=$HOME'
+alias c='git --git-dir=$HOME/.mycfg/ --work-tree=$HOME'
+alias chh='cd ~/.mycfg && ghh'
 
 # Unix
 alias u='ls -1A'         # Lists in one column, hidden files.
@@ -29,7 +30,7 @@ alias fpath='echo $FPATH | tr -s ":" "\n"'
 alias psg='ps aux | grep $(echo $1 | sed "s/^\(.\)/[\1]/g")'
 
 # alias header='curl -I'
-alias c='curl -s --dump-header /dev/stderr'
+# alias c='curl -s --dump-header /dev/stderr'
 alias myip='curl icanhazip.com'
 alias showip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias t2='tree -Fth -L 2 --du |less' #see tree with size up to 2 levels deep
@@ -41,14 +42,10 @@ alias tmu='tmux list-sessions'
 
 # convenience
 alias eA='kak ~/.aliases'
-alias eV='cd ~/dotfiles/config/nvim && nvim init.vim'
-alias eT='cd ~/dotfiles/tmux && kak tmux.conf'
-alias eH='cd ~/dotfiles/hammerspoon && kak init.lua'
-alias eS='cd ~/.ssh && kak config'
-alias eD='cd ~/.zprezto/modules/docker && kak alias.zsh'
-alias cdGosrc='cd /usr/local/opt/go/libexec/src'
-alias cdPlug='cd ~/.config/nvim/plugged'
-alias cdGist='cd ~/go/src/github.com/vbauerster/gists'
+alias eT='kak ~/.tmux.conf'
+alias eH='kak ~/.hammerspoon/init.lua'
+alias eS='kak ~/.ssh/config'
+alias eD='kak ~/.zprezto/modules/docker/alias.zsh'
 
 # http://grml.org/zsh/zsh-lovers.html [Aliases section]
 alias -s md=nvim
