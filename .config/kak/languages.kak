@@ -18,6 +18,7 @@ hook global WinSetOption filetype=(go) %{
 # Rust
 # ‾‾‾‾
 hook global WinSetOption filetype=(rust) %{
+    try %{ set-option buffer grepcmd 'rg --column -trust -g=!target' }
     set-option buffer formatcmd 'rustfmt'
     set-option buffer matching_pairs '{' '}' '[' ']' '(' ')'
 
