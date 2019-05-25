@@ -166,7 +166,7 @@ plug "ul/kak-tree" config %{
         map global syntax-tree c ': enter-user-mode syntax-tree-children<ret>' -docstring 'children'
         map global syntax-tree p ': enter-user-mode syntax-tree-parent<ret>' -docstring 'parent_node'
         map global syntax-tree t ': tree-node-sexp<ret>' -docstring 'tree-node-sexp'
-        map global user t ': enter-user-mode syntax-tree<ret>' -docstring 'tree select'
+        map global user s ': enter-user-mode syntax-tree<ret>' -docstring 'tree select'
     }
 }
 
