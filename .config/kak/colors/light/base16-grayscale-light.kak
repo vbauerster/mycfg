@@ -64,7 +64,7 @@ evaluate-commands %sh{
          face global BufferPadding      ${base03},${base00}
          face global LineNumbers        ${base02},${base00}
          face global LineNumberCursor   ${base00},${base02}
-         face global LineNumbersWrapped ${base02},${base00}+u
+         face global LineNumbersWrapped ${base00},${base00}
          face global MenuForeground     ${base00},${base0F}
          face global MenuBackground     ${base01},${base0C}
          face global MenuInfo           ${base02}
