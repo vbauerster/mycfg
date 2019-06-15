@@ -17,7 +17,10 @@ evaluate-commands %sh{
 # Use main client as jumpclient
 set-option global jumpclient client0
 
-colorscheme github-custom
+# colorscheme github-custom
+# colorscheme tomorrow-night-mod
+# colorscheme gruvbox
+colorscheme base16-tomorrow
 
 hook global WinCreate .* %{
     try %{
@@ -28,10 +31,10 @@ hook global WinCreate .* %{
         add-highlighter buffer/VisibleWords regex \b(?:FIXME|TODO|XXX)\b 0:default+rb
     }
 
-    tab-completion-enable
     # show-trailing-whitespace-enable; face window TrailingWhitespace default,red
-    # search-highlighting-enable; face window Search black,rgb:EDF97D+bi
-    search-highlighting-enable; face window Search default,rgb:EDF97D+bi
+    # enable tab complete in insert mode
+    tab-completion-enable
+    search-highlighting-enable
 }
 
 # escape hatch
@@ -41,43 +44,53 @@ hook global InsertChar \. %{ try %{
     exec <esc>
 }}
 
+# Aliases
+# ‾‾‾‾‾‾‾
 alias global u enter-user-mode
+alias global h doc
 
 ## Maps.
-map -docstring 'space as leader'             global normal '<space>'  ','
-map -docstring 'drop all but main selection' global normal 'q'        '<space>'
-map -docstring 'drop main selection'         global normal '<c-q>'    '<a-space>'
-map -docstring 'toggle case'                 global normal '='        '<a-`>'
-map -docstring 'comment line'                global normal '#'        ': comment-line<ret>'
-map -docstring 'comment block'               global normal '<a-#>'    ': comment-block<ret>'
-map -docstring 'save buffer'                 global normal '<F2>'     ': w<ret>'
-map -docstring 'select whole buffer'         global normal ':'        '<c-s>%'
+# map -docstring 'command prompt'              global normal '<plus>'  ':'
+map -docstring 'select whole buffer'         global normal ':'       '<c-s>%'
+map -docstring 'space as leader'             global normal '<space>' ','
+map -docstring 'drop all but main selection' global normal 'q'       '<space>'
+map -docstring 'drop main selection'         global normal '<c-q>'   '<a-space>'
+map -docstring 'toggle case'                 global normal '~'       '<a-`>'
+map -docstring 'align cursors'               global normal '='       '&'
+map -docstring 'copy indent'                 global normal '<a-=>'   '<a-&>'
+map -docstring 'comment line'                global normal '#'       ': comment-line<ret>'
+map -docstring 'comment block'               global normal '<a-#>'   ': comment-block<ret>'
+map -docstring 'save buffer'                 global normal '<F2>'    ': w<ret>'
 
 # Avoid escape key
 map -docstring "avoid escape key"            global normal '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global prompt '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global insert '<c-g>' '<esc>'
-map -docstring "avoid escape key"            global user   '<c-g>' '<esc>'
 
-map global normal t l
-map global normal l t
-map global normal T L
-map global normal L T
-map global normal <a-t> <a-l>
-map global normal <a-l> <a-t>
-map global normal <a-T> <a-L>
-map global normal <a-L> <a-T>
-map global normal 'J' '4j'
-map global normal 'K' '4k'
+# map global normal g u
+# map global normal u g
+# map global normal G U
+# map global normal U G
+# map global normal t l
+# map global normal l t
+# map global normal T L
+# map global normal L T
+# map global normal <a-t> <a-l>
+# map global normal <a-l> <a-t>
+# map global normal <a-T> <a-L>
+# map global normal <a-L> <a-T>
+map global normal '<plus>' 'vv4j'
+map global normal '<minus>' 'vv4k'
 map global normal '<a-plus>' 'J'
 map global normal '<a-minus>' 'K'
 # map global normal '<minus>' '_'
 # map global normal '_' '<a-_>'
 # map global normal '<plus>' ':'
-map global normal p <a-p>
-map global normal <a-p> p
-map global normal P <a-P>
-map global normal <a-P> P
+# issue with count p
+# map global normal p <a-p>
+# map global normal <a-p> p
+# map global normal P <a-P>
+# map global normal <a-P> P
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
 map global normal x ': extend-line-down %val{count}<ret>'
@@ -127,22 +140,23 @@ map -docstring 'case insensitive' global search 'i' '/(?i)'
 map -docstring 'select all'       global search 'a' ': smart-select word<ret>*%s<ret>'
 map -docstring 'search mode'      global user   '/' ': enter-user-mode search<ret>'
 
+# https://discuss.kakoune.com/t/rfr-best-way-to-add-a-toggle/580/2
 declare-user-mode toggle
 map -docstring 'toggle' global user 't' ': enter-user-mode toggle<ret>'
+map -docstring 'colorscheme' global toggle 'c' ': enter-user-mode themes<ret>'
+# map -docstring 'search highlight' global toggle  's' ': search-highlighting-enable<ret>'
+
+declare-user-mode themes
+map -docstring 'grayscale-light' global themes 'g' ': colorscheme base16-grayscale-light<ret>'
+map -docstring 'color-light' global themes 'c' ': colorscheme base16-tomorrow<ret>'
 
 ## Goto
-map -docstring 'window top'                     global goto 'g'      't'
 map -docstring 'line end'                       global goto 'u'      'l'
-map -docstring 'buffer top'                     global goto 'G'      'k'
-map -docstring 'buffer bottom'                  global goto 'B'      'j'
-# map -docstring 'window center'                  global goto 'u'      'c'
-# map -docstring 'window top'                     global goto 'k'      't'
-# map -docstring 'window bottom'                  global goto 'j'      'b'
 map -docstring 'switch to [+] buffer'           global goto '<plus>' '<esc>: switch-to-modified-buffer<ret>'
-map -docstring "file non-recursive"             global goto '<a-f>'  '<esc>gf'
-map -docstring "file recursive"                 global goto 'f'      '<esc>: smart-select WORD; search-file %val{selection}<ret>'
-map -docstring "search tag in current file"     global goto '['      '<esc>: smart-select word; symbol<ret>'
-map -docstring "search tag in global tags file" global goto ']'      '<esc>: smart-select word; ctags-search<ret>'
+map -docstring "file (non-recursive)"           global goto '<a-f>' '<esc>gf'
+map -docstring "file (recursive)"               global goto 'f'     '<esc>: smart-select WORD; search-file %val{selection}<ret>'
+map -docstring "search tag in current file"     global goto '['     '<esc><c-s>: smart-select word; symbol<ret>'
+map -docstring "search tag in global tags file" global goto ']'     '<esc><c-s>: smart-select word; ctags-search<ret>'
 
 ## System clipboard
 declare-user-mode clipboard
@@ -163,20 +177,20 @@ map -docstring 'paste (append) from tmux buffer'    global tmux-clipboard 'p' '<
 map -docstring 'replace selection with tmux buffer' global tmux-clipboard 'r' '|tmux showb<ret>'
 
 declare-user-mode anchor
-map -docstring 'reduce to cursor'           global anchor '.'       ';'
-map -docstring 'reduce to anchor'           global anchor ';'       '<a-;>;'
-map -docstring 'flip cursor and anchor'     global anchor 'm'       '<a-;>'
+# map -docstring 'reduce to cursor'           global anchor '.'       ';'
+# map -docstring 'reduce to anchor'           global anchor ';'       '<a-;>;'
+map -docstring 'flip cursor and anchor'     global anchor '.'       '<a-;>'
 map -docstring 'ensure anchor after cursor' global anchor 'h'       '<a-:><a-;>'
-map -docstring 'ensure cursor after anchor' global anchor 't'       '<a-:>'
+map -docstring 'ensure cursor after anchor' global anchor 'u'       '<a-:>'
 map -docstring 'select cursor and anchor'   global anchor 's'       '<a-S>'
 map -docstring 'reduce and insert'          global anchor 'i'       '<esc>;i'
 map -docstring 'reduce and append'          global anchor 'a'       '<esc>;a'
-map -docstring 'slice by word'              global anchor 'c'       ': slice-by-camel<ret>'
+map -docstring 'slice by word'              global anchor ','       ': slice-by-camel<ret>'
 map -docstring 'shift selection left'       global anchor '<lt>'    ': shift-selection-left;enter-user-mode anchor<ret>'
 map -docstring 'shift selection right'      global anchor '<gt>'    ': shift-selection-right;enter-user-mode anchor<ret>'
 map -docstring 'shrink selection'           global anchor '<minus>' ': shrink-selection<ret>'
 map -docstring 'enlarge selection'          global anchor '<plus>'  ': enlarge-selection<ret>'
-map -docstring 'anchor mode'                global normal ','       ': enter-user-mode  anchor<ret>'
+map -docstring 'anchor mode'                global normal ','       ': enter-user-mode anchor<ret>'
 map -docstring 'anchor mode (lock)'         global normal '<a-,>'   ': enter-user-mode -lock anchor<ret>'
 
 declare-user-mode echo-mode
@@ -211,7 +225,7 @@ map -docstring 'git mode'           global user 'g' ': enter-user-mode git<ret>'
 # <c-v>    ; # raw insert, use vim binding
 map global insert '<c-y>' '<a-;>!pbpaste<ret>'
 # https://github.com/mawww/kakoune/issues/2742
-map global insert '<c-c>' '<a-;>'
+# map global insert '<c-c>' '<a-;>'
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-word-keys-discern-camelcase-or-snake_case-parts
 # define-command -hidden select-prev-word-part %{
