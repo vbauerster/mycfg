@@ -65,14 +65,20 @@ plug "andreyorst/fzf.kak" config %{
 }
 
 plug "occivink/kakoune-phantom-selection" config %{
-    map -docstring 'phantom-selection add'   global anchor '*' ': phantom-selection-add-selection<ret>'
-    map -docstring 'phantom-selection n'     global anchor ')' ': phantom-selection-iterate-next<ret>'
-    map -docstring 'phantom-selection p'     global anchor '(' ': phantom-selection-iterate-prev<ret>'
-    map -docstring 'phantom-selection clear' global anchor ',' ': phantom-selection-select-all; phantom-selection-clear<ret>'
-
-    map global insert '<a-)>' "<esc>: phantom-selection-iterate-next<ret>"
-    map global insert '<a-(>' "<esc>: phantom-selection-iterate-prev<ret>"
+    declare-user-mode phantom
+    map -docstring 'phantom-selection add'   global phantom 'm'       ": phantom-selection-add-selection<ret>"
+    map -docstring 'phantom-selection next'  global phantom ')'       ": phantom-selection-iterate-next<ret>"
+    map -docstring 'phantom-selection prev'  global phantom '('       ": phantom-selection-iterate-prev<ret>"
+    map -docstring 'phantom-selection clear' global phantom '<space>' ": phantom-selection-select-all; phantom-selection-clear<ret>"
+    map -docstring 'phantom mode'            global normal '&'       ': enter-user-mode phantom<ret>'
+    map -docstring 'phantom mode (lock)'     global normal '<a-&>'   ': enter-user-mode -lock phantom<ret>'
+    # can't use <a-;>: see https://github.com/mawww/kakoune/issues/1916
+    map global insert '<a-)>' "<esc>: phantom-selection-iterate-next<ret>i"
+    map global insert '<a-(>' "<esc>: phantom-selection-iterate-prev<ret>i"
+    map global insert '<a-space>' "<esc>: phantom-selection-select-all; phantom-selection-clear<ret>i"
 }
+
+# plug "alexherbo2/phantom.kak"
 
 plug "andreyorst/kakoune-snippet-collection"
 
