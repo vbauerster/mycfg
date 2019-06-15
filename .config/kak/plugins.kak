@@ -300,5 +300,10 @@ plug "screwtapello/kakoune-inc-dec" domain "gitlab.com" config %{
     map -docstring "increment selection" global normal '<C-a>' ': inc-dec-modify-numbers + %val{count}<ret>'
 }
 
+plug "delapouite/kakoune-select-view" %{
+    map global normal <a-:> ': select-view<ret>' -docstring 'select view'
+    map global view w '<esc>: select-view<ret>' -docstring 'select window'
+}
+
 # source "%val{config}/scripts/bc.kak"
 source "%val{config}/scripts/colorscheme-browser.kak"
