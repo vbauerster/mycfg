@@ -8,7 +8,7 @@ plug "occivink/kakoune-vertical-selection" config %{
 }
 
 plug "delapouite/kakoune-text-objects" config %{
-    unmap global object '<tab>'
+    # unmap global object '<tab>'
     map global object 'P' '<esc>: text-object-indented-paragraph<ret>' -docstring 'indented paragraph'
 }
 
@@ -23,7 +23,7 @@ plug "occivink/kakoune-expand" config %{
         expand-impl %{ execute-keys '<a-:><a-;>k<a-K>^$<ret><a-i>i' } # previous indent level (upward)
         expand-impl %{ execute-keys '<a-:>j<a-K>^$<ret><a-i>i' }      # previous indent level (downward)
     }
-    map -docstring 'smart expand' global anchor '<space>' '<c-s>: expand<ret>'
+    map -docstring 'smart expand' global anchor 'x' '<c-s>: expand<ret>'
 }
 
 plug "delapouite/kakoune-buffers" config %{
@@ -33,14 +33,14 @@ plug "delapouite/kakoune-buffers" config %{
 }
 
 plug "delapouite/kakoune-cd" config %{
-    map global cd <space> '<esc>: print-working-directory<ret>' -docstring 'print working dir'
+    map global cd o '<esc>: print-working-directory<ret>' -docstring 'print working dir'
     map global goto o '<esc>: enter-user-mode cd<ret>' -docstring 'kakoune-cd'
     alias global pwd print-working-directory
 }
 
 plug "andreyorst/smarttab.kak" config %{
-    set-option global softtabstop 4
-    hook global WinSetOption filetype=(rust|markdown|kak|lisp|scheme|sh|perl) expandtab
+    # set-option global softtabstop 4
+    hook global WinSetOption filetype=(rust|markdown|kak|lisp|scheme|sh|perl|yaml) expandtab
     hook global WinSetOption filetype=(makefile) noexpandtab
     hook global WinSetOption filetype=(c|cpp|go) smarttab
 }
@@ -49,13 +49,14 @@ plug "andreyorst/fzf.kak" config %{
     map -docstring 'fzf-mode'  global user 'p' ': fzf-mode<ret>'
 } defer fzf %{
     set-option global fzf_preview_width '65%'
-    unmap global fzf v
-    unmap global fzf <a-v>
-    map global fzf g ': fzf-vcs<ret>' -docstring 'edit file from vcs repo'
-    map global fzf <a-g> ': fzf-vcs-mode<ret>' -docstring 'switch to vcs selection mode'
+    set-option global fzf_project_use_tilda true
+    # unmap global fzf v
+    # unmap global fzf <a-v>
+    # map global fzf g ': fzf-vcs<ret>' -docstring 'edit file from vcs repo'
+    # map global fzf <a-g> ': fzf-vcs-mode<ret>' -docstring 'switch to vcs selection mode'
     evaluate-commands %sh{
         if [ -n "$(command -v fd)" ]; then
-            echo "set-option global fzf_file_command %{fd . --no-ignore --type f --follow --exclude .git --exclude .svn --exclude TAGS}"
+            echo "set-option global fzf_file_command %{fd --no-ignore --type f --follow --exclude .git --exclude .svn .}"
         fi
         [ -n "$(command -v blsd)" ] && echo "set-option global fzf_cd_command '(echo .. && blsd)'"
         [ -n "$(command -v bat)" ] && echo "set-option global fzf_highlight_cmd bat"
@@ -107,7 +108,7 @@ plug "occivink/kakoune-find"
 plug "occivink/kakoune-sudo-write"
 
 plug "occivink/kakoune-filetree" config %{
-    map global user '<minus>' ': change-directory-current-buffer;filetree<ret>' -docstring 'filetree in current buf dir'
+    # map global user '<minus>' ': change-directory-current-buffer;filetree<ret>' -docstring 'filetree in current buf dir'
     # map global normal '<a-plus>' ': filetree<ret>' -docstring 'filetree'
 }
 
@@ -177,12 +178,10 @@ plug "ul/kak-tree" config %{
 }
 
 plug "ul/kak-lsp" do %{
-    if [ $(uname -m) != "aarch64" ]; then
-        cargo build --release --locked
-        cargo install --force --path .
-    fi
+    cargo build --release --locked
+    cargo install --force --path .
 } config %{
-    set-face global Reference default,rgb:EDF97D
+    # set-face global Reference default,rgb:EDF97D
     set-option global lsp_diagnostic_line_error_sign '║'
     set-option global lsp_diagnostic_line_warning_sign '┊'
 
@@ -229,13 +228,13 @@ plug "ul/kak-lsp" do %{
 # plug "https://gitlab.com/Screwtapello/kakoune-state-save.git" noload
 plug "danr/kakoune-easymotion" noload
 
-plug "andreyorst/powerline.kak" noload config %{
-    # set-option global powerline_ignore_warnings true
-    # set-option global powerline_format 'git bufname smarttab mode_info filetype client session position'
-    # hook -once global WinDisplay .* %{
-    #     powerline-theme github
-    # }
-}
+# plug "andreyorst/powerline.kak" noload config %{
+#     set-option global powerline_ignore_warnings true
+#     set-option global powerline_format 'git bufname smarttab mode_info filetype client session position'
+#     # hook -once global WinDisplay .* %{
+#     #     powerline-theme github
+#     # }
+# }
 
 plug "andreyorst/tagbar.kak" defer tagbar %{
     set-option global tagbar_sort false
@@ -269,14 +268,21 @@ plug "alexherbo2/auto-pairs.kak" config %{
 
 plug "alexherbo2/distraction-free.kak" config %{
     alias global dt distraction-free-toggle
+    map global toggle d '<esc>: distraction-free-toggle<ret>' -docstring 'distraction free toggle'
 }
 
 plug "alexherbo2/connect.kak" config %{
     define-command ranger -params .. -file-completion %(connect ranger %arg(@))
-    map global normal '<plus>' ' :ranger<ret>'
+    define-command fzf-files -params .. -file-completion %(connect edit $(fd --type file . %arg(@) | fzf))
+    map -docstring 'ranger' global user '<minus>' ': ranger<ret>'
 }
 
 plug "alexherbo2/word-movement.kak" config %{
+    map global normal 'J' ': move-line-below %val{count}<ret>'
+    map global normal 'K' ': move-line-above %val{count}<ret>'
+}
+
+plug "alexherbo2/move-line.kak" config %{
     word-movement-map next w
     word-movement-map previous b
     word-movement-map skip e
@@ -295,6 +301,8 @@ plug "alexherbo2/yank-ring.kak" config %{
 plug "fsub/kakoune-mark.git" domain "gitlab.com"
 
 # plug "alexherbo2/bc.kak"
+# plug "alexherbo2/search-highlighter.kak"
+
 plug "screwtapello/kakoune-inc-dec" domain "gitlab.com" config %{
     map -docstring "decrement selection" global normal '<C-x>' ': inc-dec-modify-numbers - %val{count}<ret>'
     map -docstring "increment selection" global normal '<C-a>' ': inc-dec-modify-numbers + %val{count}<ret>'
