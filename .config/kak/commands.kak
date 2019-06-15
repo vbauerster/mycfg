@@ -137,28 +137,31 @@ evaluate-selection %{
 
 # Tab completion.
 define-command tab-completion-enable %{
-  hook -group tab-completion window InsertCompletionShow .* %{
-    try %{
-      execute-keys -draft 'h<a-K>\h<ret>'
-      map window insert <tab> <c-n>
-      map window insert <s-tab> <c-p>
-    }
-  }
-  hook -group tab-completion window InsertCompletionHide .* %{
+  hook -group tab-completion global InsertCompletionShow .* %{ try %{
+    execute-keys -draft 'h<a-K>\h<ret>'
+    map window insert <tab> <c-n>
+    map window insert <s-tab> <c-p>
+    # map window insert <c-g> <c-o>
+  }}
+  hook -group tab-completion global InsertCompletionHide .* %{
     unmap window insert <tab> <c-n>
     unmap window insert <s-tab> <c-p>
+    # unmap window insert <c-g> <c-o>
   }
 }
-define-command tab-completion-disable %{ remove-hooks window tab-completion }
+define-command tab-completion-disable %{ remove-hooks global tab-completion }
 
-# search-highlighting.kak, simplified
-define-command search-highlighting-enable %{
+# search-highlighting.kak, simplified of
+# plug "alexherbo2/search-highlighter.kak"
+define-command -docstring 'Enable search highlighting' \
+search-highlighting-enable %{
   hook window -group search-highlighting NormalKey [/?*nN]|<a-[/?*nN]> %{ try %{
     addhl window/SearchHighlighting dynregex '%reg{/}' 0:Search
   }}
   hook window -group search-highlighting NormalKey <esc> %{ rmhl window/SearchHighlighting }
 }
-define-command search-highlighting-disable %{
+define-command -docstring 'Disable search highlighting' \
+search-highlighting-disable %{
   rmhl window/SearchHighlighting
   rmhooks window search-highlighting
 }
