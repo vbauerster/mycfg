@@ -1,3 +1,9 @@
+# https://stackoverflow.com/a/35456287/1351845
+unalias run-help 2>/dev/null
+autoload run-help
+[ -d /usr/local/share/zsh/help ] && HELPDIR=/usr/local/share/zsh/help
+alias help=run-help
+
 # https://news.ycombinator.com/item?id=11070797
 alias c='git --git-dir=$HOME/.mycfg/ --work-tree=$HOME'
 alias chh='cd ~/.mycfg && ghh'
