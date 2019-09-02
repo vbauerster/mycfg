@@ -1,10 +1,18 @@
 # source the plugin manager itself
 source "%val{config}/plugins/plug.kak/rc/plug.kak"
 
-plug "andreyorst/plug.kak" noload
+plug "andreyorst/plug.kak" noload config %{
+    # set-option global plug_always_ensure true
+    hook global WinSetOption filetype=plug %{
+        remove-highlighter buffer/numbers
+        remove-highlighter buffer/matching
+        remove-highlighter buffer/wrap
+        remove-highlighter buffer/show-whitespaces
+    }
+}
 
 plug "occivink/kakoune-vertical-selection" config %{
-    map global normal '%' ': vertical-selection-up-and-down<ret>'
+    map global normal '^' ': vertical-selection-up-and-down<ret>'
 }
 
 plug "delapouite/kakoune-text-objects" config %{
@@ -23,82 +31,99 @@ plug "occivink/kakoune-expand" config %{
         expand-impl %{ execute-keys '<a-:><a-;>k<a-K>^$<ret><a-i>i' } # previous indent level (upward)
         expand-impl %{ execute-keys '<a-:>j<a-K>^$<ret><a-i>i' }      # previous indent level (downward)
     }
-    map -docstring 'smart expand' global anchor 'x' '<c-s>: expand<ret>'
+    # map global view 'm' '<esc><c-s>: expand<ret>v' -docstring 'smart expand'
+    map global view 'm' '<esc>: expand<ret>v' -docstring 'smart expand'
 }
 
 plug "delapouite/kakoune-buffers" config %{
     hook global WinDisplay .* info-buffers
-    map -docstring 'buffers'        global user b ': enter-user-mode buffers<ret>'
-    map -docstring 'buffers (lock)' global user B ': enter-user-mode -lock buffers<ret>'
+    map global user 'b' ': enter-user-mode buffers<ret>'       -docstring 'buffers'
+    map global user 'B' ': enter-user-mode -lock buffers<ret>' -docstring 'buffers (lock)'
 }
 
 plug "delapouite/kakoune-cd" config %{
     map global cd o '<esc>: print-working-directory<ret>' -docstring 'print working dir'
-    map global goto o '<esc>: enter-user-mode cd<ret>' -docstring 'kakoune-cd'
+    map global goto o '<esc>: enter-user-mode cd<ret>'    -docstring 'kakoune-cd'
     alias global pwd print-working-directory
 }
 
 plug "andreyorst/smarttab.kak" config %{
-    # set-option global softtabstop 4
     hook global WinSetOption filetype=(rust|markdown|kak|lisp|scheme|sh|perl|yaml) expandtab
     hook global WinSetOption filetype=(makefile) noexpandtab
     hook global WinSetOption filetype=(c|cpp|go) smarttab
+} defer smarttab %{
+    set-option global softtabstop 4
 }
 
 plug "andreyorst/fzf.kak" config %{
-    map -docstring 'fzf-mode'  global user 'p' ': fzf-mode<ret>'
+    map -docstring 'fzf mode'  global user 'p' ': fzf-mode<ret>'
 } defer fzf %{
     set-option global fzf_preview_width '65%'
     set-option global fzf_project_use_tilda true
-    # unmap global fzf v
-    # unmap global fzf <a-v>
-    # map global fzf g ': fzf-vcs<ret>' -docstring 'edit file from vcs repo'
-    # map global fzf <a-g> ': fzf-vcs-mode<ret>' -docstring 'switch to vcs selection mode'
+    declare-option str-list fzf_exclude_files "*.o" "*.bin" "*.obj"
+    declare-option str-list fzf_exclude_dirs ".git" ".svn" "vendor" "target"
     evaluate-commands %sh{
         if [ -n "$(command -v fd)" ]; then
-            echo "set-option global fzf_file_command %{fd --no-ignore --type f --follow --exclude .git --exclude .svn .}"
+            eval "set -- $kak_quoted_opt_fzf_exclude_files $kak_quoted_opt_fzf_exclude_dirs"
+            while [ $# -gt 0 ]; do
+                exclude="$exclude --exclude '$1'"
+                shift
+            done
+            # echo "echo -debug fzf exclude: $exclude"
+            echo "set-option global fzf_file_command %{fd . --no-ignore --type f --follow --hidden $exclude}"
+        else
+            eval "set -- $kak_quoted_opt_fzf_exclude_files"
+            while [ $# -gt 0 ]; do
+                exclude="$exclude -name '$1' -o"
+                shift
+            done
+            eval "set -- $kak_quoted_opt_fzf_exclude_dirs"
+            while [ $# -gt 1 ]; do
+                exclude="$exclude -path '*/$1' -o"
+                shift
+            done
+            exclude="$exclude -path '*/$1'"
+            echo "set-option global fzf_file_command %{find . \( $exclude \) -prune -o -type f -follow -print}"
         fi
-        [ -n "$(command -v blsd)" ] && echo "set-option global fzf_cd_command '(echo .. && blsd)'"
-        [ -n "$(command -v bat)" ] && echo "set-option global fzf_highlight_cmd bat"
+        [ -n "$(command -v bat)" ] && echo "set-option global fzf_highlight_command bat"
         [ -n "${kak_opt_grepcmd}" ] && echo "set-option global fzf_sk_grep_command %{${kak_opt_grepcmd}}"
-        # command -v tree >/dev/null 2>/dev/null && echo "set-option global fzf_cd_preview true"
     }
 }
 
 plug "occivink/kakoune-phantom-selection" config %{
     declare-user-mode phantom
-    map -docstring 'phantom-selection add'   global phantom 'm'       ": phantom-selection-add-selection<ret>"
-    map -docstring 'phantom-selection next'  global phantom ')'       ": phantom-selection-iterate-next<ret>"
-    map -docstring 'phantom-selection prev'  global phantom '('       ": phantom-selection-iterate-prev<ret>"
-    map -docstring 'phantom-selection clear' global phantom '<space>' ": phantom-selection-select-all; phantom-selection-clear<ret>"
-    map -docstring 'phantom mode'            global normal '&'       ': enter-user-mode phantom<ret>'
-    map -docstring 'phantom mode (lock)'     global normal '<a-&>'   ': enter-user-mode -lock phantom<ret>'
+    map -docstring 'phantom-selection add'   global phantom '<plus>'   ": phantom-selection-add-selection<ret>"
+    map -docstring 'phantom-selection clear' global phantom '<minus>'  ": phantom-selection-select-all; phantom-selection-clear<ret>"
+    map -docstring 'phantom-selection next'  global phantom ')'        ": phantom-selection-iterate-next<ret>"
+    map -docstring 'phantom-selection prev'  global phantom '('        ": phantom-selection-iterate-prev<ret>"
+    map -docstring 'phantom mode quit'       global phantom ';'        ": phantom-selection-clear<ret>"
+    map -docstring 'phantom mode'            global normal '<minus>'   ": enter-user-mode phantom<ret>"
+    map -docstring 'phantom mode (lock)'     global normal '<a-minus>' ": enter-user-mode -lock phantom<ret>"
     # can't use <a-;>: see https://github.com/mawww/kakoune/issues/1916
     map global insert '<a-)>' "<esc>: phantom-selection-iterate-next<ret>i"
     map global insert '<a-(>' "<esc>: phantom-selection-iterate-prev<ret>i"
     map global insert '<a-space>' "<esc>: phantom-selection-select-all; phantom-selection-clear<ret>i"
 }
 
-# plug "alexherbo2/phantom.kak"
-
 plug "andreyorst/kakoune-snippet-collection"
 
-plug "occivink/kakoune-snippets" branch "auto-discard" config %{
+# plug "occivink/kakoune-snippets" branch "auto-discard" config %{
+plug "occivink/kakoune-snippets" config %{
     set-option -add global snippets_directories "%opt{plug_install_dir}/kakoune-snippet-collection/snippets"
     set-option global snippets_auto_expand false
-    # map global normal '<ret>' ":      expand-or-jump-or-key ret<ret>"
-    map global insert '<a-n>' "<a-;>: expand-or-jump-or-key a-n<ret>"
-    map -docstring 'snippets-info' global user 'i' ': snippets-info<ret>'
+    map global insert '<c-e>' "<a-;>: expand-or-jump<ret>"
+    # map -docstring 'snippets-info' global user 'i' ': snippets-info<ret>'
 
-    define-command -hidden \
-    expand-or-jump-or-key -params 1 %{
+    define-command -hidden expand-or-jump %{
         try %{
             snippets-select-next-placeholders
-        } catch %{ snippets-expand-trigger %{
-            set-register / "%opt{snippets_triggers_regex}\z"
-            execute-keys 'hGhs<ret>'
-        }} catch %sh{
-            printf "%s\n" "execute-keys -with-hooks <$1>"
+        } catch %{
+            snippets-expand-trigger %{
+                set-register / "%opt{snippets_triggers_regex}\z"
+                execute-keys 'hGhs<ret>'
+            }
+        } catch %{
+            nop
         }
     }
 }
@@ -113,74 +138,29 @@ plug "occivink/kakoune-filetree" config %{
 }
 
 plug "ul/kak-tree" config %{
-    # set global tree_cmd 'kak-tree -c /Users/vbauer/dotfiles/config/kak/kak-tree.toml'
+    set-option global tree_cmd "kak-tree -c %val{config}/kak-tree.toml"
+    declare-user-mode syntax-tree
+    map global syntax-tree <space> ': tree-node-sexp<ret>'      -docstring 'tree node sexp'
+    map global lang-mode t ': enter-user-mode syntax-tree<ret>' -docstring 'tree select'
     hook global WinSetOption filetype=(go) %{
-        declare-user-mode syntax-tree-children
-        map global syntax-tree-children c ': tree-select-children<ret>' -docstring 'children'
-        map global syntax-tree-children t ': tree-select-children type_declaration<ret>' -docstring 'type_declaration'
-        map global syntax-tree-children m ': tree-select-children method_declaration<ret>' -docstring 'method_declaration'
-        map global syntax-tree-children f ': tree-select-children function_declaration<ret>' -docstring 'function_declaration'
-        map global syntax-tree-children l ': tree-select-children func_literal<ret>' -docstring 'func_literal'
-        map global syntax-tree-children g ': tree-select-children go_statement<ret>' -docstring 'go_statement'
-        map global syntax-tree-children b ': tree-select-children block<ret>' -docstring 'block'
-        map global syntax-tree-children i ': tree-select-children if_statement<ret>' -docstring 'if_statement'
-        map global syntax-tree-children o ': tree-select-children for_statement<ret>' -docstring 'for_statement'
-        map global syntax-tree-children u ': tree-select-children parameter_list<ret>' -docstring 'parameter_list'
-        map global syntax-tree-children r ': tree-select-children return_statement<ret>' -docstring 'return_statement'
-        map global syntax-tree-children <backspace> ': enter-user-mode syntax-tree<ret>' -docstring 'back...'
-
-        declare-user-mode syntax-tree-parent
-        map global syntax-tree-parent p ': tree-select-parent-node<ret>' -docstring 'parent_node'
-        map global syntax-tree-parent t ': tree-select-parent-node type_declaration<ret>' -docstring 'type_declaration'
-        map global syntax-tree-parent m ': tree-select-parent-node method_declaration<ret>' -docstring 'method_declaration'
-        map global syntax-tree-parent f ': tree-select-parent-node function_declaration<ret>' -docstring 'function_declaration'
-        map global syntax-tree-parent l ': tree-select-parent-node func_literal<ret>' -docstring 'func_literal'
-        map global syntax-tree-parent g ': tree-select-parent-node go_statement<ret>' -docstring 'go_statement'
-        map global syntax-tree-parent b ': tree-select-parent-node block<ret>' -docstring 'block'
-        map global syntax-tree-parent i ': tree-select-parent-node if_statement<ret>' -docstring 'if_statement'
-        map global syntax-tree-parent o ': tree-select-parent-node for_statement<ret>' -docstring 'for_statement'
-        map global syntax-tree-parent u ': tree-select-parent-node parameter_list<ret>' -docstring 'parameter_list'
-        map global syntax-tree-parent r ': tree-select-parent-node return_statement<ret>' -docstring 'return_statement'
-        map global syntax-tree-parent <backspace> ': enter-user-mode syntax-tree<ret>' -docstring 'back...'
-
-        declare-user-mode syntax-tree-next
-        map global syntax-tree-next ')' ': tree-select-next-node<ret>' -docstring 'next_node'
-        map global syntax-tree-next t   ': tree-select-next-node type_declaration<ret>' -docstring 'type_declaration'
-        map global syntax-tree-next m   ': tree-select-next-node method_declaration<ret>' -docstring 'method_declaration'
-        map global syntax-tree-next f   ': tree-select-next-node function_declaration<ret>' -docstring 'function_declaration'
-        map global syntax-tree-next b   ': tree-select-next-node block<ret>' -docstring 'block'
-        map global syntax-tree-next i   ': tree-select-next-node if_statement<ret>' -docstring 'if_statement'
-        map global syntax-tree-next o   ': tree-select-next-node for_statement<ret>' -docstring 'for_statement'
-        map global syntax-tree-next u   ': tree-select-next-node parameter_list<ret>' -docstring 'parameter_list'
-        map global syntax-tree-next r   ': tree-select-next-node return_statement<ret>' -docstring 'return_statement'
-        map global syntax-tree-next <backspace> ': enter-user-mode syntax-tree<ret>' -docstring 'back...'
-
-        declare-user-mode syntax-tree-prev
-        map global syntax-tree-prev '(' ': tree-select-previous-node<ret>' -docstring 'previous_node'
-        map global syntax-tree-prev t ': tree-select-previous-node type_declaration<ret>' -docstring 'type_declaration'
-        map global syntax-tree-prev m ': tree-select-previous-node method_declaration<ret>' -docstring 'method_declaration'
-        map global syntax-tree-prev f ': tree-select-previous-node function_declaration<ret>' -docstring 'function_declaration'
-        map global syntax-tree-prev b ': tree-select-previous-node block<ret>' -docstring 'block'
-        map global syntax-tree-prev i ': tree-select-previous-node if_statement<ret>' -docstring 'if_statement'
-        map global syntax-tree-prev o ': tree-select-previous-node for_statement<ret>' -docstring 'for_statement'
-        map global syntax-tree-prev u ': tree-select-previous-node parameter_list<ret>' -docstring 'parameter_list'
-        map global syntax-tree-prev r ': tree-select-previous-node return_statement<ret>' -docstring 'return_statement'
-        map global syntax-tree-prev <backspace> ': enter-user-mode syntax-tree<ret>' -docstring 'back...'
-
-        declare-user-mode syntax-tree
-        map global syntax-tree '(' ': enter-user-mode syntax-tree-prev<ret>' -docstring 'previous_node'
-        map global syntax-tree ')' ': enter-user-mode syntax-tree-next<ret>' -docstring 'next_node'
-        map global syntax-tree c ': enter-user-mode syntax-tree-children<ret>' -docstring 'children'
-        map global syntax-tree p ': enter-user-mode syntax-tree-parent<ret>' -docstring 'parent_node'
-        map global syntax-tree t ': tree-node-sexp<ret>' -docstring 'tree-node-sexp'
-        map global user s ': enter-user-mode syntax-tree<ret>' -docstring 'tree select'
+        map window syntax-tree t ':tree-select- type_declaration<a-b><left>'            -docstring 'type_declaration'
+        map window syntax-tree m ':tree-select- method_declaration<a-b><left>'          -docstring 'method_declaration'
+        map window syntax-tree f ':tree-select- function_declaration<a-b><left>'        -docstring 'function_declaration'
+        map window syntax-tree l ':tree-select- func_literal<a-b><left>'                -docstring 'func_literal'
+        map window syntax-tree g ':tree-select- go_statement<a-b><left>'                -docstring 'go_statement'
+        map window syntax-tree i ':tree-select- if_statement<a-b><left>'                -docstring 'if_statement'
+        map window syntax-tree o ':tree-select- for_statement<a-b><left>'               -docstring 'for_statement'
+        map window syntax-tree u ':tree-select- parameter_list<a-b><left>'              -docstring 'parameter_list'
+        map window syntax-tree r ':tree-select- return_statement<a-b><left>'            -docstring 'return_statement'
+        map window syntax-tree s ':tree-select- expression_switch_statement<a-b><left>' -docstring 'switch statement'
+        map window syntax-tree c ':tree-select- expression_case_clause<a-b><left>'      -docstring 'case clause'
     }
 }
 
 plug "ul/kak-lsp" do %{
-    cargo build --release --locked
-    cargo install --force --path .
+    # cargo install --force --path . --locked
 } config %{
+    define-command -docstring 'restart lsp server' lsp-restart %{ lsp-stop; lsp-start }
     # set-face global Reference default,rgb:EDF97D
     set-option global lsp_diagnostic_line_error_sign '║'
     set-option global lsp_diagnostic_line_warning_sign '┊'
@@ -188,33 +168,34 @@ plug "ul/kak-lsp" do %{
     # define-command ne -docstring 'go to next error/warning from lsp' %{ lsp-find-error --include-warnings }
     # define-command pe -docstring 'go to previous error/warning from lsp' %{ lsp-find-error --previous --include-warnings }
     # define-command ee -docstring 'go to current error/warning from lsp' %{ lsp-find-error --include-warnings; lsp-find-error --previous --include-warnings }
+    map global lsp '<minus>' "<esc>: lsp-disable-window<ret>" -docstring "lsp-disable-window"
 
-    define-command lsp-restart -docstring 'restart lsp server' %{ lsp-stop; lsp-start }
-
-    hook global WinSetOption filetype=(c|cpp|go|rust) %{
-        map -docstring 'lsp-references-next-match'     global lsp ']' ': lsp-references-next-match;enter-user-mode lsp<ret>'
-        map -docstring 'lsp-references-previous-match' global lsp '[' ': lsp-references-previous-match;enter-user-mode lsp<ret>'
-        map -docstring 'LSP mode' window user 'a' ': enter-user-mode lsp<ret>'
+    hook global WinSetOption filetype=(go|rust) %{
         set-option window lsp_auto_highlight_references true
         set-option window lsp_hover_anchor false
-        lsp-enable-window
-        lsp-auto-signature-help-enable
         set-face window DiagnosticError default+u
         set-face window DiagnosticWarning default+u
+        lsp-enable-window
+        lsp-auto-signature-help-enable
         # lsp-diagnostic-lines-enable
         # lsp-auto-hover-enable
         # lsp-auto-hover-insert-mode-disable
-        # unmap window lsp &
-        # map window lsp <*> ': lsp-highlight-references<ret>' -docstring 'lsp-highlight-references'
+        map window lsp ']' ': lsp-references-next-match;enter-user-mode lsp<ret>'     -docstring 'lsp-references-next-match'
+        map window lsp '[' ': lsp-references-previous-match;enter-user-mode lsp<ret>' -docstring 'lsp-references-previous-match'
+        map window lsp 'n' "<esc>: lsp-find-error --include-warnings<ret>" -docstring "find next error or warning"
+        map window lsp 'p' "<esc>: lsp-find-error --previous --include-warnings<ret>" -docstring "find previous error or warning"
+        map window user 'a' ': enter-user-mode lsp<ret>' -docstring 'LSP mode'
     }
 
     hook global WinSetOption filetype=(rust) %{
+        # bug https://github.com/ul/kak-lsp/issues/217#issuecomment-512793942
         set-option window lsp_server_configuration rust.clippy_preference="on"
-        hook -group lsp buffer BufWritePre .* %{
-            evaluate-commands %sh{
-                test -f rustfmt.toml && printf lsp-formatting-sync
-            }
-        }
+
+        # hook -group lsp buffer BufWritePre .* %{
+        #     evaluate-commands %sh{
+        #         test -f rustfmt.toml && printf lsp-formatting-sync
+        #     }
+        # }
         set-register @ 'A;<esc>'
     }
 
@@ -222,7 +203,7 @@ plug "ul/kak-lsp" do %{
     #     hook -group lsp buffer BufWritePre .* lsp-formatting-sync
     # }
 
-    hook global KakEnd .* lsp-exit
+    hook -group lsp global KakEnd .* lsp-exit
 }
 
 # plug "https://gitlab.com/Screwtapello/kakoune-state-save.git" noload
@@ -236,22 +217,22 @@ plug "danr/kakoune-easymotion" noload
 #     # }
 # }
 
-plug "andreyorst/tagbar.kak" defer tagbar %{
-    set-option global tagbar_sort false
-    set-option global tagbar_size 40
-    set-option global tagbar_display_anon false
-} config %{
-    map global toggle 't' ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
-    hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
-        tagbar-enable
-    }
-    hook global WinSetOption filetype=tagbar %{
-        remove-highlighter buffer/numbers
-        remove-highlighter buffer/matching
-        remove-highlighter buffer/wrap
-        remove-highlighter buffer/show-whitespaces
-    }
-}
+# plug "andreyorst/tagbar.kak" defer tagbar %{
+#     set-option global tagbar_sort false
+#     set-option global tagbar_size 40
+#     set-option global tagbar_display_anon false
+# } config %{
+#     map global toggle 't' ": tagbar-toggle<ret>" -docstring "toggle tagbar panel"
+#     hook global WinSetOption filetype=(c|cpp|rust|go|markdown) %{
+#         tagbar-enable
+#     }
+#     hook global WinSetOption filetype=tagbar %{
+#         remove-highlighter buffer/numbers
+#         remove-highlighter buffer/matching
+#         remove-highlighter buffer/wrap
+#         remove-highlighter buffer/show-whitespaces
+#     }
+# }
 
 plug "delapouite/kakoune-auto-percent" config %{
     map -docstring 'select-complement' global anchor 'p' ': select-complement<ret>'
@@ -259,16 +240,18 @@ plug "delapouite/kakoune-auto-percent" config %{
 plug "delapouite/kakoune-auto-star"
 plug 'delapouite/kakoune-palette'
 
-plug "alexherbo2/auto-pairs.kak" config %{
-    # hook global WinSetOption filetype=(c|cpp|go|rust) %{
+plug "alexherbo2/auto-pairs.kak" %{
+    map -docstring 'auto pairs toggle' global toggle p '<esc>: auto-pairs-toggle<ret>'
+    # map global user 's' ': auto-pairs-surround<ret>' -docstring "surround selection"
+    # hook global WinSetOption filetype=(c|cpp|rust) %{
     #     auto-pairs-enable
     # }
-    map global toggle p '<esc>: auto-pairs-toggle<ret>' -docstring 'auto pairs toggle'
+    # hook global WinCreate .* auto-pairs-enable
 }
 
 plug "alexherbo2/distraction-free.kak" config %{
     alias global dt distraction-free-toggle
-    map global toggle d '<esc>: distraction-free-toggle<ret>' -docstring 'distraction free toggle'
+    map -docstring 'distraction free toggle' global toggle d '<esc>: distraction-free-toggle<ret>'
 }
 
 plug "alexherbo2/connect.kak" config %{
@@ -278,16 +261,16 @@ plug "alexherbo2/connect.kak" config %{
 }
 
 plug "alexherbo2/word-movement.kak" config %{
-    map global normal 'J' ': move-line-below %val{count}<ret>'
-    map global normal 'K' ': move-line-above %val{count}<ret>'
-}
-
-plug "alexherbo2/move-line.kak" config %{
     word-movement-map next w
     word-movement-map previous b
     word-movement-map skip e
     map -docstring 'reduce and wm w' global anchor 'w' ';: word-movement-next-word<ret>'
     map -docstring 'reduce and wm b' global anchor 'b' ';: word-movement-previous-word<ret>'
+}
+
+plug "alexherbo2/move-line.kak" config %{
+    map -docstring 'move line below' global view 'j' '<esc>: move-line-below %val{count}<ret>v'
+    map -docstring 'move line above' global view 'k' '<esc>: move-line-above %val{count}<ret>v'
 }
 
 plug "alexherbo2/split-object.kak" config %{
@@ -298,7 +281,16 @@ plug "alexherbo2/yank-ring.kak" config %{
     map -docstring 'yank ring' global clipboard 'r' ': yank-ring<ret>'
 }
 
-plug "fsub/kakoune-mark.git" domain "gitlab.com"
+plug "fsub/kakoune-mark.git" domain "gitlab.com" config %{
+    set-face global MarkFace1 rgb:000000,rgb:00FF4D
+    set-face global MarkFace2 rgb:000000,rgb:F9D3FA
+    set-face global MarkFace3 rgb:000000,rgb:A3B3FF
+    set-face global MarkFace4 rgb:000000,rgb:BAF2C0
+    set-face global MarkFace5 rgb:000000,rgb:FBAEB2
+    set-face global MarkFace6 rgb:000000,rgb:FBFF00
+    map -docstring 'mark word' global toggle m '<esc>: mark-word<ret>'
+    map -docstring 'clear word' global toggle M '<esc>: mark-clear<ret>'
+}
 
 # plug "alexherbo2/bc.kak"
 # plug "alexherbo2/search-highlighter.kak"
@@ -309,9 +301,11 @@ plug "screwtapello/kakoune-inc-dec" domain "gitlab.com" config %{
 }
 
 plug "delapouite/kakoune-select-view" %{
-    map global normal <a-:> ': select-view<ret>' -docstring 'select view'
+    # map global normal <a-:> ': select-view<ret>' -docstring 'select view'
     map global view w '<esc>: select-view<ret>' -docstring 'select window'
 }
+
+plug "eraserhd/kak-ansi"
 
 # source "%val{config}/scripts/bc.kak"
 source "%val{config}/scripts/colorscheme-browser.kak"
