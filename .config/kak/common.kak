@@ -11,7 +11,7 @@ set-option global scrolloff 2,2
 # Grep
 # try %{ set global grepcmd 'ag --filename --column --ignore tags --ignore build --ignore buildDebug' }
 evaluate-commands %sh{
-    [ ! -z "$(command -v rg)" ] && printf "%s\n" "set-option global grepcmd 'rg -L --with-filename --column'"
+    [ -n "$(command -v rg)" ] && printf "%s\n" "set-option global grepcmd 'rg -L --with-filename --column'"
 }
 
 # Use main client as jumpclient
@@ -50,14 +50,11 @@ alias global u enter-user-mode
 alias global h doc
 
 ## Maps.
-# map -docstring 'command prompt'              global normal '<plus>'  ':'
-map -docstring 'select whole buffer'         global normal ':'       '<c-s>%'
+map -docstring 'select whole buffer'         global normal '%'       '<c-s>%'
 map -docstring 'space as leader'             global normal '<space>' ','
 map -docstring 'drop all but main selection' global normal 'q'       '<space>'
 map -docstring 'drop main selection'         global normal '<c-q>'   '<a-space>'
 map -docstring 'toggle case'                 global normal '~'       '<a-`>'
-map -docstring 'align cursors'               global normal '='       '&'
-map -docstring 'copy indent'                 global normal '<a-=>'   '<a-&>'
 map -docstring 'comment line'                global normal '#'       ': comment-line<ret>'
 map -docstring 'comment block'               global normal '<a-#>'   ': comment-block<ret>'
 map -docstring 'save buffer'                 global normal '<F2>'    ': w<ret>'
@@ -67,30 +64,18 @@ map -docstring "avoid escape key"            global normal '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global prompt '<c-g>' '<esc>'
 map -docstring "avoid escape key"            global insert '<c-g>' '<esc>'
 
+# map global normal '<minus>' ';'
+# map global normal '<a-minus>' '<a-;>'
+
+# swap g and u
 # map global normal g u
 # map global normal u g
 # map global normal G U
 # map global normal U G
-# map global normal t l
-# map global normal l t
-# map global normal T L
-# map global normal L T
-# map global normal <a-t> <a-l>
-# map global normal <a-l> <a-t>
-# map global normal <a-T> <a-L>
-# map global normal <a-L> <a-T>
-map global normal '<plus>' 'vv4j'
-map global normal '<minus>' 'vv4k'
-map global normal '<a-plus>' 'J'
-map global normal '<a-minus>' 'K'
-# map global normal '<minus>' '_'
-# map global normal '_' '<a-_>'
-# map global normal '<plus>' ':'
-# issue with count p
-# map global normal p <a-p>
-# map global normal <a-p> p
-# map global normal P <a-P>
-# map global normal <a-P> P
+
+map global normal '<plus>' '5j'
+map global normal '<a-plus>' '5k'
+# map global normal '<a-space>' 'vv'
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
 map global normal x ': extend-line-down %val{count}<ret>'
@@ -109,10 +94,10 @@ map global normal <"> <q>
 # map global object q Q -docstring 'double quote string'
 # map global object Q q -docstring 'single quote string'
 # map global view u t -docstring 'same as t'
-map global view h hv
-map global view j jv
-map global view k kv
-map global view l lv
+map global view e jv
+map global view y kv
+# map global view d '<esc>5jv'
+# map global view u '<esc>5kv'
 
 ## Some User
 map -docstring 'command prompt'    global user '<space>' ':'
@@ -122,6 +107,8 @@ map -docstring 'selection hull'    global user 'h'       ': hull<ret>'
 map -docstring 'tmux-focus'        global user 'o'       ': tmux-focus '
 map -docstring 'enter-user-mode'   global user 'u'       ':u '
 map -docstring 'quit!'             global user 'Q'       ':q!<ret>'
+map -docstring 'grep next'         global user ']'       ': grep-next-match<ret>'
+map -docstring 'grep prev'         global user '['       ': grep-previous-match<ret>'
 
 map global normal '0' ': zero select-or-add-cursor<ret>'
 # map global normal <*> ': smart-select word<ret>*'
@@ -207,25 +194,33 @@ map -docstring 'ModeChange debug on'  global echo-mode 'm' ': hook -group echo-m
 map -docstring 'ModeChange debug off' global echo-mode 'M' ': rmhooks window echo-mode<ret>'
 map -docstring 'echo mode'            global user      'e' ': enter-user-mode echo-mode<ret>'
 
+declare-user-mode tig
+map global tig 'h' %{: tmux-terminal-window tig %val{buffile}<ret>} -docstring "tig buffile history"
+map global tig 'b' %{: tmux-terminal-window tig blame "+%val{cursor_line}" -- %val{buffile}<ret>} -docstring "tig blame"
+map global tig 't' %{: tmux-terminal-window tig status<ret>} -docstring "tig status (for committing)"
+
 declare-user-mode git
-map -docstring 'blame (toggle)'     global git  'b' ': git-toggle-blame<ret>'
-map -docstring 'log'                global git  'l' ': git log<ret>'
-map -docstring 'commit'             global git  'c' ': git commit<ret>'
-map -docstring 'diff'               global git  'd' ': git diff<ret>'
-map -docstring 'status'             global git  's' ': git status<ret>'
-map -docstring 'show diff'          global git  'h' ': git show-diff<ret>'
-map -docstring 'hide diff'          global git  'H' ': git-hide-diff<ret>'
-map -docstring 'show blamed commit' global git  'w' ': git-show-blamed-commit<ret>'
-map -docstring 'log blame'          global git  'L' ': git-log-lines<ret>'
-map -docstring 'git mode'           global user 'g' ': enter-user-mode git<ret>'
+map global git 'g' ': git show-diff<ret>'            -docstring 'show gutter'
+map global git 'G' ': git-hide-diff<ret>'            -docstring 'hide gutter'
+map global git 's' ': git status<ret>'               -docstring 'status'
+map global git 'b' ': git-toggle-blame<ret>'         -docstring 'blame (toggle)'
+map global git 'l' ': git log<ret>'                  -docstring 'log'
+map global git 'c' ': git commit<ret>'               -docstring 'commit'
+map global git 'd' ': git diff<ret>'                 -docstring 'diff'
+map global git 'w' ': git-show-blamed-commit<ret>'   -docstring 'show blamed commit'
+map global git 'L' ': git-log-lines<ret>'            -docstring 'log blame'
+map global git 't' '<esc>: enter-user-mode tig<ret>' -docstring 'tig mode'
+map global user 'g' ': enter-user-mode git<ret>' -docstring 'git mode'
+
+declare-user-mode lang-mode
+map global user 'm' ': enter-user-mode lang-mode<ret>' -docstring 'lang mode'
 
 # Insert mode
 # <c-o>    ; # silent: stop completion
 # <c-x>    ; # complete here
 # <c-v>    ; # raw insert, use vim binding
 map global insert '<c-y>' '<a-;>!pbpaste<ret>'
-# https://github.com/mawww/kakoune/issues/2742
-# map global insert '<c-c>' '<a-;>'
+map global insert '<a-g>' '<a-;>'
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-word-keys-discern-camelcase-or-snake_case-parts
 # define-command -hidden select-prev-word-part %{
@@ -241,4 +236,16 @@ map global insert '<c-y>' '<a-;>!pbpaste<ret>'
 #   exec ?[A-Z][a-z]+|[A-Z]+|[a-z]+<ret>
 # }
 
-# <a-_> merge contiguous selections together (works across lines as well)
+# Scratch buffer
+# ‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+
+## Delete the `*scratch*' buffer as soon as another is created, but only if it's empty
+## ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+hook global BufCreate '^\*scratch\*$' %{
+    execute-keys -buffer *scratch* '%d'
+    hook -once -always global BufCreate '^(?!\*scratch\*).*$' %{ try %{
+        # throw if the buffer has something other than newlines in the beginning of lines
+        execute-keys -buffer *scratch* '%s\A\n\z<ret>'
+        delete-buffer *scratch*
+    }}
+}
