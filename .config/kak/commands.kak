@@ -2,9 +2,9 @@ define-command -hidden \
 -docstring "smart-select: select WORD if current selection is only one character" \
 smart-select -params 1 %{ evaluate-commands %sh{
     case $1 in
-        WORD) keys="<a-w>" ;;
-        word) keys="w" ;;
-        *)    printf "%s\n" "fail %{wrong word type '$1'}"; exit ;;
+        (WORD) keys="<a-w>" ;;
+        (word) keys="w" ;;
+        (*)    printf "%s\n" "fail %{wrong word type '$1'}"; exit ;;
     esac
     if [ $(printf "%s\n" ${kak_selection} | wc -m) -eq 2 ]; then
         printf "%s\n" "execute-keys -save-regs '' <a-i>${keys}"
@@ -40,9 +40,9 @@ search-file -params 1 %{ evaluate-commands %sh{
     eval "set -- ${kak_opt_path}"
     while [ $# -gt 0 ]; do                # Since we want to check fewer places,
         case $1 in                        # I've swapped ./ and %/ because
-            ./) path=${kak_buffile%/*} ;; # %/ usually has smaller scope. So
-            %/) path=${PWD}            ;; # this trick is a speedi-up hack.
-            *)  path=$1                ;; # This means that `path' option should
+            (./) path=${kak_buffile%/*} ;; # %/ usually has smaller scope. So
+            (%/) path=${PWD}            ;; # this trick is a speedi-up hack.
+            (*)  path=$1                ;; # This means that `path' option should
         esac                              # first contain `./' and then `%/'
 
         if [ -z "${file##*/*}" ] && [ -e "${path}/${file}" ]; then
@@ -82,15 +82,15 @@ select-or-add-cursor %{ execute-keys -save-regs '' %sh{
     fi
 }}
 
-define-command -docstring "symbol [<symbol>]: jump to symbol definition in current file.
+define-command -override -docstring "symbol [<symbol>]: jump to symbol definition in current file.
 If no symbol given, current selection is used as a symbol name" \
 -shell-script-candidates %{
     tags="${TMPDIR:-/tmp}/tags-tmp"
     ctags -f "${tags}" "${kak_buffile}"
     cut -f 1 "${tags}" | grep -v '^!' | awk '!x[$0]++'
-} symbol -params ..1 %{ evaluate-commands %sh{
-    export tagname="${1:-${kak_selection}}"
+} symbol -params ..1 %[ evaluate-commands %sh[
     tags="${TMPDIR:-/tmp}/tags-tmp"
+    tagname="${1:-${kak_selection}}"
 
     if [ ! -s "${tags}" ]; then
         ctags -f "${tags}" "${kak_buffile}"
@@ -102,28 +102,26 @@ If no symbol given, current selection is used as a symbol name" \
         tags_cmd='grep "^\b${tagname}\b.*\$/" "${tags}" -o'
     fi
 
-    eval "${tags_cmd}" | awk -F '\t|\n' '
+    eval "${tags_cmd}" | tagname="$tagname" awk -F '\t|\n' '
         /[^\t]+\t[^\t]+\t\/\^.*\$?\// {
-            opener = "\\{"; closer = "\\}"
-            line = $0; sub(".*\t/\\^", "", line); sub("\\$?/$", "", line);
-            menu_info = line; gsub("#", "##", menu_info); gsub(/^[\t+ ]+/, "", menu_info); gsub(opener, "\\"opener, menu_info); gsub(/\t/, " ", menu_info);
-            keys = line; gsub(/</, "<lt>", keys); gsub(/\t/, "<c-v><c-i>", keys); gsub("#", "##", keys); gsub("&", "&&", keys); gsub("!", "!!", keys); gsub("\\|", "||", keys); gsub("\\\\/", "/", keys);
-            menu_item = $2; gsub("#", "##", menu_item);
-            edit_path = $2; gsub("&", "&&", edit_path); gsub("!", "!!", edit_path); gsub("\\|", "||", edit_path);
-            select = $1; gsub(/</, "<lt>", select); gsub(/\t/, "<c-v><c-i>", select); gsub("#", "##", select); gsub("&", "&&", select); gsub("!", "!!", select); gsub("\\|", "||", select);
-            out = out "%#" menu_item ": {MenuInfo}" menu_info "# %#evaluate-commands %! try %& edit -existing %|" edit_path "|; execute-keys %|/\\Q" keys "<ret>vc| & catch %& echo -markup %|{Error}unable to find tag| &; try %& execute-keys %|s\\Q" select "<ret>| & ! #"
+            line = $0; sub(".*\t/\\^", "", line); sub("\\$?/.*$", "", line);
+            menu_info = line; gsub("!", "!!", menu_info); gsub(/^[\t ]+/, "", menu_info); gsub("{", "\\{", menu_info); gsub(/\t/, " ", menu_info);
+            keys = line; gsub(/</, "<lt>", keys); gsub(/\t/, "<c-v><c-i>", keys); gsub("!", "!!", keys); gsub("&", "&&", keys); gsub("#", "##", keys); gsub("\\|", "||", keys); gsub("\\\\/", "/", keys);
+            menu_item = ENVIRON["tagname"]; gsub("!", "!!", menu_item);
+            edit_path = $2; gsub("&", "&&", edit_path); gsub("#", "##", edit_path); gsub("\\|", "||", edit_path);
+            select = $1; gsub(/</, "<lt>", select); gsub(/\t/, "<c-v><c-i>", select); gsub("!", "!!", select); gsub("&", "&&", select); gsub("#", "##", select); gsub("\\|", "||", select);
+            out = out "%!" menu_item ": {MenuInfo}" menu_info "! %!evaluate-commands %# try %& edit -existing %|" edit_path "|; execute-keys %|/\\Q" keys "<ret>vc| & catch %& echo -markup %|{Error}unable to find tag| &; try %& execute-keys %|s\\Q" select "<ret>| & # !"
         }
         /[^\t]+\t[^\t]+\t[0-9]+/ {
-            opener = "\\{"; closer = "\\}"
-            menu_item = $2; gsub("#", "##", menu_item);
-            select = $1; gsub(/</, "<lt>", select); gsub(/\t/, "<c-v><c-i>", select); gsub("#", "##", select); gsub("&", "&&", select); gsub("!", "!!", select); gsub("\\|", "||", select);
-            menu_info = $3; gsub("#", "##", menu_info); gsub(opener, "\\"opener, menu_info);
-            edit_path = $2; gsub("#", "##", edit_path); gsub("!", "!!", edit_path); gsub("&", "&&", edit_path); gsub("\\|", "||", edit_path);
+            menu_item = $2; gsub("!", "!!", menu_item);
+            select = $1; gsub(/</, "<lt>", select); gsub(/\t/, "<c-v><c-i>", select); gsub("!", "!!", select); gsub("&", "&&", select); gsub("#", "##", select); gsub("\\|", "||", select);
+            menu_info = $3; gsub("!", "!!", menu_info); gsub("{", "\\{", menu_info);
+            edit_path = $2; gsub("!", "!!", edit_path); gsub("#", "##", edit_path); gsub("&", "&&", edit_path); gsub("\\|", "||", edit_path);
             line_number = $3;
-            out = out "%#" menu_item ": {MenuInfo}" menu_info "# %#evaluate-commands %! try %& edit -existing %|" edit_path "|; execute-keys %|" line_number "gx| & catch %& echo -markup %|{Error}unable to find tag| &; try %& execute-keys %|s\\Q" select "<ret>| & ! #"
+            out = out "%!" menu_item ": {MenuInfo}" menu_info "! %!evaluate-commands %# try %& edit -existing %|" edit_path "|; execute-keys %|" line_number "gx| & catch %& echo -markup %|{Error}unable to find tag| &; try %& execute-keys %|s\\Q" select "<ret>| & # !"
         }
         END { print ( length(out) == 0 ? "echo -markup %{{Error}no such tag " ENVIRON["tagname"] "}" : "menu -markup -auto-single " out ) }'
-}}
+]]
 
 define-command -docstring "evaluate-buffer: evaluate current buffer contents as kakscript" \
 evaluate-buffer %{
@@ -153,14 +151,14 @@ define-command tab-completion-disable %{ remove-hooks global tab-completion }
 
 # search-highlighting.kak, simplified of
 # plug "alexherbo2/search-highlighter.kak"
-define-command -docstring 'Enable search highlighting' \
+define-command -docstring "Enable search highlighting" \
 search-highlighting-enable %{
   hook window -group search-highlighting NormalKey [/?*nN]|<a-[/?*nN]> %{ try %{
     addhl window/SearchHighlighting dynregex '%reg{/}' 0:Search
   }}
   hook window -group search-highlighting NormalKey <esc> %{ rmhl window/SearchHighlighting }
 }
-define-command -docstring 'Disable search highlighting' \
+define-command -docstring "Disable search highlighting" \
 search-highlighting-disable %{
   rmhl window/SearchHighlighting
   rmhooks window search-highlighting
@@ -248,12 +246,14 @@ define-command -params 1 extend-line-up %{
 }
 
 # https://github.com/mawww/kakoune/wiki/Normal-mode-commands#suggestions
+# if you press 0 alone, it will echo "foo".
+# if you press 0 after a number to express a count, like 10, it will work as usual.
 define-command -hidden -params 1 zero %{
-   eval %sh{
+   evaluate-commands %sh{
         if [ $kak_count = 0 ]; then
             echo "$1"
         else
-            echo "exec ${kak_count}0"
+            echo "execute-keys ${kak_count}0"
         fi
     }
 }
@@ -327,7 +327,7 @@ define-command git-toggle-blame %{
 define-command git-hide-diff %{ rmhl window/git-diff }
 
 # https://github.com/shachaf/kak/blob/c2b4a7423f742858f713f7cfe2511b4f9414c37e/kakrc#L355
-define-command -docstring %{switch to the other client's buffer} \
+define-command -docstring "switch to the other client's buffer" \
   other-client-buffer \
   %{ eval %sh{
   if [ "$(echo "$kak_client_list" | wc -w)" -ne 2 ]; then
@@ -360,7 +360,7 @@ define-command man-selection-with-count %{
 
 # https://github.com/shachaf/kak/blob/c2b4a7423f742858f713f7cfe2511b4f9414c37e/kakrc#L302
 define-command selection-hull \
-  -docstring 'The smallest single selection containing every selection.' \
+  -docstring "The smallest single selection containing every selection" \
   %{
   eval -save-regs 'ab' %{
     exec '"aZ' '<space>"bZ'
@@ -372,17 +372,29 @@ define-command selection-hull \
 }
 alias global hull selection-hull
 
-# define-command -hidden smart-star -params 1 %{
-#     try %{
-#         exec -draft <a-space>
-#         eval -no-hooks -draft -save-regs '"' %{
-#             exec -save-regs '' "%arg{1}""""*"
-#             edit -scratch *smart-star-temp*
-#             exec '<a-P>)<a-space>i|<esc>'
-#         }
-#         try %{ exec -buffer *smart-star-temp* -save-regs '' "%%H""%val{register}/<c-r>.<ret>" }
-#         db *smart-star-temp*
-#     } catch %{
-#         exec -save-regs '' """%val{register}%arg{1}"
-#     }
-# }
+define-command -docstring "flygrep: run grep on every key" \
+flygrep %{
+    edit -scratch *grep*
+    prompt "flygrep: " -on-change %{
+        flygrep-call-grep %val{text}
+    } nop
+}
+
+define-command -hidden flygrep-call-grep -params 1 %{ evaluate-commands %sh{
+    [ -z "${1##*&*}" ] && text=$(printf "%s\n" "$1" | sed "s/&/&&/g") || text="$1"
+    if [ ${#1} -gt 2 ]; then
+        printf "%s\n" "info"
+        printf "%s\n" "evaluate-commands %&grep '$text'&"
+    else
+        printf "%s\n" "info -title flygrep %{$((3-${#1})) more chars}"
+    fi
+}}
+
+define-command mkdir %{ nop %sh{ mkdir -p $(dirname $kak_buffile) } } -docstring "Creates the directory up to this file"
+
+# https://github.com/mawww/kakoune/issues/1106
+# https://discuss.kakoune.com/t/repeating-a-character-n-times-in-insert-mode/670
+define-command -hidden -params 1 count-insert %{
+    execute-keys -with-hooks \;i.<esc>hd %arg{1} P %arg{1} Hs.<ret><a-space>c
+}
+map global user i %{:count-insert %val{count}<ret>} -docstring 'count insert'
