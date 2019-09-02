@@ -2,18 +2,19 @@ evaluate-commands %sh{
     config_files="
         common.kak
         commands.kak
+        beacon.kak
         tmux.kak
         languages.kak
         plugins.kak
+        go-decls.kak
     "
 
     for file in $config_files; do
-        printf "%s\n" "try %{
-            source '$HOME/.config/kak/$file'
+        printf "%s\n" "
+        try %{
+            source \"%val{config}/$file\"
         } catch %{
             echo -debug %val{error}
-        } catch %{
-            echo -debug 'Error sourcing $file'
         }"
     done
 }
