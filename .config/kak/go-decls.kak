@@ -16,11 +16,14 @@ define-command go-decls-dir %{
 
 define-command -hidden go-decls-impl -params ..1 %{ evaluate-commands %sh{
     output=$(mktemp ${TMPDIR:-/tmp}/kak-go-decls.XXXXXX)
-    rel_dir=${kak_buffile%/*}
-    case $1 in
-        (dir) scope="-dir .${rel_dir:${#PWD}}" ;;
-        (*)   scope="-file $kak_bufname" ;;
-    esac
+
+    if [ $1 = "dir" ]; then
+        rel_dir=${kak_buffile%/*}
+        scope="-dir .${rel_dir:${#PWD}}"
+    else
+        scope="-file $kak_bufname"
+    fi
+
     motion -mode decls -include func,type $scope | jq -c '[.decls[]]' > $output
 
     filter='.[] | "\(.filename):\(.line):\(.col):\t\(.keyword) \(.ident)"'
