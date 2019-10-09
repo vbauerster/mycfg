@@ -1,0 +1,62 @@
+#!/usr/bin/env /usr/local/bin/bash
+#
+# kak - A wrapper for Kakoune which connects to (or creates) a session named
+#       for the current git repo.
+#
+# https://github.com/eraserhd/dotfiles/blob/develop/kak/wrapper/wrapper.sh
+# https://discuss.kakoune.com/t/kak-session-manager-snippet/731
+
+kak="/usr/local/bin/kak"
+declare -a extraArgs=()
+
+canSpecifySession() {
+    while (( $# != 0 )); do
+        case "$1" in
+            -l|-c|-s|-n|-p) return 1;;
+            -e|-E|-f|-i|-ui|-debug) shift;;
+        esac
+        shift
+    done
+    return 0
+}
+
+findSessionName() {
+    local session=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [[ -z $session ]]; then
+        printf 'global'
+    else
+        printf '%.7s' $(echo ${session} | shasum)
+    fi
+}
+
+sessionExists() {
+    local session="$1" exists=false name=''
+    exec 3< <("$kak" -l 2>/dev/null)
+    while read -u 3 name; do
+        if [[ $name = $session ]]; then
+            exists=true
+            break
+        fi
+    done
+    exec 3<&-
+    if [[ $exists = true ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+addSessionArgs() {
+    if ! canSpecifySession "$@"; then
+        return
+    fi
+    local session="$(findSessionName)"
+    if sessionExists "$session"; then
+        extraArgs+=( -c "$session" )
+    else
+        extraArgs+=( -s "$session" )
+    fi
+}
+
+addSessionArgs "$@"
+exec "$kak" "${extraArgs[@]}" "$@"
