@@ -43,7 +43,7 @@ alias t2='tree -Fth -L 2 --du |less' #see tree with size up to 2 levels deep
 
 # tmux
 alias tma='tmux attach -d -t'
-alias tmn='tmux new -s ${${PWD##*/}%.*}'
+alias tmn='tmux new -s $(echo ${PWD##*/} | sed "s/[^[:alnum:]]//g")'
 alias tmu='tmux list-sessions'
 
 # convenience
