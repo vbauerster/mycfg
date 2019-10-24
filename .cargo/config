@@ -1,0 +1,11 @@
+[target.armv7-unknown-linux-musleabihf]
+linker = "/Volumes/ct-ng/x-tools/armv7-rpi2-linux-gnueabihf/bin/armv7-rpi2-linux-gnueabihf-gcc"
+ar = "/Volumes/ct-ng/x-tools/armv7-rpi2-linux-gnueabihf/bin/armv7-rpi2-linux-gnueabihf-ar"
+
+[target.armv7-unknown-linux-gnueabihf]
+linker = "/Volumes/ct-ng/x-tools/armv7-rpi2-linux-gnueabihf/bin/armv7-rpi2-linux-gnueabihf-gcc"
+ar = "/Volumes/ct-ng/x-tools/armv7-rpi2-linux-gnueabihf/bin/armv7-rpi2-linux-gnueabihf-ar"
+
+[target.aarch64-unknown-linux-gnu]
+linker = "/Volumes/ct-ng/x-tools/aarch64-rpi3-linux-gnueabi/bin/aarch64-rpi3-linux-gnueabi-gcc"
+ar = "/Volumes/ct-ng/x-tools/aarch64-rpi3-linux-gnueabi/bin/aarch64-rpi3-linux-gnueabi-ar"
