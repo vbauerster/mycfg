@@ -47,8 +47,8 @@ alias tmn='tmux new -s $(echo ${PWD##*/} | sed "s/[^[:alnum:]]//g")'
 alias tmu='tmux list-sessions'
 
 # convenience
-alias eA='kak ~/.aliases'
-alias eT='kak ~/.tmux.conf'
+alias kakl='kak -l'
+alias kakg='kak -c global'
 alias eH='kak ~/.hammerspoon/init.lua'
 alias eS='kak ~/.ssh/config'
 alias eD='kak ~/.zprezto/modules/docker/alias.zsh'
