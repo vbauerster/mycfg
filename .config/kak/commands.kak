@@ -1,15 +1,49 @@
 define-command -hidden \
--docstring "smart-select: select WORD if current selection is only one character" \
-smart-select -params 1 %{ evaluate-commands %sh{
-    case $1 in
-        (WORD) keys="<a-w>" ;;
-        (word) keys="w" ;;
-        (*)    printf "%s\n" "fail %{wrong word type '$1'}"; exit ;;
-    esac
-    if [ $(printf "%s\n" ${kak_selection} | wc -m) -eq 2 ]; then
-        printf "%s\n" "execute-keys -save-regs '' <a-i>${keys}"
-    fi
-}}
+-docstring "smart-select <w|a-w>: select <word> if current selection is only one character." \
+smart-select -params 1 %{
+    try %{
+        execute-keys "<a-k>..<ret>"
+    } catch %{
+        execute-keys "<a-i><%arg{1}>"
+    } catch nop
+}
+
+define-command -override -hidden \
+-docstring "smart-select-file: tries to select file path in current line automatically." \
+smart-select-file %{
+    try %{
+        execute-keys "<a-k>..<ret>"
+    } catch %{
+        # guess we have nonblank character under cursor
+        execute-keys "<a-k>\w<ret>"
+        execute-keys "<a-i><a-w>"
+    } catch %{
+        # try selecting inside first occurrence of <...> string
+        execute-keys "<a-x>s<<ret>)<space>"
+        execute-keys "<a-i>a"
+    } catch %{
+        # try selecting inside first occurrence of "..."
+        execute-keys '<a-x>s"<ret>)<space>'
+        execute-keys "<a-i>Q"
+    } catch %{
+        # try selecting inside first  occurrence of '...'
+        execute-keys "<a-x>s'<ret>)<space>"
+        execute-keys "<a-i>q"
+    } catch %{
+        # try select from cursor to the end of the line
+        execute-keys "<a-l><a-k>\w<ret>"
+    } catch %{
+        # try select from beginning to the end of the line
+        execute-keys "Gi<a-l><a-k>\w<ret>"
+    } catch %{
+        fail "no file can be selected"
+    }
+    try %{
+        execute-keys "s/?\w[\S]+(?!/)<ret>)<space>"
+    } catch %{
+        fail "failed to select file"
+    }
+}
 
 define-command -docstring \
 "search-file <filename>: search for file recusively under path option: %opt{path}" \
@@ -22,7 +56,7 @@ search-file -params 1 %{ evaluate-commands %sh{
 
     file=$(printf "%s\n" $1 | sed -E "s:^~/:$HOME/:") # we want full path
 
-    eval "set -- ${kak_buflist}"
+    eval "set -- ${kak_quoted_buflist}"
     while [ $# -gt 0 ]; do            # Check if buffer with this
         if [ "${file}" = "$1" ]; then # file already exists. Basically
             printf "%s\n" "buffer $1" # emulating what edit command does
@@ -37,7 +71,7 @@ search-file -params 1 %{ evaluate-commands %sh{
     fi                                            # we start recursive searchimg
 
     # if everthing  above fails - search for file under `path'
-    eval "set -- ${kak_opt_path}"
+    eval "set -- ${kak_quoted_opt_path}"
     while [ $# -gt 0 ]; do                # Since we want to check fewer places,
         case $1 in                        # I've swapped ./ and %/ because
             (./) path=${kak_buffile%/*} ;; # %/ usually has smaller scope. So
@@ -194,19 +228,20 @@ define-command trim-trailing-whitespace -docstring "trim trailing whitespaces" %
   }
 }
 
-define-command enlarge-selection %{
-  exec '<a-:>L<a-;>H<a-:>'
-}
-define-command shrink-selection %{
-  exec '<a-:>H<a-;>L<a-:>'
-}
-define-command shift-selection-left %{
-  exec '<a-:>H<a-;>H<a-:>'
-}
-define-command shift-selection-right %{
-  exec '<a-:>L<a-;>L<a-:>'
-}
-define-command slice-by-camel %{
+# define-command enlarge-selection %{
+#   exec '<a-:>L<a-;>H<a-:>'
+# }
+# define-command shrink-selection %{
+#   exec '<a-:>H<a-;>L<a-:>'
+# }
+# define-command shift-selection-left %{
+#   exec '<a-:>H<a-;>H<a-:>'
+# }
+# define-command shift-selection-right %{
+#   exec '<a-:>L<a-;>L<a-:>'
+# }
+
+define-command slice-by-word %{
   exec s[A-Z][a-z]+|[A-Z]+|[a-z]+<ret>
 }
 
@@ -233,10 +268,10 @@ define-command kebabcase %{
 }
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
-define-command -params 1 extend-line-down %{
+define-command -hidden -params 1 extend-line-down %{
   exec "<a-:>%arg{1}X"
 }
-define-command -params 1 extend-line-up %{
+define-command -hidden -params 1 extend-line-up %{
   exec "<a-:><a-;>%arg{1}K<a-;>"
   try %{
     exec -draft ';<a-K>\n<ret>'
@@ -290,18 +325,18 @@ define-command format-comment %{ exec '<a-s>ght/F<space>dx<a-_>|fmt<a-!><ret><a-
 # }
 
 # https://github.com/shachaf/kak/blob/c2b4a7423f742858f713f7cfe2511b4f9414c37e/kakrc#L241
-define-command switch-to-modified-buffer %{
-  eval -save-regs a %{
-    reg a ''
-    try %{
-      eval -buffer * %{
-        eval %sh{[ "$kak_modified" = true ] && echo "reg a %{$kak_bufname}; fail"}
-      }
-    }
-    eval %sh{[ -z "$kak_main_reg_a" ] && echo "fail 'No modified buffers!'"}
-    buffer %reg{a}
-  }
-}
+# define-command switch-to-modified-buffer %{
+#   eval -save-regs a %{
+#     reg a ''
+#     try %{
+#       eval -buffer * %{
+#         eval %sh{[ "$kak_modified" = true ] && echo "reg a %{$kak_bufname}; fail"}
+#       }
+#     }
+#     eval %sh{[ -z "$kak_main_reg_a" ] && echo "fail 'No modified buffers!'"}
+#     buffer %reg{a}
+#   }
+# }
 
 # Git extras.
 # https://github.com/shachaf/kak/blob/c2b4a7423f742858f713f7cfe2511b4f9414c37e/kakrc#L381
@@ -349,18 +384,13 @@ define-command man-selection-with-count %{
   }
 }
 
-# https://github.com/mawww/kakoune/wiki/Selections#how-to-select-the-smallest-single-selection-containing-every-selection
-# def selection-hull %{
-#   eval -save-regs 'abc' %{
-#     exec '"aZ' '<space>"bZ' '"az<a-space>"cZ'
-#     eval -itersel %{ exec '"b<a-Z>u' }
-#     exec '"bz'
-#   }
-# }
+# Hull
+# ‾‾‾‾
 
+# https://github.com/mawww/kakoune/wiki/Selections#how-to-select-the-smallest-single-selection-containing-every-selection
 # https://github.com/shachaf/kak/blob/c2b4a7423f742858f713f7cfe2511b4f9414c37e/kakrc#L302
 define-command selection-hull \
-  -docstring "The smallest single selection containing every selection" \
+  -docstring 'The smallest single selection containing every selection.' \
   %{
   eval -save-regs 'ab' %{
     exec '"aZ' '<space>"bZ'
@@ -370,7 +400,9 @@ define-command selection-hull \
     echo
   }
 }
-alias global hull selection-hull
+
+# Flygrep
+# ‾‾‾‾‾‾‾
 
 define-command -docstring "flygrep: run grep on every key" \
 flygrep %{
@@ -390,11 +422,82 @@ define-command -hidden flygrep-call-grep -params 1 %{ evaluate-commands %sh{
     fi
 }}
 
-define-command mkdir %{ nop %sh{ mkdir -p $(dirname $kak_buffile) } } -docstring "Creates the directory up to this file"
-
 # https://github.com/mawww/kakoune/issues/1106
 # https://discuss.kakoune.com/t/repeating-a-character-n-times-in-insert-mode/670
 define-command -hidden -params 1 count-insert %{
     execute-keys -with-hooks \;i.<esc>hd %arg{1} P %arg{1} Hs.<ret><a-space>c
 }
 map global user i %{:count-insert %val{count}<ret>} -docstring 'count insert'
+map global insert <a-i> '<esc>h<a-i>n"nd: count-insert <c-r>n<ret>'
+
+# Jump
+# ‾‾‾‾
+
+declare-option -hidden str jump_search_result
+
+define-command -hidden -params 1 jump-helper %{
+    evaluate-commands %sh{
+        if [ "$1" -ef "${kak_buffile}" ]; then
+            printf 'set-option global jump_search_result "%s"\n' "${kak_client}"
+        fi
+    }
+}
+
+define-command -override \
+    -docstring %{jump [<options>] <file> [<line> [<column>]]
+
+Takes all the same switches as edit.} \
+    -params 1..3 \
+    -file-completion \
+    jump %{
+    set-option global jump_search_result %opt{jumpclient}
+    evaluate-commands %sh{
+        for client in ${kak_client_list}; do
+            echo "evaluate-commands -client \"${client}\" %{jump-helper \"$1\"}"
+        done
+    }
+    evaluate-commands -try-client %opt{jump_search_result} %{
+        edit %arg{@}
+        try %{ focus }
+    }
+}
+
+# Misc
+# ‾‾‾‾
+
+define-command mkdir %{ nop %sh{ mkdir -p $(dirname $kak_buffile) } } -docstring "Creates the directory up to this file"
+
+define-command rm %{
+    nop %sh{ rm -f "$kak_buffile" }
+    delete-buffer!
+}
+
+define-command \
+    -override \
+    -docstring %{mv <target>: move this file to <target> dir or file} \
+    -shell-script-candidates %{fd --type f} \
+    -params 1 \
+    mv %{
+    evaluate-commands %sh{
+        target="$1"
+        if $kak_modified; then
+            printf 'fail "mv: buffer is modified."\n'
+            exit
+        fi
+        if [ -d "$target" ]; then
+            target="${target}/$(basename "$kak_buffile")"
+        fi
+        mkdir -p "$(dirname "$target")"
+        mv "$kak_buffile" "$target"
+        if [ $? -ne 0 ]; then
+            printf 'fail "mv: unable to move file."\n'
+            exit
+        fi
+        printf 'delete-buffer\n'
+        printf 'edit %%{%s}\n' "$target"
+    }
+}
+
+# https://discuss.kakoune.com/t/rfr-roll-back-through-old-versions-of-a-file-in-git/743
+define-command git-edit-force 'edit!; nop %sh(git reset -- "$kak_buffile"); git checkout'
+alias global ge! git-edit-force

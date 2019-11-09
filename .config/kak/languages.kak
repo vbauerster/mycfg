@@ -1,7 +1,6 @@
 # Go
 # ‾‾‾‾
 hook global WinSetOption filetype=(go) %{
-    # try %{ set-option buffer grepcmd 'rg --column -tgo -g=!vendor' }
     evaluate-commands %sh{
         # if [ -n "$(command -v fd)" ]; then
         #     echo "set-option buffer fzf_file_command %{fd --no-ignore --type f --follow --exclude .git --exclude vendor .}"
@@ -21,7 +20,7 @@ hook global WinSetOption filetype=(go) %{
     # map global goto u '<esc>: go-jump<ret>' -docstring 'go-jump'
     # map global help-and-hovers d ': go-doc-info<ret>' -docstring 'go-doc-info'
 
-    hook buffer BufWritePre .* %{ format }
+    # hook buffer BufWritePre .* %{ format }
     map buffer lang-mode o %{:grep ^func|^import|^var|^package|^const|^goto|^struct|^type %val{bufname} -H<ret>} -docstring "Show outline"
     # map buffer lang-mode o ': godecls<ret>' -docstring 'godecl outline'
 }
@@ -69,8 +68,9 @@ hook global ModuleLoaded c-family %{ try %{ evaluate-commands %sh{
 
 # Rust
 # ‾‾‾‾
-hook global WinSetOption filetype=(rust) %{
-    set-option buffer matching_pairs '{' '}' '[' ']' '(' ')'
+hook global WinSetOption filetype=(rust) %[
+    # set-option buffer matching_pairs '(' ')' '[' ']' '{' '}'
+    set-register @ 'A;<esc>'
     evaluate-commands %sh{
         # if [ -n "$(command -v fd)" ]; then
         #     echo "set-option buffer fzf_file_command %{fd --no-ignore --type f --follow --exclude .git --exclude target .}"
@@ -79,7 +79,15 @@ hook global WinSetOption filetype=(rust) %{
             echo "set-option buffer grepcmd %{rg --column -trust -g=!target}"
         fi
     }
-}
+    hook window InsertChar \Q-\E %{ try %{
+        exec -draft h2H <a-k>\Q)<space><minus>\E<ret>
+        exec <gt>
+    }}
+    hook window InsertChar : %[ try %[
+        exec -draft hH <a-k>\Q{:\E<ret>
+        exec ?
+    ]]
+]
 
 # Makefile
 # ‾‾‾‾‾‾‾‾
@@ -125,3 +133,7 @@ hook global BufCreate .*\.conf %{
 #     set buffer formatcmd 'js-beautify'
 # }
 
+hook global WinSetOption filetype=(yaml) %{
+    set-option buffer tabstop 2
+    set-option buffer indentwidth 2
+}

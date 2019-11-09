@@ -1,8 +1,8 @@
 define-command go-decls %{
     require-module fzf
-    go-decls-impl
+    go-decls-impl file
     define-command -override go-decls %{
-        go-decls-impl
+        go-decls-impl file
     }
 }
 
@@ -14,7 +14,7 @@ define-command go-decls-dir %{
     }
 }
 
-define-command -hidden go-decls-impl -params ..1 %{ evaluate-commands %sh{
+define-command -hidden go-decls-impl -params 1 %{ evaluate-commands %sh{
     output=$(mktemp ${TMPDIR:-/tmp}/kak-go-decls.XXXXXX)
 
     if [ $1 = "dir" ]; then
