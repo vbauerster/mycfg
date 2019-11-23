@@ -83,9 +83,13 @@ hook global WinSetOption filetype=(rust) %[
         exec -draft h2H <a-k>\Q)<space><minus>\E<ret>
         exec <gt>
     }}
-    hook window InsertChar : %[ try %[
-        exec -draft hH <a-k>\Q{:\E<ret>
-        exec ?
+    hook window InsertChar \? %[ try %[
+        exec -draft hH <a-k>\Q{?\E<ret>
+        exec <left>:<right>}
+    ]]
+    hook window InsertChar '#' %[ try %[
+        exec -draft hH <a-k>\Q{#\E<ret>
+        exec <left>:<right>?}
     ]]
 ]
 
