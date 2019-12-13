@@ -6,4 +6,4 @@
 	url = https://github.com/sorin-ionescu/prezto
 [submodule ".config/kak/plugins/plug.kak"]
 	path = .config/kak/plugins/plug.kak
-	url = https://github.com/andreyorst/plug.kak
+	url = https://gitlab.com/andreyorst/plug.kak
