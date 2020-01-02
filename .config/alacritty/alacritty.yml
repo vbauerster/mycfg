@@ -657,5 +657,9 @@ key_bindings:
   - { key: Key0,      mods: Alt,       chars: "\x1b)" }
   - { key: Key9,      mods: Alt,       chars: "\x1b(" }
   - { key: Key8,      mods: Alt,       chars: "\x1b*" }
-  - { key: LBracket,  mods: Alt,       chars: "\x1b[" }
-  - { key: RBracket,  mods: Alt,       chars: "\x1b]" }
+  - { key: 19,        mods: Alt,       chars: "\x1b[" }
+  - { key: 29,        mods: Alt,       chars: "\x1b]" }
+  - { key: 20,        mods: Alt,       chars: "\x1b{" }
+  - { key: 21,        mods: Alt,       chars: "\x1b}" }
+  - { key: 22,        mods: Alt,       chars: "\x1b=" }
+  - { key: 25,        mods: Alt,       chars: "\x1b+" }
