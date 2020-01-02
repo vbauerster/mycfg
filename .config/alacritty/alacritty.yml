@@ -108,29 +108,29 @@ scrolling:
 # change the `it` value in terminfo when altering this setting.
 tabspaces: 8
 
-# Font configuration (changes require restart)
+# Font configuration
 font:
   normal:
-    family: Iosevka
-    style: Extended
+    family: Iosevka Term SS05
+    style: Regular
 
   # Bold font face
   bold:
-    family: Iosevka
-    style: Semibold Extended
+    family: Iosevka Term SS05
+    style: Semibold
 
   # Italic font face
   italic:
-    family: Iosevka
-    style: Extended Italic
+    family: Iosevka Term SS05
+    style: Italic
 
   # Bold italic font face
   bold_italic:
-    family: Iosevka
-    style: Semibold Extended Italic
+    family: Iosevka Term SS05
+    style: Semibold Italic
 
   # Point size
-  size: 13.0
+  size: 14.0
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
