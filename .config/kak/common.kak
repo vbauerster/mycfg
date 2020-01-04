@@ -44,8 +44,8 @@ hook global WinSetOption filetype=grep %{
 # escape hatch
 # https://github.com/mawww/kakoune/wiki/Avoid-the-escape-key
 hook global InsertChar \. %{ try %{
-    exec -draft hH <a-k>\Q,.\E<ret> d
-    exec <esc>
+    execute-keys -draft hH <a-k>\Q,.\E<ret> d
+    execute-keys <esc>
 }}
 
 # Aliases
@@ -272,16 +272,30 @@ hook global BufOpenFile .* %{
 # }
 
 # hook -group pairwise global InsertChar \) %{ try %{
-#     exec -draft hH <a-k>\Q()\E<ret>
-#     exec '<a-;>h'
+#     execute-keys -draft hH <a-k>\Q()\E<ret>
+#     execute-keys '<a-;>h'
 # }}
-
 # hook -group pairwise global InsertChar \} %{ try %{
-#     exec -draft hH <a-k>\Q{}\E<ret>
-#     exec '<a-;>h'
+#     execute-keys -draft hH <a-k>\Q{}\E<ret>
+#     execute-keys '<a-;>h'
 # }}
-
 # hook -group pairwise global InsertChar > %{ try %{
-#     exec -draft hH <a-k>\Q<lt><gt>\E<ret>
-#     exec '<a-;>h'
+#     execute-keys -draft hH <a-k>\Q<lt><gt>\E<ret>
+#     execute-keys '<a-;>h'
 # }}
+hook -group pairwise global InsertChar \) %{ try %{
+    execute-keys -draft h2H <a-k>\Q())\E<ret>
+    execute-keys <backspace><left>
+}}
+hook -group pairwise global InsertChar \] %{ try %{
+    execute-keys -draft h2H <a-k>\Q[]]\E<ret>
+    execute-keys <backspace><left>
+}}
+hook -group pairwise global InsertChar > %{ try %{
+    execute-keys -draft h2H <a-k>\Q<lt><gt><gt>\E<ret>
+    execute-keys <backspace><left>
+}}
+hook -group pairwise global InsertChar \} %[ try %[
+    execute-keys -draft h2H <a-k>\Q{}}\E<ret>
+    execute-keys <backspace><left>
+]]
