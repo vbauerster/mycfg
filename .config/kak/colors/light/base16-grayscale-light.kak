@@ -50,32 +50,32 @@ evaluate-commands %sh{
 
          face global Default            ${base05},${base00}
 
-         face global PrimarySelection   ${base00},${base0F}
+         face global PrimarySelection   ${base00},${base04}
          face global PrimaryCursor      ${base00},${base09}
          face global PrimaryCursorEol   ${base00},${base09}+fg
          face global SecondarySelection ${base0F},${base0A}
          face global SecondaryCursor    ${base0A},${base0F}
          face global SecondaryCursorEol ${base0A},${base0F}+fg
-         face global MatchingChar       ${base05},${base01}+u
+
          # face global MatchingChar       ${base0A},${base0F}
-         face global Search             ${base00},${base03}+i
+         face global MatchingChar       ${base05},${base01}+u
+         face global Search             ${base00},${base0A}+i
          face global CurrentWord        ${base08},${base01}
          face global Whitespace         ${base01},${base00}+f
          face global BufferPadding      ${base03},${base00}
          face global LineNumbers        ${base02},${base00}
          face global LineNumberCursor   ${base00},${base02}
          face global LineNumbersWrapped ${base00},${base00}
-         face global MenuForeground     ${base00},${base0F}
-         face global MenuBackground     ${base01},${base0C}
+         face global MenuForeground     ${base00},${base05}
+         face global MenuBackground     ${base00},${base03}
          face global MenuInfo           ${base02}
          face global Information        ${base01},${base0F}
          face global Error              ${base00},${base08}
-         # face global StatusLine         ${base04},${base00}
-         face global StatusLine         ${base05},${base01}
-         face global StatusLineMode     ${base00},${base0D}
-         face global StatusLineInfo     ${base0F}
-         face global StatusLineValue    ${base0C}
+         face global StatusLine         ${base00},${base0C}
+         face global StatusLineMode     ${base00},${base0B}
+         face global StatusLineInfo     ${base01}
+         face global StatusLineValue    ${base00}
          face global StatusCursor       ${base00},${base05}
-         face global Prompt             ${base00},${base0B}
+         face global Prompt             ${base00},${base0D}
     "
 }

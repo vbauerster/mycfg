@@ -1,19 +1,19 @@
-# gotham theme
-# https://github.com/whatyouhide/gotham-contrib
+# dracula theme
+# https://draculatheme.com/
 
 evaluate-commands %sh{
-    black="rgb:0c1014"
-    gray="rgb:245361"
-    white="rgb:d3ebe9"
+    black="rgb:282a36"
+    gray="rgb:44475a"
+    white="rgb:f8f8f2"
 
-    pink="rgb:888ca6"
-    purple="rgb:4e5166"
-    blue="rgb:195466"
-    cyan="rgb:33859e"
-    green="rgb:2aa889"
-    yellow="rgb:edb443"
-    orange="rgb:d26937"
-    red="rgb:c23127"
+    pink="rgb:ff79c6"
+    purple="rgb:bd93f9"
+    blue="rgb:6272a4"
+    cyan="rgb:8be9fd"
+    green="rgb:50fa7b"
+    yellow="rgb:f1fa8c"
+    orange="rgb:ffb86c"
+    red="rgb:ff5555"
 
     echo "
          face global value $green
@@ -43,8 +43,8 @@ evaluate-commands %sh{
          face global Default $white,$black
 
          face global PrimarySelection $black,$pink
-         face global PrimaryCursorEol $black,$cyan
          face global PrimaryCursor $black,$cyan
+         face global PrimaryCursorEol $black,$cyan
 
          face global SecondarySelection $black,$purple
          face global SecondaryCursor $black,$orange
@@ -58,6 +58,8 @@ evaluate-commands %sh{
          face global Whitespace $gray,$black+f
          # ~ lines at EOB
          face global BufferPadding $gray,$black
+         # must use wrap -marker hl
+         face global WrapMarker Whitespace
 
          face global LineNumbers $gray,$black
          # must use -hl-cursor

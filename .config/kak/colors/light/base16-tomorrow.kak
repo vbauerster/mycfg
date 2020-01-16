@@ -20,7 +20,9 @@ evaluate-commands %sh{
     base0D='rgb:4271ae'
     base0E='rgb:8959a8'
     base0F='rgb:a3685a'
-    matchb='rgb:EDF97D'
+
+    white='rgb:FFFFFF'
+    # matchb='rgb:EDF97D'
     # mytype='rgb:bf8b56'
     # menufg='rgb:f9f9f9'
 
@@ -69,7 +71,7 @@ evaluate-commands %sh{
     cat <<- EOF
 
     # For Code
-    face global keyword   ${base0E}
+    face global keyword   ${base0E}+b
     face global attribute ${base08}
     face global type      ${base0F}
     face global string    ${base0B}
@@ -95,15 +97,14 @@ evaluate-commands %sh{
 
     face global Default            ${base05},${base00}
 
-    face global PrimarySelection   ${base07},${pale_blue}
-    face global PrimaryCursor      ${base00},${vibrant_orange}
-    face global PrimaryCursorEol   ${base00},${vibrant_red}+fg
-    face global SecondarySelection ${base05},${pale_cyan}
-    face global SecondaryCursor    ${pale_cyan},${base0F}
-    face global SecondaryCursorEol ${pale_cyan},${muted_wine}+fg
+    face global PrimarySelection   ${base05},${pale_cyan}+i
+    face global PrimaryCursor      ${white},${vibrant_orange}
+    face global PrimaryCursorEol   ${white},${vibrant_red}+fg
+    face global SecondarySelection ${pale_cyan},${base04}
+    face global SecondaryCursor    ${base00},${vibrant_cyan}+i
+    face global SecondaryCursorEol ${base00},${vibrant_blue}+fg
 
-    # face global MatchingChar       ${base05},${matchb}
-    face global MatchingChar       ${base06},${pale_yellow}
+    face global MatchingChar       ${base05},${pale_yellow}
     face global Search             ${base00},${base0A}+i
     face global CurrentWord        ${base08},${base01}
     face global Whitespace         ${base01}+f
@@ -114,9 +115,9 @@ evaluate-commands %sh{
     face global LineNumbersWrapped ${base00},${base00}
     face global MenuForeground     ${base00},${base0F}
     face global MenuBackground     ${base01},${dark_grey}
-    face global MenuInfo           ${pale_yellow}
+    face global MenuInfo           ${pale_yellow}+i
     face global Information        ${base05},${pale_yellow}
-    face global Error              ${base00},${base08}
+    face global Error              ${white},${base08}
     face global StatusLine         ${base00},${base0C}
     face global StatusLineMode     ${base00},${base0B}
     face global StatusLineInfo     ${base01}

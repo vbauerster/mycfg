@@ -1,20 +1,19 @@
-# seagull theme
-# https://github.com/nightsense/seabird
+# gotham theme
+# https://github.com/whatyouhide/gotham-contrib
 
 evaluate-commands %sh{
-    black="rgb:1d252b"
-    gray="rgb:6d767d"
-    lightgray="rgb:e6eaed"
-    white="rgb:ffffff"
+    black="rgb:0c1014"
+    gray="rgb:245361"
+    white="rgb:d3ebe9"
 
-    pink="rgb:ff549b"
-    purple="rgb:9854ff"
-    blue="rgb:0099ff"
-    cyan="rgb:00a5ab"
-    green="rgb:11ab00"
-    yellow="rgb:bf8c00"
-    orange="rgb:ff6200"
-    red="rgb:ff4053"
+    pink="rgb:888ca6"
+    purple="rgb:4e5166"
+    blue="rgb:195466"
+    cyan="rgb:33859e"
+    green="rgb:2aa889"
+    yellow="rgb:edb443"
+    orange="rgb:d26937"
+    red="rgb:c23127"
 
     echo "
          face global value $green
@@ -27,9 +26,9 @@ evaluate-commands %sh{
          face global keyword $cyan
          face global operator $orange
          face global attribute $pink
-         face global comment $blue
+         face global comment $blue+i
          face global meta $red
-         face global builtin $black
+         face global builtin $white+b
 
          face global title $red
          face global header $orange
@@ -39,52 +38,54 @@ evaluate-commands %sh{
          face global block $cyan
          face global link $green
          face global bullet $green
-         face global list $gray
+         face global list $white
 
-         face global Default $gray,$white
+         face global Default $white,$black
 
          face global PrimarySelection $black,$pink
-         face global PrimaryCursor $black,$blue
-         face global PrimaryCursorEol $black,$blue
+         face global PrimaryCursorEol $black,$cyan
+         face global PrimaryCursor $black,$cyan
 
          face global SecondarySelection $black,$purple
          face global SecondaryCursor $black,$orange
          face global SecondaryCursorEol $black,$orange
 
-         face global MatchingChar $black,$cyan
+         face global MatchingChar $black,$blue
          face global Search $blue,$green
-         face global CurrentWord $gray,$lightgray
+         face global CurrentWord $white,$blue
 
          # listchars
-         face global Whitespace $lightgray,$white+f
+         face global Whitespace $gray,$black+f
          # ~ lines at EOB
-         face global BufferPadding $lightgray,$white
+         face global BufferPadding $gray,$black
+         # must use wrap -marker hl
+         face global WrapMarker Whitespace
 
-         face global LineNumbers $gray,$white
+         face global LineNumbers $gray,$black
          # must use -hl-cursor
-         face global LineNumberCursor $black,$white+b
-         face global LineNumbersWrapped $gray,$white+i
+         face global LineNumberCursor $white,$gray+b
+         face global LineNumbersWrapped $gray,$black+i
 
          # when item focused in menu
          face global MenuForeground $blue,$white+b
          # default bottom menu and autocomplete
          face global MenuBackground $white,$blue
          # complement in autocomplete like path
-         face global MenuInfo $lightgray,$blue
+         face global MenuInfo $cyan,$blue
          # clippy
-         face global Information $yellow,$lightgray
+         face global Information $yellow,$gray
          face global Error $black,$red
 
          # all status line: what we type, but also client@[session]
-         face global StatusLine $black,$white
+         face global StatusLine $white,$black
          # insert mode, prompt mode
-         face global StatusLineMode $white,$green
+         face global StatusLineMode $black,$green
          # message like '1 sel'
-         face global StatusLineInfo $purple,$white
+         face global StatusLineInfo $purple,$black
          # count
-         face global StatusLineValue $orange,$white
+         face global StatusLineValue $orange,$black
          face global StatusCursor $white,$blue
          # like the word 'select:' when pressing 's'
-         face global Prompt $white,$green
+         face global Prompt $black,$green
     "
 }
