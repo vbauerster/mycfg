@@ -68,7 +68,7 @@ hook global ModuleLoaded c-family %{ try %{ evaluate-commands %sh{
 
 # Rust
 # ‾‾‾‾
-hook global WinSetOption filetype=(rust) %[
+hook global WinSetOption filetype=(rust) %{
     # set-option buffer matching_pairs '(' ')' '[' ']' '{' '}'
     set-register @ 'A;<esc>'
     evaluate-commands %sh{
@@ -80,18 +80,28 @@ hook global WinSetOption filetype=(rust) %[
         fi
     }
     hook window InsertChar \Q-\E %{ try %{
-        exec -draft h2H <a-k>\Q)<space><minus>\E<ret>
-        exec <gt>
+        execute-keys -draft h2H <a-k>\Q)<space><minus>\E<ret>
+        execute-keys <gt>
     }}
-    hook window InsertChar \? %[ try %[
-        exec -draft hH <a-k>\Q{?\E<ret>
-        exec <left>:<right>}
-    ]]
-    hook window InsertChar '#' %[ try %[
-        exec -draft hH <a-k>\Q{#\E<ret>
-        exec <left>:<right>?}
-    ]]
-]
+    hook window InsertChar \' %{
+        try %{
+            execute-keys -draft hH <a-k>\Q<lt>'\E<ret>
+            execute-keys a
+        }
+        try %{
+            execute-keys -draft hH <a-k>\Q&'\E<ret>
+            execute-keys a
+        }
+    }
+    hook window InsertChar \? %{ try %{
+        execute-keys -draft hH <a-k>\Q{?\E<ret>
+        execute-keys <left>:<right>}
+    }}
+    hook window InsertChar '#' %{ try %{
+        execute-keys -draft hH <a-k>\Q{#\E<ret>
+        execute-keys <left>:<right>?}
+    }}
+}
 
 # Makefile
 # ‾‾‾‾‾‾‾‾
