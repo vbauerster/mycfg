@@ -54,10 +54,14 @@ alias global u enter-user-mode
 alias global h doc
 
 ## Maps.
-map -docstring "align cusors"              global normal '='       '&'
-map -docstring "copy indentation"          global normal '<a-=>'   '<a-&>'
-map -docstring "extend sel to whole lines" global normal '&'       '<a-x>'
-map -docstring "crop sel to whole lines"   global normal '<a-&>'   '<a-X>'
+# map -docstring "align cusors"              global normal '='       '&'
+# map -docstring "copy indentation"          global normal '<a-=>'   '<a-&>'
+map -docstring "clear anchor"              global normal '<minus>' ';'
+map -docstring "flip cursor and anchor"    global normal '<a-minus>' '<a-;>'
+map -docstring "extend sel to whole lines" global normal '}'       '<a-x>'
+map -docstring "crop sel to whole lines"   global normal '<a-}>'   '<a-X>'
+map -docstring "extend to surrounding obj" global normal '<plus>'  '}'
+map -docstring "extend to inner surr obj"  global normal '<a-plus>' '<a-}>'
 map -docstring "extend up"                 global normal '<a-x>'   'J'
 map -docstring "extend down"               global normal '<a-X>'   'K'
 map -docstring "select whole buffer"       global normal '%'       '<c-s>%'
@@ -70,7 +74,7 @@ map -docstring "save buffer"               global normal '<F2>'    ': w<ret>'
 # map -docstring "<a-a>"                     global normal '<a-6>'   '<a-a>'
 
 # map -docstring "choose register"     global normal <esc> <">
-map -docstring "choose register"     global normal <a-space> <">
+# map -docstring "choose register"     global normal <a-space> <">
 map -docstring "record macro"        global normal <a-@> <Q>
 map -docstring "play recorded macro" global normal <@> <q>
 
@@ -78,6 +82,10 @@ map -docstring "play recorded macro" global normal <@> <q>
 map -docstring "avoid escape key" global normal '<c-g>' '<esc>'
 map -docstring "avoid escape key" global prompt '<c-g>' '<esc>'
 map -docstring "avoid escape key" global insert '<c-g>' '<esc>'
+
+map global normal '0' ': zero select-or-add-cursor<ret>'
+# map global normal <*> ': smart-select word<ret>*'
+# map global normal '%' ': select-or-add-cursor<ret>'
 
 map global normal 'J' 'C<space>'
 map global normal 'K' '<a-C><space>'
@@ -93,19 +101,20 @@ map global normal X ': extend-line-up %val{count}<ret>'
 # map global normal <a-c> c
 
 # https://github.com/mawww/kakoune/issues/1791
-# map global object q Q -docstring 'double quote string'
 # map global object Q q -docstring 'single quote string'
+map global object q '"' -docstring 'double quote string'
 map global view e jv         -docstring "scroll down"
 map global view y kv         -docstring "scroll up"
-map global view j <esc>3j    -docstring "3j"
-map global view k <esc>3k    -docstring "3k"
-map global view J <esc>3jv   -docstring "3j (sticky)"
-map global view K <esc>3kv   -docstring "3k (sticky)"
+map global view j <esc>3jv   -docstring "3j (sticky)"
+map global view k <esc>3kv   -docstring "3k (sticky)"
+map global view J <esc>6jv   -docstring "6j (sticky)"
+map global view K <esc>6kv   -docstring "6k (sticky)"
 map global view i <esc><a-i> -docstring "<a-i>"
 map global view a <esc><a-a> -docstring "<a-a>"
 
 ## Some User
 map -docstring "command prompt"  global user '<space>' ':'
+map -docstring "choose register" global user <'> <">
 map -docstring "Reload buffer"   global user 'R'       ': e!<ret>'
 map -docstring "man"             global user 'k'       ': smart-select w; man-selection-with-count<ret>'
 map -docstring "tmux-focus"      global user 'o'       ': tmux-focus '
@@ -113,14 +122,10 @@ map -docstring "enter-user-mode" global user 'u'       ':u '
 map -docstring "quit!"           global user 'Q'       ':q!<ret>'
 map -docstring "grep next"       global user ']'       ': grep-next-match<ret>'
 map -docstring "grep prev"       global user '['       ': grep-previous-match<ret>'
-map -docstring "null reg"        global user '_'       '"_'
 map -docstring "format buffer"   global user '='       ': format-buffer<ret>'
 map -docstring "tabs to spaces"  global user <@> <@>
 map -docstring "spaces to tabs"  global user <a-@> <a-@>
-
-map global normal '0' ': zero select-or-add-cursor<ret>'
-# map global normal <*> ': smart-select word<ret>*'
-# map global normal '%' ': select-or-add-cursor<ret>'
+# map -docstring "null reg"        global user '_'       '"_'
 
 ## Spell
 declare-user-mode spell
@@ -152,12 +157,19 @@ map -docstring "grayscale-light" global themes 'g' ': colorscheme base16-graysca
 map -docstring "color-light"     global themes 'c' ': colorscheme base16-tomorrow<ret>'
 
 ## Goto
-map -docstring "window bottom"                  global goto 'u'     'b'
+map -docstring "window top"                     global goto 'k'     't'
+map -docstring "window bottom"                  global goto 'j'     'b'
+map -docstring "buffer bottom"                  global goto 'G'     'j'
+map -docstring "extend to line end"             global goto '}'     '<esc><a-:>Gl'
+map -docstring "extend to line begin"           global goto '{'     '<esc><a-:>;Gh'
+map -docstring "extend to line non-blank"       global goto '<tab>' '<esc><a-:>;Gi'
 map -docstring "file (recursive)"               global goto 'f'     '<esc>: smart-select-file; search-file %val{selection}<ret>'
 map -docstring "file (non-recursive)"           global goto '<a-f>'  '<esc>gf'
 map -docstring "search tag in current file"     global goto '['      '<esc><c-s>: smart-select w; symbol<ret>'
 map -docstring "search tag in global tags file" global goto ']'      '<esc><c-s>: smart-select w; ctags-search<ret>'
-# map -docstring 'switch to [+] buffer'           global goto '<plus>' '<esc>: switch-to-modified-buffer<ret>'
+# map -docstring 'switch to [+] buffer'         global goto '<plus>' '<esc>: switch-to-modified-buffer<ret>'
+unmap global goto t
+unmap global goto b
 
 ## System clipboard
 declare-user-mode clipboard
@@ -184,7 +196,7 @@ map -docstring "selection hull"             global anchor 'u'       ': selection
 map -docstring "ensure anchor after cursor" global anchor 'h'       '<a-:><a-;>'
 map -docstring "ensure cursor after anchor" global anchor 'l'       '<a-:>'
 map -docstring "select cursor and anchor"   global anchor 's'       '<a-S>'
-map -docstring "reduce and insert"          global anchor 'i'       '<esc>;i'
+map -docstring "reduce and insert"          global anchor 'c'       '<esc>;i'
 map -docstring "reduce and append"          global anchor 'a'       '<esc>;a'
 map -docstring "next selection (centered)"  global anchor 'n'       '<esc>nvv: enter-user-mode anchor<ret>'
 map -docstring "prev selection (centered)"  global anchor 'p'       '<esc><a-n>vv: enter-user-mode anchor<ret>'
@@ -232,6 +244,9 @@ map global user 'm' ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
 # <c-v>    ; # raw insert, use vim binding
 map global insert '<c-y>' '<a-;>!pbpaste<ret>'
 map global insert '<c-a>' '<a-;>'
+map global insert '<a-minus>' '<a-;>'
+map global insert '<c-e>' '<esc>A'
+map global insert '<a-o>' '<c-o><c-x>l'
 map global insert '<a-h>' '<a-;>h'
 map global insert '<a-l>' '<a-;>l'
 map global insert '<a-c>' '<esc><a-c>'
@@ -256,6 +271,10 @@ hook global BufOpenFile .* %{
         fi
     }
 }
+
+# Custom text objects
+# ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+map global object w 'c\s,\s<ret>' -docstring "select between whitespace"
 
 # Scratch buffer
 # ‾‾‾‾‾‾‾‾‾‾‾‾‾‾
@@ -299,3 +318,8 @@ hook -group pairwise global InsertChar \} %[ try %[
     execute-keys -draft h2H <a-k>\Q{}}\E<ret>
     execute-keys <backspace><left>
 ]]
+# hook -group pairwise global InsertChar \{ %[ try %[
+#     execute-keys -draft H <a-k>\Q{)\E<ret>
+#     # execute-keys -save-regs '"' <esc>hdli<space><c-r>"
+#     execute-keys <backspace><right><space>{
+# ]]
