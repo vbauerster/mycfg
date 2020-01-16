@@ -106,15 +106,16 @@ search-file -params 1 %{ evaluate-commands %sh{
     printf "%s\n" "echo -markup %{{Error}unable to find file '${file}'}"
 }}
 
-define-command -docstring \
+define-command -hidden -docstring \
 "select a word under cursor, or add cursor on next occurrence of current selection" \
-select-or-add-cursor %{ execute-keys -save-regs '' %sh{
-    if [ $(printf "%s\n" ${kak_selection} | wc -m) -eq 2 ]; then
-        printf "%s\n" "<a-i>w*"
-    else
-        printf "%s\n" "*<s-n>"
-    fi
-}}
+select-or-add-cursor %{
+    try %{
+        execute-keys "<a-k>\A.\z<ret>"
+        execute-keys -save-regs '' "_<a-i>w*"
+    } catch %{
+        execute-keys -save-regs '' "_*<s-n>"
+    } catch nop
+}
 
 define-command -override -docstring "symbol [<symbol>]: jump to symbol definition in current file.
 If no symbol given, current selection is used as a symbol name" \
@@ -173,11 +174,15 @@ define-command tab-completion-enable %{
     execute-keys -draft 'h<a-K>\h<ret>'
     map window insert <tab> <c-n>
     map window insert <s-tab> <c-p>
+    map window insert <down> <c-n>
+    map window insert <up> <c-p>
     # map window insert <c-g> <c-o>
   }}
   hook -group tab-completion global InsertCompletionHide .* %{
     unmap window insert <tab> <c-n>
     unmap window insert <s-tab> <c-p>
+    unmap window insert <down> <c-n>
+    unmap window insert <up> <c-p>
     # unmap window insert <c-g> <c-o>
   }
 }
