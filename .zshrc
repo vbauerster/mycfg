@@ -4,7 +4,8 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 ### Disable CTRL-S and CTRL-Q
-[[ $- =~ i ]] && stty -ixoff -ixon
+# https://github.com/sorin-ionescu/prezto/pull/1771
+# [[ $- =~ i ]] && stty -ixoff -ixon
 
 # use the Dvorak keyboard for the basis for examining spelling mistakes
 setopt DVORAK
