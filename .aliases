@@ -5,19 +5,35 @@ autoload run-help
 alias help=run-help
 
 # https://news.ycombinator.com/item?id=11070797
-alias c='git --git-dir=$HOME/.mycfg/ --work-tree=$HOME'
-alias chh='cd ~/.mycfg && ghh'
+alias c='git --git-dir=$HOME/.myconf --work-tree=$HOME'
+alias chh='cd ~/.myconf && tig && cd -'
+
+# http://grml.org/zsh/zsh-lovers.html [Aliases section]
+# quick view md files with glow
+alias -s md='glow -s light'
+# global aliases
+alias -g C='| wc -l'
+alias -g L="| less"
+alias -g LS='| less -S'
+alias -g G='| rg'
+alias -g H='| head'
+alias -g HL='| head -20'
+alias -g T='| tail'
+alias -g TL='| tail -20'
+alias -g X='| xargs'
+alias -g X0='| xargs -0'
+alias -g NUL="> /dev/null 2>&1"
+alias -g Sk="*~(*.bz2|*.gz|*.tgz|*.zip|*.z)"
 
 # Unix
-alias u='ls -1A'         # Lists in one column, hidden files.
-alias uh='ls -lh'        # Lists human readable sizes.
-alias ur='uu -R'         # Lists human readable sizes, recursively.
-alias ua='uh -A'         # Lists human readable sizes, hidden files.
-alias um='ua | "$PAGER"' # Lists human readable sizes, hidden files through pager.
-alias uk='uh -Sr'        # Lists sorted by size, largest last.
-alias ut='uh -tr'        # Lists sorted by date, most recent last.
-alias uc='ut -c'         # Lists sorted by date, most recent last, shows change time.
-alias uu='ut -u'         # Lists sorted by date, most recent last, shows access time.
+alias u='ls -1A'   # Lists in one column, hidden files.
+alias uh='ls -lh'  # Lists human readable sizes.
+alias ur='uu -R'   # Lists human readable sizes, recursively.
+alias ua='uh -A'   # Lists human readable sizes, hidden files.
+alias uk='uh -Sr'  # Lists sorted by size, largest last.
+alias ut='uh -tr'  # Lists sorted by date, most recent last.
+alias uc='ut -c'   # Lists sorted by date, most recent last, shows change time.
+alias uu='ut -u'   # Lists sorted by date, most recent last, shows access time.
 
 alias rmm="rm -rf"
 alias q='exit'
@@ -52,14 +68,6 @@ alias kakg='kak -c global'
 alias eH='kak ~/.hammerspoon/init.lua'
 alias eS='kak ~/.ssh/config'
 alias eD='kak ~/.zprezto/modules/docker/alias.zsh'
-
-# http://grml.org/zsh/zsh-lovers.html [Aliases section]
-alias -s md=nvim
-alias -g C='| wc -l'
-alias -g L="| less"
-alias -g LS='| less -S'
-alias -g G='| rg'
-alias -g Sk="*~(*.bz2|*.gz|*.tgz|*.zip|*.z)"
 
 # Mac
 alias pbsort='pbpaste | sort | pbcopy'
