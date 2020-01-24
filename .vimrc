@@ -138,7 +138,7 @@ set splitbelow
 set splitright
 
 " Always use vertical diffs
-set diffopt+=vertical
+" set diffopt+=vertical
 
 " Whitespaces
 set listchars=tab:»⋅,trail:⋅,nbsp:⋅,extends:❯,precedes:❮
