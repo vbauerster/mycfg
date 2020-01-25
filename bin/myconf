@@ -1,0 +1,5 @@
+#!/usr/bin/env /bin/sh
+
+export GIT_DIR=$HOME/.myconf
+export GIT_WORK_TREE=$HOME
+cd $HOME/.myconf && tig status && cd -

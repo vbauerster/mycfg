@@ -6,7 +6,7 @@ alias help=run-help
 
 # https://news.ycombinator.com/item?id=11070797
 alias c='git --git-dir=$HOME/.myconf --work-tree=$HOME'
-alias chh='cd ~/.myconf && tig && cd -'
+alias chh='cd ~/.myconf && ghh'
 
 # http://grml.org/zsh/zsh-lovers.html [Aliases section]
 # quick view md files with glow
