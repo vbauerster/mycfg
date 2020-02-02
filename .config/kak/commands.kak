@@ -449,11 +449,9 @@ define-command -hidden flygrep-call-grep -params 1 %{ evaluate-commands %sh{
 
 # https://github.com/mawww/kakoune/issues/1106
 # https://discuss.kakoune.com/t/repeating-a-character-n-times-in-insert-mode/670
-define-command -hidden -params 1 count-insert %{
+define-command -params 1 count-insert %{
     execute-keys -with-hooks \;i.<esc>hd %arg{1} P %arg{1} Hs.<ret><a-space>c
 }
-map global user i %{:count-insert %val{count}<ret>} -docstring 'count insert'
-map global insert <a-i> '<esc>h<a-i>n"nd: count-insert <c-r>n<ret>'
 
 # Jump
 # ‾‾‾‾

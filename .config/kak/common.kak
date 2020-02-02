@@ -120,21 +120,30 @@ map -docstring "choose register" global user <'> <">
 map -docstring "Reload buffer"   global user 'R'       ': e!<ret>'
 map -docstring "man"             global user 'k'       ': smart-select w; man-selection-with-count<ret>'
 map -docstring "tmux-focus"      global user 'o'       ': tmux-focus '
-map -docstring "enter-user-mode" global user 'u'       ':u '
 map -docstring "quit!"           global user 'Q'       ':q!<ret>'
 map -docstring "grep next"       global user ']'       ': grep-next-match<ret>'
 map -docstring "grep prev"       global user '['       ': grep-previous-match<ret>'
 map -docstring "format buffer"   global user '='       ': format-buffer<ret>'
 map -docstring "tabs to spaces"  global user <@> <@>
 map -docstring "spaces to tabs"  global user <a-@> <a-@>
-# map -docstring "null reg"        global user '_'       '"_'
+map -docstring "require-module"  global user r ': require-module '
+map -docstring "enter-user-mode" global user u ':u '
+# map -docstring "count insert"    global user i %{ : count-insert %val{count}<ret> }
 
 ## Spell
+# https://discuss.kakoune.com/t/useful-user-modes/730/4
 declare-user-mode spell
-map -docstring "next error"      global spell 'n' ': spell-next<ret>'
-map -docstring "replace word"    global spell 's' '_: spell-replace<ret>'
-map -docstring "exit spell mode" global spell 'c' ': spell-clear<ret>'
-map -docstring "spell mode"      global user  'S' ': enter-user-mode spell; spell en-US<ret>'
+# map -docstring "next error"      global spell 'n' ': spell-next<ret>'
+# map -docstring "replace word"    global spell 's' '_: spell-replace<ret>'
+# map -docstring "exit spell mode" global spell 'c' ': spell-clear<ret>'
+# map -docstring "spell mode"      global user  'S' ': enter-user-mode spell; spell en-US<ret>'
+map global spell r ': spell ru<ret>' -docstring 'RU'
+map global spell e ': spell en<ret>' -docstring 'ENG'
+map global spell f ': spell-next<ret>_: enter-user-mode spell<ret>' -docstring 'next'
+map global spell s ': spell-replace<ret><ret> : enter-user-mode spell<ret>' -docstring 'lucky fix'
+map global spell a ': spell-replace<ret>' -docstring 'manual fix'
+map global spell c ': spell-clear<ret>' -docstring 'clear'
+map global user  s ': enter-user-mode spell<ret>' -docstring "spell mode"
 
 declare-user-mode search
 map -docstring "regex disabled"   global search '/' ': exec /<ret>\Q\E<left><left>'
@@ -254,6 +263,7 @@ map global insert '<a-l>' '<a-;>l'
 map global insert '<a-c>' '<esc><a-c>'
 map global insert '<a-d>' '<esc><a-d>'
 map global insert '<a-\>' '\n'
+map global insert '<a-i>' '<esc>: count-insert '
 
 # Hooks
 # ‾‾‾‾‾
