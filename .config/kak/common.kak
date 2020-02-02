@@ -105,8 +105,8 @@ map global normal '%' ': set current jumpclient client'
 # https://github.com/mawww/kakoune/issues/1791
 # map global object Q q -docstring 'single quote string'
 map global object q '"' -docstring 'double quote string'
-map global view e jv         -docstring "scroll down"
-map global view y kv         -docstring "scroll up"
+map global view e jv         -docstring "🔼"
+map global view y kv         -docstring "🔽"
 map global view j <esc>3jv   -docstring "3j (sticky)"
 map global view k <esc>3kv   -docstring "3k (sticky)"
 map global view J <esc>6jv   -docstring "6j (sticky)"
