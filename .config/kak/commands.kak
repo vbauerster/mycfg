@@ -327,6 +327,21 @@ define-command -docstring "export to the system clipboard" clipboard-export %{
   nop %sh{ printf "%s" "$kak_main_reg_dquote" | pbcopy }
   echo -markup "{Information}exported "" register to system clipboard"
 }
+define-command -docstring "choose from tmux buffer into "" reg" tmux-choose-buffer %{
+    # evaluate-commands -no-hooks %sh{
+    #     output="${TMPDIR:-/tmp}/tmux-buffer"
+    #     tmux choose-buffer "save-buffer -b '%%' ${output}"
+    #     printf "set-register dquote %%sh{cat %s}\n" ${output}
+    #     printf "echo -debug %%sh{cat %s}\n" ${output}
+    # }
+    evaluate-commands -no-hooks %sh{
+        output=$(mktemp -d -t kak-temp-XXXXXXXX)/fifo
+        mkfifo ${output}
+        tmux choose-buffer "save-buffer -b '%%' ${output}"
+        echo "edit! -fifo ${output} *tmux-buffer*
+              hook buffer BufClose .* %{ nop %sh{ rm -r $(dirname ${output})} }"
+    }
+}
 
 # Sort of a replacement for gq.
 # def format-par %{ exec '|par -w%opt{autowrap_column}<a-!><ret>' }

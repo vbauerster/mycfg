@@ -195,10 +195,11 @@ map -docstring "clipboard mode"                      global user      'y' ': ent
 
 declare-user-mode tmux-clipboard
 # map -docstring 'yank to tmux buffer'                global tmux-clipboard 'y' '<a-|>tmux setb -b kak "$kak_selection"<ret>'
-map -docstring "yank to tmux buffer"                global tmux-clipboard 'y' '<a-|>tmux setb "$kak_selection"<ret>'
-map -docstring "paste (insert) from tmux buffer"    global tmux-clipboard 'P' '!tmux showb<ret>'
-map -docstring "paste (append) from tmux buffer"    global tmux-clipboard 'p' '<a-!>tmux showb<ret>'
-map -docstring "replace selection with tmux buffer" global tmux-clipboard 'r' '|tmux showb<ret>'
+map -docstring "yank to tmux buffer"                 global tmux-clipboard 'y' '<a-|>tmux setb "$kak_selection"<ret>'
+map -docstring "paste (insert) from tmux buffer"     global tmux-clipboard 'P' '!tmux showb<ret>'
+map -docstring "paste (append) from tmux buffer"     global tmux-clipboard 'p' '<a-!>tmux showb<ret>'
+map -docstring "replace selection with tmux buffer"  global tmux-clipboard 'r' '|tmux showb<ret>'
+map -docstring "choose-buffer into "" reg"           global tmux-clipboard 'm' ': tmux-choose-buffer<ret>'
 
 declare-user-mode anchor
 map -docstring "slice by word"              global anchor ','       ': slice-by-word<ret>'
