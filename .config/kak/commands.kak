@@ -39,7 +39,7 @@ smart-select-file %{
         fail "no file can be selected"
     }
     try %{
-        execute-keys "s/?\w[\S]+(?!/)<ret>)<space>"
+        execute-keys "s/?\w[^'""\s]+(?!/)<ret>)<space>"
     } catch %{
         fail "failed to select file"
     }
