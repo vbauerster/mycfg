@@ -1,7 +1,7 @@
 evaluate-commands %sh{
     config_files="
-        common.kak
         commands.kak
+        common.kak
         languages.kak
         plugins.kak
         go-decls.kak
