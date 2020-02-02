@@ -1,21 +1,24 @@
-define-command go-decls %{
-    require-module fzf
-    go-decls-impl file
-    define-command -override go-decls %{
+hook -once global WinSetOption filetype=(go) %{
+    define-command go-decls %{
+        require-module fzf
         go-decls-impl file
+        define-command -override go-decls %{
+            go-decls-impl file
+        }
     }
-}
 
-define-command go-decls-dir %{
-    require-module fzf
-    go-decls-impl dir
-    define-command -override go-decls-dir %{
+    define-command go-decls-dir %{
+        require-module fzf
         go-decls-impl dir
+        define-command -override go-decls-dir %{
+            go-decls-impl dir
+        }
     }
 }
 
-define-command -hidden go-decls-impl -params 1 %{ evaluate-commands %sh{
-    output=$(mktemp ${TMPDIR:-/tmp}/kak-go-decls.XXXXXX)
+define-command -hidden go-decls-impl -params 1 %{ evaluate-commands -no-hooks %sh{
+    # output=$(mktemp ${TMPDIR:-/tmp}/kak-go-decls.XXXXXX)
+    output="${TMPDIR:-/tmp}/kak-go-decls"
 
     if [ $1 = "dir" ]; then
         rel_dir=${kak_buffile%/*}
