@@ -245,6 +245,8 @@ map -docstring "diff"               global git 'd' ': git diff<ret>'
 map -docstring "show blamed commit" global git 'w' ': git-show-blamed-commit<ret>'
 map -docstring "log blame"          global git 'L' ': git-log-lines<ret>'
 map -docstring "tig mode"           global git 't' '<esc>: enter-user-mode tig<ret>'
+map -docstring 'next-hunk'          global git ']' "<esc>: git next-hunk;execute-keys 'vv';enter-user-mode git<ret>"    
+map -docstring 'prev-hunk'          global git '[' "<esc>: git prev-hunk;execute-keys 'vv';enter-user-mode git<ret>"
 map -docstring "git mode"           global user 'g' ': enter-user-mode git<ret>'
 
 declare-user-mode lang-mode
