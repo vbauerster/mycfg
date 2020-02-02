@@ -32,6 +32,7 @@ hook global WinCreate .* %{
     # show-trailing-whitespace-enable; face window TrailingWhitespace default,red
     # enable tab complete in insert mode
     tab-completion-enable
+    pairwise-enable
     search-highlighting-enable
 }
 
@@ -302,22 +303,24 @@ map global object w 'c\s,\s<ret>' -docstring "select between whitespace"
 #     execute-keys -draft hH <a-k>\Q<lt><gt>\E<ret>
 #     execute-keys '<a-;>h'
 # }}
-hook -group pairwise global InsertChar \) %{ try %{
-    execute-keys -draft h2H <a-k>\Q())\E<ret>
-    execute-keys <backspace><left>
-}}
-hook -group pairwise global InsertChar \] %{ try %{
-    execute-keys -draft h2H <a-k>\Q[]]\E<ret>
-    execute-keys <backspace><left>
-}}
-hook -group pairwise global InsertChar > %{ try %{
-    execute-keys -draft h2H <a-k>\Q<lt><gt><gt>\E<ret>
-    execute-keys <backspace><left>
-}}
-hook -group pairwise global InsertChar \} %[ try %[
-    execute-keys -draft h2H <a-k>\Q{}}\E<ret>
-    execute-keys <backspace><left>
-]]
+
+# hook -group pairwise global InsertChar \) %{ try %{
+#     execute-keys -draft h2H <a-k>\Q())\E<ret>
+#     execute-keys <backspace><left>
+# }}
+# hook -group pairwise global InsertChar \] %{ try %{
+#     execute-keys -draft h2H <a-k>\Q[]]\E<ret>
+#     execute-keys <backspace><left>
+# }}
+# hook -group pairwise global InsertChar \} %[ try %[
+#     execute-keys -draft h2H <a-k>\Q{}}\E<ret>
+#     execute-keys <backspace><left>
+# ]]
+# hook global InsertChar > %{ try %{
+#     execute-keys -draft h2H <a-k>\Q<lt><gt><gt>\E<ret>
+#     execute-keys <backspace><left>
+# }}
+
 # hook -group pairwise global InsertChar \{ %[ try %[
 #     execute-keys -draft H <a-k>\Q{)\E<ret>
 #     # execute-keys -save-regs '"' <esc>hdli<space><c-r>"

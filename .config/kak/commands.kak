@@ -188,6 +188,26 @@ define-command tab-completion-enable %{
 }
 define-command tab-completion-disable %{ remove-hooks global tab-completion }
 
+define-command pairwise-enable %~
+    hook -group pairwise global InsertChar \) %{ try %{
+        execute-keys -draft h2H <a-k>\Q())\E<ret>
+        execute-keys <backspace><left>
+    }}
+    hook -group pairwise global InsertChar \] %{ try %{
+        execute-keys -draft h2H <a-k>\Q[]]\E<ret>
+        execute-keys <backspace><left>
+    }}
+    hook -group pairwise global InsertChar \} %[ try %[
+        execute-keys -draft h2H <a-k>\Q{}}\E<ret>
+        execute-keys <backspace><left>
+    ]]
+    hook -group pairwise global InsertChar > %{ try %{
+        execute-keys -draft h2H <a-k>\Q<lt><gt><gt>\E<ret>
+        execute-keys <backspace><left>
+    }}
+~
+define-command pairwise-disable %{ remove-hooks global pairwise }
+
 # search-highlighting.kak, simplified of
 # plug "alexherbo2/search-highlighter.kak"
 define-command -docstring "Enable search highlighting" \
