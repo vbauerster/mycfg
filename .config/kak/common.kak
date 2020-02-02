@@ -57,22 +57,19 @@ alias global h doc
 ## Maps.
 # map -docstring "align cusors"              global normal '='       '&'
 # map -docstring "copy indentation"          global normal '<a-=>'   '<a-&>'
+# map -docstring "extend up"                 global normal '<a-x>'   'J'
+# map -docstring "extend down"               global normal '<a-X>'   'K'
 map -docstring "clear anchor"              global normal '<minus>' ';'
 map -docstring "flip cursor and anchor"    global normal '<a-minus>' '<a-;>'
 map -docstring "extend sel to whole lines" global normal '}'       '<a-x>'
 map -docstring "crop sel to whole lines"   global normal '<a-}>'   '<a-X>'
 map -docstring "extend to surrounding obj" global normal '<plus>'  '}'
 map -docstring "extend to inner surr obj"  global normal '<a-plus>' '<a-}>'
-map -docstring "extend up"                 global normal '<a-x>'   'J'
-map -docstring "extend down"               global normal '<a-X>'   'K'
-map -docstring "select whole buffer"       global normal '%'       '<c-s>%'
 map -docstring "space as leader"           global normal '<space>' ','
 map -docstring "drop all but main sel"     global normal 'q'       '<space>'
 map -docstring "drop main selection"       global normal '<c-q>'   '<a-space>'
 map -docstring "comment line"              global normal '#'       ': comment-line<ret>'
 map -docstring "save buffer"               global normal '<F2>'    ': w<ret>'
-# map -docstring "<a-i>"                     global normal '<a-4>'   '<a-i>'
-# map -docstring "<a-a>"                     global normal '<a-6>'   '<a-a>'
 
 # map -docstring "choose register"     global normal <esc> <">
 # map -docstring "choose register"     global normal <a-space> <">
@@ -94,6 +91,10 @@ map global normal 'K' '<a-C><space>'
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
 map global normal x ': extend-line-down %val{count}<ret>'
 map global normal X ': extend-line-up %val{count}<ret>'
+
+map global normal D hd
+map global normal Y '<c-s>%'
+map global normal '%' ': set current jumpclient client'
 
 # stop c and d from yanking
 # map global normal d <a-d>
