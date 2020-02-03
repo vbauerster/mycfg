@@ -21,7 +21,7 @@ local doExit = function()
 end
 modalKey:bind({}, 'escape', doExit)
 
-local exitTimer = hs.timer.delayed.new(4, doExit)
+local exitTimer = hs.timer.delayed.new(3, doExit)
 
 modalKey:bind({'ctrl', 'alt', 'cmd'}, 'n', function() exitTimer:start() end)
 
@@ -47,6 +47,11 @@ for k, v in pairs(npad) do
         -- Repeat:
         hs.eventtap.event.newKeyEvent({}, v, true):setProperty(hs.eventtap.event.properties.keyboardEventAutorepeat, 1):post()
         exitTimer:start()
+    end)
+    modalKey:bind({'shift'}, k, function()
+        modalKey:exit()
+        hs.eventtap.keyStroke({}, k)
+        hs.timer.doAfter(.1, function() modalKey:enter() end)
     end)
 end
 
