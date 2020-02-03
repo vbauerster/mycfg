@@ -332,7 +332,8 @@ plug "alexherbo2/word-select.kak" config %{
 }
 
 plug "alexherbo2/split-object.kak" config %{
-    map -docstring "split object" global normal '<a-I>' ': enter-user-mode split-object<ret>'
+    map -docstring "split object" global normal <a-I> ': enter-user-mode split-object<ret>'
+    map -docstring "split object" global view I '<esc>: enter-user-mode split-object<ret>'
 }
 
 plug "alexherbo2/yank-ring.kak" config %{
