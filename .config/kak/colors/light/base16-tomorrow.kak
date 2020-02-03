@@ -97,11 +97,11 @@ evaluate-commands %sh{
 
     face global Default            ${base05},${base00}
 
-    face global PrimarySelection   ${base05},${pale_cyan}+i
+    face global PrimarySelection   ${base05},${pale_cyan}
     face global PrimaryCursor      ${white},${vibrant_orange}
     face global PrimaryCursorEol   ${white},${vibrant_red}+fg
     face global SecondarySelection ${pale_cyan},${base04}
-    face global SecondaryCursor    ${base00},${vibrant_cyan}+i
+    face global SecondaryCursor    ${base00},${vibrant_cyan}
     face global SecondaryCursorEol ${base00},${vibrant_blue}+fg
 
     face global MatchingChar       ${base05},${pale_yellow}
