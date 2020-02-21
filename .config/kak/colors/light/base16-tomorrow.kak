@@ -80,6 +80,7 @@ evaluate-commands %sh{
     face global builtin   ${base05}+b
     face global module    ${base0A}
     face global comment   ${base03}+i
+    face global documentation comment
     face global function  ${base0D}
     face global operator  default
     face global variable  default
@@ -104,7 +105,7 @@ evaluate-commands %sh{
     face global SecondaryCursor    ${base00},${vibrant_cyan}
     face global SecondaryCursorEol ${base00},${vibrant_blue}+fg
 
-    face global MatchingChar       ${base05},${pale_yellow}
+    face global MatchingChar       ${base07},${base01}
     face global Search             ${base00},${base0A}+i
     face global CurrentWord        ${base08},${base01}
     face global Whitespace         ${base01}+f
