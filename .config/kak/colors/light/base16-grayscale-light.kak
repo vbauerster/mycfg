@@ -21,61 +21,70 @@ evaluate-commands %sh{
     base0E='rgb:747474'
     base0F='rgb:5e5e5e'
 
-    echo "
-         # face global identifier ${base08}
-         # face global error $red
+    cat <<- EOF
 
-         face global value     ${base09}
-         face global type      ${base0A}+b
-         face global variable  ${base08}
-         face global function  ${base0D}
-         face global module    ${base0E}
-         face global string    ${base0B}
-         face global keyword   ${base0E}+b
-         face global operator  ${base05}
-         face global attribute ${base0F}
-         face global comment   ${base03}+i
-         face global meta      ${base0C}
-         face global builtin   ${base05}+b
+        # For Code
+        face global keyword   ${base0E}+b
+        face global attribute ${base06}
+        face global type      ${base0F}
+        face global string    ${base0D}
+        face global value     ${base0D}
+        face global meta      ${base0C}
+        face global builtin   ${base05}+b
+        face global module    ${base0D}
+        face global comment   ${base03}+i
+        face global documentation comment
+        face global function  ${base0E}
+        face global operator  ${base0E}
+        face global variable  ${base0E}
 
-         face global title  ${base0D}+b
-         face global header ${base0D}+b
-         face global bold   ${base0A}+b
-         face global italic ${base0E}
-         face global mono   ${base0B}
-         face global block  ${base0C}
-         face global link   ${base09}
-         face global bullet ${base08}
-         face global list   ${base08}
+        # For markup
+        face global title  ${base0D}+b
+        face global header ${base0D}
+        face global mono   ${base0B}
+        face global block  ${base09}
+        face global link   ${base0C}+u
+        face global list   Default
+        face global bullet +b
+        face global bold   +b
+        face global italic +i
 
          face global Default            ${base05},${base00}
 
-         face global PrimarySelection   ${base00},${base04}
-         face global PrimaryCursor      ${base00},${base09}
-         face global PrimaryCursorEol   ${base00},${base09}+fg
-         face global SecondarySelection ${base0F},${base0A}
-         face global SecondaryCursor    ${base0A},${base0F}
-         face global SecondaryCursorEol ${base0A},${base0F}+fg
+         face global PrimarySelection   ${base05},${base01}
+         face global PrimaryCursor      ${base00},${base05}
+         face global PrimaryCursorEol   ${base00},${base07}+fg
+         face global SecondarySelection ${base01},${base03}
+         face global SecondaryCursor    ${base01},${base0E}
+         face global SecondaryCursorEol ${base01},${base04}+fg
 
-         # face global MatchingChar       ${base0A},${base0F}
-         face global MatchingChar       ${base05},${base01}+u
+         # face global PrimarySelection   ${base00},${base04}
+         # face global PrimaryCursor      ${base00},${base09}
+         # face global PrimaryCursorEol   ${base00},${base09}+fg
+         # face global SecondarySelection ${base0F},${base0A}
+         # face global SecondaryCursor    ${base0A},${base0F}
+         # face global SecondaryCursorEol ${base0A},${base0F}+fg
+
+         face global MatchingChar       ${base07},${base01}
          face global Search             ${base00},${base0A}+i
          face global CurrentWord        ${base08},${base01}
-         face global Whitespace         ${base01},${base00}+f
+         face global Whitespace         ${base01}+f
+         face global WrapMarker         ${base05}+f
          face global BufferPadding      ${base03},${base00}
          face global LineNumbers        ${base02},${base00}
-         face global LineNumberCursor   ${base00},${base02}
+         face global LineNumberCursor   ${base04},${base00}
          face global LineNumbersWrapped ${base00},${base00}
-         face global MenuForeground     ${base00},${base05}
-         face global MenuBackground     ${base00},${base03}
-         face global MenuInfo           ${base02}
-         face global Information        ${base01},${base0F}
+         face global MenuForeground     ${base00},${base0D}
+         face global MenuBackground     ${base01},${base0C}
+         face global MenuInfo           ${base06}+i
+         face global Information        ${base01},${base0D}
          face global Error              ${base00},${base08}
-         face global StatusLine         ${base00},${base0C}
-         face global StatusLineMode     ${base00},${base0B}
-         face global StatusLineInfo     ${base01}
+         face global StatusLine         ${base06},${base01}
+         face global StatusLineMode     ${base01},${base06}
+         face global StatusLineInfo     ${base08}
          face global StatusLineValue    ${base00}
          face global StatusCursor       ${base00},${base05}
          face global Prompt             ${base00},${base0D}
-    "
+
+EOF
 }
