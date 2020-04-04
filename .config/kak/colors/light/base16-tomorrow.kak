@@ -91,14 +91,14 @@ evaluate-commands %sh{
     face global mono   ${base0B}
     face global block  ${base09}
     face global link   ${base0C}+u
-    face global list   default
+    face global list   Default
     face global bullet +b
     face global bold   +b
     face global italic +i
 
     face global Default            ${base05},${base00}
 
-    face global PrimarySelection   ${base05},${pale_cyan}
+    face global PrimarySelection   ${base06},${pale_cyan}
     face global PrimaryCursor      ${white},${vibrant_orange}
     face global PrimaryCursorEol   ${white},${vibrant_red}+fg
     face global SecondarySelection ${pale_cyan},${base04}
