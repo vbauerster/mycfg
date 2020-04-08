@@ -2,9 +2,8 @@
 evaluate-commands %sh{
     plugins="$HOME/.config/kak/plugins"
     mkdir -p $plugins
-    if [ ! -e "$plugins/plug.kak" ]; then
+    [ ! -e "$plugins/plug.kak" ] && \
         git clone -q https://gitlab.com/andreyorst/plug.kak.git "$plugins/plug.kak"
-    fi
     printf "%s\n" "source '$plugins/plug.kak/rc/plug.kak'"
 }
 
@@ -45,7 +44,7 @@ plug "occivink/kakoune-expand" config %{
         expand-impl %{ execute-keys '<a-:>j<a-K>^$<ret><a-i>i' }      # previous indent level (downward)
     }
     # map global view u '<esc><c-s>: expand<ret>v' -docstring 'smart expand'
-    map -docstring "smart expand" global normal V '<c-s>: expand<ret>'
+    map global normal '0' ': zero expand<ret>' -docstring "smart expand"
 }
 
 plug "delapouite/kakoune-buffers" config %{
@@ -63,10 +62,13 @@ plug "delapouite/kakoune-cd" config %{
 
 plug "andreyorst/smarttab.kak" domain gitlab.com config %{
     hook global WinSetOption filetype=(rust|markdown|kak|lisp|scheme|sh|perl|yaml) expandtab
-    hook global WinSetOption filetype=(makefile) noexpandtab
-    hook global WinSetOption filetype=(c|cpp|go) smarttab
+    hook global WinSetOption filetype=(makefile|go) noexpandtab
+    hook global WinSetOption filetype=(c|cpp) smarttab
 } defer smarttab %{
     set-option global softtabstop 4
+    set-option global smarttab_expandtab_mode_name   '⋅t⋅'
+    set-option global smarttab_noexpandtab_mode_name '→t→'
+    set-option global smarttab_smarttab_mode_name    '→t⋅'
 }
 
 plug "andreyorst/fzf.kak" domain gitlab.com config %{
@@ -105,31 +107,58 @@ plug "andreyorst/fzf.kak" domain gitlab.com config %{
     }
 }
 
-plug "occivink/kakoune-phantom-selection" config %{
+plug "occivink/kakoune-phantom-selection" config %~
     declare-user-mode phantom
     map -docstring 'phantom add'           global phantom '<space>' ': phantom-selection-add-selection<ret>'
-    map -docstring 'phantom add & next'    global phantom ')'       ': phantom-selection-add-selection;phantom-selection-iterate-next<ret>'
-    map -docstring 'phantom add & prev'    global phantom '('       ': phantom-selection-add-selection;phantom-selection-iterate-prev<ret>'
+    # map -docstring 'phantom add & next'    global phantom ')'       ': phantom-selection-add-selection;phantom-selection-iterate-next<ret>'
+    # map -docstring 'phantom add & prev'    global phantom '('       ': phantom-selection-add-selection;phantom-selection-iterate-prev<ret>'
     map -docstring 'phantom next'          global phantom 'n'       ': phantom-selection-iterate-next<ret>'
     map -docstring 'phantom prev'          global phantom 'p'       ': phantom-selection-iterate-prev<ret>'
-    map -docstring 'phantom next (sticky)' global phantom '<a-n>'   ': phantom-selection-iterate-next;enter-user-mode phantom<ret>'
-    map -docstring 'phantom prev (sticky)' global phantom '<a-p>'   ': phantom-selection-iterate-prev;enter-user-mode phantom<ret>'
+    # map -docstring 'phantom next (sticky)' global phantom '<a-n>'   ': phantom-selection-iterate-next;enter-user-mode phantom<ret>'
+    # map -docstring 'phantom prev (sticky)' global phantom '<a-p>'   ': phantom-selection-iterate-prev;enter-user-mode phantom<ret>'
     map -docstring 'clear'                 global phantom ';'       ': phantom-selection-select-all; phantom-selection-clear<ret>'
-    map -docstring 'clear!'                global phantom '='       ': phantom-selection-clear<ret>'
-    map -docstring 'phantom mode'          global normal  '='       ': enter-user-mode phantom<ret>'
+    map -docstring 'clear!'                global phantom '<ret>'   ': phantom-selection-clear<ret>'
+    map -docstring 'phantom mode'          global normal  '<c-n>'   ': enter-user-mode phantom<ret>'
+    map -docstring 'phantom mode'          global insert  '<c-n>'   '<a-;>: enter-user-mode phantom<ret>'
     # can't use <a-;>: see https://github.com/mawww/kakoune/issues/1916
     # map global insert '<a-]>' "<esc>: phantom-selection-iterate-next<ret>i"
     # map global insert '<a-[>' "<esc>: phantom-selection-iterate-prev<ret>i"
-    map global insert '<a-space>' '<a-;>: enter-user-mode phantom<ret>'
-}
+~
+
+# https://discuss.kakoune.com/t/easy-way-to-loop-through-phantom-selections/908
+# plug "occivink/kakoune-phantom-selection" config %~
+#     define-command -hidden -override -docstring "Creates a phantom group of selections" \
+#     phantom-group %{
+#         phantom-selection-add-selection
+#         map buffer normal <tab>   ': phantom-selection-iterate-next<ret>'
+#         map buffer insert <tab>   '<esc>: phantom-selection-iterate-next<ret>i'
+#         map buffer normal <s-tab> ': phantom-selection-iterate-prev<ret>'
+#         map buffer insert <s-tab> '<esc>: phantom-selection-iterate-prev<ret>i'
+#         map buffer normal <c-g>   ': phantom-ungroup<ret>'
+#         map buffer insert <c-g>   '<esc>: phantom-ungroup<ret>i'
+#     }
+#     define-command -hidden -override -docstring "Removes a phantom group of selections" \
+#     phantom-ungroup %{
+#         phantom-selection-select-all
+#         phantom-selection-clear
+#         unmap buffer normal <tab>   ': phantom-selection-iterate-next<ret>'
+#         map   buffer insert <tab>   '<tab>'
+#         unmap buffer normal <s-tab> ': phantom-selection-iterate-prev<ret>'
+#         unmap buffer insert <s-tab> '<esc>: phantom-selection-iterate-prev<ret>i'
+#         unmap buffer normal <c-g>   ': phantom-ungroup<ret>'
+#         unmap buffer insert <c-g>   '<esc>: phantom-ungroup<ret>i'
+#     }
+#     map global normal <c-g>  ': phantom-group<ret><space>'
+#     map global insert <c-g>  '<esc>: phantom-group<ret><space>i'
+# ~
 
 plug "andreyorst/kakoune-snippet-collection"
 
 plug "occivink/kakoune-snippets" config %{
     set-option -add global snippets_directories "%opt{plug_install_dir}/kakoune-snippet-collection/snippets"
     set-option global snippets_auto_expand false
-    map global insert <a-e> '<a-;>: expand-or-jump<ret>'
-    map -docstring 'snippets-' global toggle 's' ':snippets-'
+    map global insert '<a-space>' '<a-;>: expand-or-jump<ret>'
+    map -docstring 'snippets-' global toggle 's' ': snippets-'
 
     define-command -hidden expand-or-jump %{
         try %{
@@ -277,11 +306,11 @@ plug "andreyorst/tagbar.kak" domain gitlab.com defer tagbar %{
     set-option global tagbar_display_anon false
     set-option global tagbar_powerline_format ""
 } config %{
-    declare-user-mode tagbar
-    map -docstring "tagbar toggles"      global toggle 't' ':tagbar-'
-    map -docstring "toggle tagbar panel" global tagbar 't' ': tagbar-toggle<ret>'
-    map -docstring "tagbar focus"        global tagbar 'T' ': tmux-focus tagbarclient<ret>'
-    map -docstring "tagbar user mode"    global user   'T' ': enter-user-mode tagbar<ret>'
+    map -docstring "tagbar toggles"      global toggle 't' ': tagbar-'
+    # declare-user-mode tagbar
+    # map -docstring "toggle tagbar panel" global tagbar 't' ': tagbar-toggle<ret>'
+    # map -docstring "tagbar focus"        global tagbar 'o' ': tmux-focus tagbarclient<ret>'
+    # map -docstring "tagbar user mode"    global user   't' ': enter-user-mode tagbar<ret>'
     # hook global WinSetOption filetype=(c|cpp|rust|markdown) %{
     #     tagbar-enable
     # }
@@ -294,27 +323,16 @@ plug "andreyorst/tagbar.kak" domain gitlab.com defer tagbar %{
 }
 
 plug "delapouite/kakoune-auto-percent" config %{
-    map -docstring "select-complement" global toggle 'M' ': select-complement<ret>'
+    map -docstring "select-complement" global toggle '&' ': select-complement<ret>'
 }
 
 plug 'delapouite/kakoune-palette'
 
 plug "alexherbo2/auto-pairs.kak" config %{
-    map -docstring "auto-pairs toggles" global toggle 'p' ': auto-pairs-'
-    # hook global WinSetOption filetype=(c|cpp|rust) %{
-    #     auto-pairs-enable
-    # }
+    map -docstring "auto-pairs toggles" global toggle ')' ': auto-pairs-'
 }
 
-# plug "alexherbo2/manual-indent.kak" config %{
-#     hook global WinCreate .* %{
-#       manual-indent-enable
-#     }
-#     hook global WinSetOption filetype=.* %{
-#       manual-indent-remove-filetype-hooks
-#     }
-# }
-
+plug "alexherbo2/prelude.kak"
 plug "alexherbo2/connect.kak" config %{
     # require-module connect-lf
     # define-command ranger -params .. -file-completion %(connect ranger %arg(@))
@@ -337,19 +355,22 @@ plug "alexherbo2/split-object.kak" config %{
 }
 
 plug "alexherbo2/yank-ring.kak" config %{
-    map -docstring 'yank ring' global clipboard 'r' ': yank-ring<ret>'
+    map -docstring 'yank ring' global clipboard '<space>' ': yank-ring<ret>'
+    # map -docstring 'yank ring' global normal '%' ': yank-ring<ret>'
 }
 
 plug "alexherbo2/replace-mode.kak" config %{
     map global normal <a-r> ': enter-replace-mode<ret>' -docstring 'replace mode'
 }
 
-plug "alexherbo2/move-line.kak"
+plug "alexherbo2/move-line.kak" config %{
+    map -docstring 'move line below' global normal '<a-down>' ': move-line-below<ret>'
+    map -docstring 'move line above' global normal '<a-up>'   ': move-line-above<ret>'
+}
 
 plug "delapouite/kakoune-mirror" config %{
-    map global normal "'" ': enter-user-mode -lock mirror<ret>'
-    map -docstring 'move line below' global mirror '<plus>'  ': move-line-below<ret>'
-    map -docstring 'move line above' global mirror '<minus>' ': move-line-above<ret>'
+    map global normal "'" ': enter-user-mode mirror<ret>'
+    map global normal '"' ': enter-user-mode -lock mirror<ret>'
 }
 
 plug "screwtapello/kakoune-inc-dec" domain "gitlab.com" config %{
@@ -377,7 +398,38 @@ plug "TeddyDD/kakoune-selenized" domain "github.com" theme
 plug "Delapouite/kakoune-colors" domain "github.com" theme
 plug "robertmeta/nofrils-kakoune" domain "github.com" theme
 
-# plug "alexherbo2/surround.kak"
+plug "alexherbo2/surround.kak" config %{
+    set-option global surround_begin auto-pairs-disable
+    set-option global surround_end auto-pairs-enable
+}
+
+plug "andreyorst/langmap.kak" domain gitlab.com defer langmap %{
+    # declare-option -docstring 'English key layout for Dvorak keyboards' str-list langmap_us_dvorak 'en' %{`~1!2@3#4$5%6^7&8*9(0)[{]}\|'",<.>pPyYfFgGcCrRlL/?=+aAoOeEuUiIdDhHtTnNsS-_;:qQjJkKxXbBmMwWvVzZ}
+ # declare-option -docstring 'Russian key layout for jcuken keyboards'    str-list langmap_ru_jcuken 'ru' %{ёЁ1!2"3№4;5%6:7?8*9(0)-_=+\/йЙцЦуУкКеЕнНгГшШщЩзЗхХъЪфФыЫвВаАпПрРоОлЛдДжЖэЭяЯчЧсСмМиИтТьЬбБюЮ.,}
+    declare-option -docstring 'English key layout for Programming Dvorak keyboards' \
+    str-list langmap_us_programming_dvorak 'en' %{$~&%[7{5}3(1=9*0)2+4]6!8#`\|;:,<.>pPyYfFgGcCrRlL/?@^aAoOeEuUiIdDhHtTnNsS-_'"qQjJkKxXbBmMwWvVzZ}
+    #                                           %{ёЁ1!2"3№4;5%6:7?8*9(0)-_=+\/йЙцЦуУкКеЕнНгГшШщЩзЗхХъЪфФыЫвВаАпПрРоОлЛдДжЖэЭяЯчЧсСмМиИтТьЬбБюЮ.,}
+    set-option global langmap_default %opt{langmap_us_programming_dvorak}
+    set-option global langmap %opt{langmap_ru_jcuken}
+
+    map -docstring "toggle layout" global insert '<c-l>' '<a-;>: toggle-langmap<ret>'
+    # map -docstring "toggle layout (C-\)" global normal '' ':      toggle-langmap<ret>'
+    # map -docstring "toggle layout (C-\)" global prompt '' '<a-;>: toggle-langmap prompt<ret>'
+}
+
+# plug "andreyorst/powerline.kak" domain gitlab.com defer powerline %{
+#     set-option global powerline_ignore_warnings true
+#     set-option global powerline_format 'git bufname langmap smarttab mode_info filetype client session position'
+#     set-option global powerline_shorten_bufname 'short'
+#     if %[ ! -n "${PATH##*termux*}" ] %{
+#         set-option global powerline_separator ''
+#         set-option global powerline_separator_thin ''
+#     }
+#     powerline-theme base16-gruvbox
+# } config %{
+#     powerline-start
+# }
+
 # plug "alexherbo2/bc.kak"
 # plug "alexherbo2/search-highlighter.kak"
 # plug "danr/kakoune-easymotion"
@@ -388,6 +440,15 @@ plug "robertmeta/nofrils-kakoune" domain "github.com" theme
 #     # hook -once global WinDisplay .* %{
 #     #     powerline-theme github
 #     # }
+# }
+
+# plug "alexherbo2/manual-indent.kak" config %{
+#     hook global WinCreate .* %{
+#       manual-indent-enable
+#     }
+#     hook global WinSetOption filetype=.* %{
+#       manual-indent-remove-filetype-hooks
+#     }
 # }
 
 # source "%val{config}/scripts/bc.kak"

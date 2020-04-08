@@ -39,6 +39,7 @@ smart-select-file %{
         fail "no file can be selected"
     }
     try %{
+        # execute-keys "s/?\w[\S]+(?!/)<ret>)<space>"
         execute-keys "s/?\w[^'""\s]+(?!/)<ret>)<space>"
     } catch %{
         fail "failed to select file"
@@ -106,6 +107,7 @@ search-file -params 1 %{ evaluate-commands %sh{
     printf "%s\n" "echo -markup %{{Error}unable to find file '${file}'}"
 }}
 
+# https://discuss.kakoune.com/t/sublime-text-style-multiple-cursor-select-add-mapping/150
 define-command -hidden -docstring \
 "select a word under cursor, or add cursor on next occurrence of current selection" \
 select-or-add-cursor %{
@@ -213,14 +215,14 @@ define-command pairwise-disable %{ remove-hooks global pairwise }
 define-command -docstring "Enable search highlighting" \
 search-highlighting-enable %{
   hook window -group search-highlighting NormalKey [/?*nN]|<a-[/?*nN]> %{ try %{
-    addhl window/SearchHighlighting dynregex '%reg{/}' 0:Search
+    add-highlighter window/SearchHighlighting dynregex '%reg{/}' 0:Search
   }}
   hook window -group search-highlighting NormalKey <esc> %{ rmhl window/SearchHighlighting }
 }
 define-command -docstring "Disable search highlighting" \
 search-highlighting-disable %{
-  rmhl window/SearchHighlighting
-  rmhooks window search-highlighting
+  remove-highlighter window/SearchHighlighting
+  remove-hooks window search-highlighting
 }
 
 # Basic autoindent.
@@ -441,9 +443,6 @@ define-command selection-hull \
   }
 }
 
-# Flygrep
-# ‾‾‾‾‾‾‾
-
 define-command -docstring "flygrep: run grep on every key" \
 flygrep %{
     edit -scratch *grep*
@@ -454,9 +453,10 @@ flygrep %{
 
 define-command -hidden flygrep-call-grep -params 1 %{ evaluate-commands %sh{
     [ -z "${1##*&*}" ] && text=$(printf "%s\n" "$1" | sed "s/&/&&/g") || text="$1"
+    [ -z "${1##*@*}" ] && text=$(printf "%s\n" "$text" | sed "s/@/@@/g") || text="$text"
     if [ ${#1} -gt 2 ]; then
         printf "%s\n" "info"
-        printf "%s\n" "evaluate-commands %&grep '$text'&"
+        printf "%s\n" "evaluate-commands %&grep %@$text@&"
     else
         printf "%s\n" "info -title flygrep %{$((3-${#1})) more chars}"
     fi
@@ -539,3 +539,6 @@ define-command \
 # https://discuss.kakoune.com/t/rfr-roll-back-through-old-versions-of-a-file-in-git/743
 define-command git-edit-force 'edit!; nop %sh(git reset -- "$kak_buffile"); git checkout'
 alias global ge! git-edit-force
+
+# https://github.com/robertmeta/kakfiles/blob/7d0079b2d8a578ec1dd606ccb536681836b2649e/kakrc#L211
+define-command broot -params .. -file-completion %(connect-terminal broot %arg(@)) -docstring "Open with broot"

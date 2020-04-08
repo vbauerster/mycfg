@@ -55,46 +55,46 @@ alias global u enter-user-mode
 alias global h doc
 
 ## Maps.
-# map -docstring "align cusors"              global normal '='       '&'
-# map -docstring "copy indentation"          global normal '<a-=>'   '<a-&>'
-# map -docstring "extend up"                 global normal '<a-x>'   'J'
-# map -docstring "extend down"               global normal '<a-X>'   'K'
-map -docstring "clear anchor"              global normal '<minus>' ';'
-map -docstring "flip cursor and anchor"    global normal '<a-minus>' '<a-;>'
-map -docstring "extend sel to whole lines" global normal '}'       '<a-x>'
-map -docstring "crop sel to whole lines"   global normal '<a-}>'   '<a-X>'
-map -docstring "extend to surrounding obj" global normal '<plus>'  '}'
-map -docstring "extend to inner surr obj"  global normal '<a-plus>' '<a-}>'
-map -docstring "space as leader"           global normal '<space>' ','
-map -docstring "drop all but main sel"     global normal 'q'       '<space>'
-map -docstring "drop main selection"       global normal '<c-q>'   '<a-space>'
-map -docstring "comment line"              global normal '#'       ': comment-line<ret>'
-map -docstring "save buffer"               global normal '<F2>'    ': w<ret>'
+# map -docstring "command prompt"            global normal '%'         ':'
+# map -docstring "clear anchor"              global normal '&'         ';'
+# map -docstring "flip cursor and anchor"    global normal '<a-&>'     '<a-;>'
+# map -docstring "cursor after anchor"       global normal '<a-%>'     '<a-:>'
+map -docstring "align cusors"              global normal '<minus>'   '&'
+map -docstring "copy indentation"          global normal '<a-minus>' '<a-&>'
+map -docstring "extend sel to whole lines" global normal '&'         '<a-x>'
+map -docstring "crop sel to whole lines"   global normal '%'         '<a-X>'
+# map -docstring "extend to surrounding obj" global normal '<plus>'    '}'
+# map -docstring "extend to inner surr obj"  global normal '<a-plus>'  '<a-}>'
+map -docstring "space as leader"           global normal '<space>'   ','
+map -docstring "drop all but main sel"     global normal 'q'         '<space>'
+map -docstring "drop main selection"       global normal '<c-q>'     '<a-space>'
+map -docstring "comment line"              global normal '#'         ': comment-line<ret>'
+map -docstring "save buffer"               global normal '<F2>'      ': w<ret>'
 
-# map -docstring "choose register"     global normal <esc> <">
-# map -docstring "choose register"     global normal <a-space> <">
+map -docstring "choose register"     global normal 'Y' '"'
 map -docstring "record macro"        global normal <a-@> <Q>
 map -docstring "play recorded macro" global normal <@> <q>
 
 # Avoid escape key
-map -docstring "avoid escape key" global normal '<c-g>' '<esc>'
 map -docstring "avoid escape key" global prompt '<c-g>' '<esc>'
-map -docstring "avoid escape key" global insert '<c-g>' '<esc>'
+# map -docstring "avoid escape key" global normal '<c-g>' '<esc>'
+# map -docstring "avoid escape key" global insert '<c-g>' '<esc>'
 
-map global normal '0' ': zero select-or-add-cursor<ret>'
+map global normal '<c-g>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match"
+# map global normal '0' ': zero select-or-add-cursor<ret>'
 # map global normal <*> ': smart-select word<ret>*'
-# map global normal '%' ': select-or-add-cursor<ret>'
-
-map global normal 'J' 'C<space>'
-map global normal 'K' '<a-C><space>'
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
 map global normal x ': extend-line-down %val{count}<ret>'
 map global normal X ': extend-line-up %val{count}<ret>'
 
-map global normal D hd
-map global normal Y '<c-s>%'
-map global normal '%' ': set current jumpclient client'
+map global normal '<a-&>' '<c-s>%'
+map global normal D h<a-d>
+map global normal <plus> ': set current jumpclient '
+map global normal <a-plus> ': rename-client '
+# experimental:
+map global normal <ret> 'A'
+# map global normal 'A' '<c-s>%'
 
 # stop c and d from yanking
 # map global normal d <a-d>
@@ -102,21 +102,23 @@ map global normal '%' ': set current jumpclient client'
 # map global normal <a-d> d
 # map global normal <a-c> c
 
-# https://github.com/mawww/kakoune/issues/1791
-# map global object Q q -docstring 'single quote string'
-map global object q '"' -docstring 'double quote string'
-map global view e jv         -docstring "🔼"
-map global view y kv         -docstring "🔽"
-map global view j <esc>3jv   -docstring "3j (sticky)"
-map global view k <esc>3kv   -docstring "3k (sticky)"
-map global view J <esc>6jv   -docstring "6j (sticky)"
-map global view K <esc>6kv   -docstring "6k (sticky)"
-map global view i <esc><a-i> -docstring "<a-i>"
-map global view a <esc><a-a> -docstring "<a-a>"
+map global normal <c-j> <esc>C<space>     -docstring "C<space>"
+map global normal <c-k> <esc><a-C><space> -docstring "<a-C><space>"
+# map global normal <c-J> <esc>4j           -docstring "4j"
+# map global normal <c-K> <esc>4k           -docstring "4k"
+
+map global view e jv                 -docstring "🔼"
+map global view y kv                 -docstring "🔽"
+# map global view j <esc>C<space>      -docstring "C<space>"
+# map global view k <esc><a-C><space>  -docstring "<a-C><space>"
+map global view j <esc>4jv           -docstring "4j (sticky)"
+map global view k <esc>4kv           -docstring "4k (sticky)"
+map global view i <esc><a-i>         -docstring "<a-i>"
+map global view a <esc><a-a>         -docstring "<a-a>"
 
 ## Some User
 map -docstring "command prompt"  global user '<space>' ':'
-map -docstring "choose register" global user <'> <">
+map -docstring "require module"  global user ';' ': require-module '
 map -docstring "Reload buffer"   global user 'R'       ': e!<ret>'
 map -docstring "man"             global user 'k'       ': smart-select w; man-selection-with-count<ret>'
 map -docstring "tmux-focus"      global user 'o'       ': tmux-focus '
@@ -126,8 +128,7 @@ map -docstring "grep prev"       global user '['       ': grep-previous-match<re
 map -docstring "format buffer"   global user '='       ': format-buffer<ret>'
 map -docstring "tabs to spaces"  global user <@> <@>
 map -docstring "spaces to tabs"  global user <a-@> <a-@>
-map -docstring "require-module"  global user r ': require-module '
-map -docstring "enter-user-mode" global user u ':u '
+# map -docstring "enter-user-mode" global user u ':u '
 # map -docstring "count insert"    global user i %{ : count-insert %val{count}<ret> }
 
 ## Spell
@@ -155,7 +156,7 @@ map -docstring "search mode"      global user   '/' ': enter-user-mode search<re
 declare-user-mode toggle
 map -docstring "colorscheme"   global toggle 'c' ': enter-user-mode themes<ret>'
 map -docstring "buffer toggle" global toggle 'b' ': enter-user-mode buffer-toggle<ret>'
-map -docstring "toggle"        global user 't' ': enter-user-mode toggle<ret>'
+map -docstring "toggle"        global normal '=' ': enter-user-mode toggle<ret>'
 # map -docstring 'search highlight' global toggle  's' ': search-highlighting-enable<ret>'
 
 declare-user-mode buffer-toggle
@@ -204,9 +205,9 @@ map -docstring "choose-buffer into "" reg"           global tmux-clipboard 'm' '
 declare-user-mode anchor
 map -docstring "slice by word"              global anchor ','       ': slice-by-word<ret>'
 map -docstring "flip cursor and anchor"     global anchor '.'       '<a-;>'
-map -docstring "selection hull"             global anchor 'u'       ': selection-hull<ret>'
 map -docstring "ensure anchor after cursor" global anchor 'h'       '<a-:><a-;>'
 map -docstring "ensure cursor after anchor" global anchor 'l'       '<a-:>'
+map -docstring "selection hull"             global anchor 'm'       ': selection-hull<ret>'
 map -docstring "select cursor and anchor"   global anchor 's'       '<a-S>'
 map -docstring "reduce and insert"          global anchor 'c'       '<esc>;i'
 map -docstring "reduce and append"          global anchor 'a'       '<esc>;a'
@@ -230,9 +231,9 @@ map -docstring "ModeChange debug off" global echo-mode 'M' ': rmhooks window ech
 map -docstring "echo mode"            global user      'e' ': enter-user-mode echo-mode<ret>'
 
 declare-user-mode tig
-map -docstring "tig buffile history"         global tig 'h' %{: tmux-terminal-window tig %val{bufname}<ret>}
-map -docstring "tig blame"                   global tig 'b' %{: tmux-terminal-window tig blame "+%val{cursor_line}" -- %val{bufname}<ret>}
-map -docstring "tig status (for committing)" global tig 't' %{: tmux-terminal-window tig status<ret>}
+map -docstring "tig buffile history"         global tig h %{: tmux-terminal-window tig %val{bufname}<ret>}
+map -docstring "tig blame"                   global tig b %{: tmux-terminal-window tig blame "+%val{cursor_line}" -- %val{bufname}<ret>}
+map -docstring "tig status (for committing)" global tig <space> %{: tmux-terminal-window tig status<ret>}
 
 declare-user-mode git
 map -docstring "show gutter"        global git 'g' ': git show-diff<ret>'
@@ -256,17 +257,18 @@ map global user 'm' ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
 # <c-o>    ; # silent: stop completion
 # <c-x>    ; # complete here
 # <c-v>    ; # raw insert, use vim binding
+map global insert '<a-&>' '<a-;>' -docstring "escape to normal mode for single command"
+map global insert '<c-a>' '<a-;>' -docstring "escape to normal mode for single command"
+# map global insert '<a-a>' '<a-;>:' -docstring "escape to prompt mode for single command"
 map global insert '<c-y>' '<a-;>!pbpaste<ret>'
-map global insert '<c-a>' '<a-;>'
-map global insert '<a-minus>' '<a-;>'
 map global insert '<c-e>' '<esc>A'
 map global insert '<a-o>' '<c-o><c-x>l'
 map global insert '<a-h>' '<a-;>h'
 map global insert '<a-l>' '<a-;>l'
 map global insert '<a-c>' '<esc><a-c>'
 map global insert '<a-d>' '<esc><a-d>'
-map global insert '<a-\>' '\n'
 map global insert '<a-i>' '<esc>: count-insert '
+# map global insert '<a-\>' '\n'
 
 # Hooks
 # ‾‾‾‾‾
@@ -289,7 +291,8 @@ hook global BufOpenFile .* %{
 
 # Custom text objects
 # ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-map global object w 'c\s,\s<ret>' -docstring "select between whitespace"
+map global object w 'c\s,\s<ret>' -docstring 'select between whitespace'
+map global object q '"'           -docstring 'double quote string'
 
 # Scratch buffer
 # ‾‾‾‾‾‾‾‾‾‾‾‾‾‾

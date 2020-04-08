@@ -9,20 +9,23 @@ hook global WinSetOption filetype=(go) %{
             echo "set-option buffer grepcmd %{rg --column -tgo -g=!vendor}"
         fi
     }
-    set-option buffer matching_pairs '(' ')' '{' '}' '[' ']'
-    # set-option buffer auto_pairs '(' ')' '{' '}' '[' ']' '"' '"' '''' '''' '`' '`'
-    set-option buffer indentwidth 0 # 0 means real tab
+    # set-option buffer matching_pairs '(' ')' '{' '}' '[' ']'
+    # set-option buffer indentwidth 0 # 0 means real tab
     set-option buffer formatcmd 'goimports'
     set-option buffer lintcmd 'gometalinter .'
     set-option buffer makecmd 'go build .'
-    # alias window jump-to-definition go-jump
     # set buffer lintcmd '(gometalinter | grep -v "::\w")  <'
-    # map global goto u '<esc>: go-jump<ret>' -docstring 'go-jump'
     # map global help-and-hovers d ': go-doc-info<ret>' -docstring 'go-doc-info'
 
     # hook buffer BufWritePre .* %{ format }
     map buffer lang-mode o %{:grep ^func|^import|^var|^package|^const|^goto|^struct|^type %val{bufname} -H<ret>} -docstring "Show outline"
-    # map buffer lang-mode o ': godecls<ret>' -docstring 'godecl outline'
+
+    define-command -docstring "Dim all error checks" go-err-chk-dim %{
+        add-highlighter window/GoErrCheck regex 'if err != nil .*?\{.*?\}' 0:comment
+    }
+    define-command -docstring "Undim all error checks on" go-err-chk-on %{
+        remove-highlighter window/GoErrCheck
+    }
 }
 
 # Rust
@@ -42,16 +45,16 @@ hook global WinSetOption filetype=(rust) %{
         execute-keys -draft h2H <a-k>\Q)<space><minus>\E<ret>
         execute-keys <gt>
     }}
-    hook window InsertChar \' %{
-        try %{
-            execute-keys -draft hH <a-k>\Q<lt>'\E<ret>
-            execute-keys a
-        }
-        try %{
-            execute-keys -draft hH <a-k>\Q&'\E<ret>
-            execute-keys a
-        }
-    }
+    # hook window InsertChar \' %{
+    #     try %{
+    #         execute-keys -draft hH <a-k>\Q<lt>'\E<ret>
+    #         execute-keys a
+    #     }
+    #     try %{
+    #         execute-keys -draft hH <a-k>\Q&'\E<ret>
+    #         execute-keys a
+    #     }
+    # }
     hook window InsertChar \? %{ try %{
         execute-keys -draft hH <a-k>\Q{?\E<ret>
         execute-keys <left>:<right>}
