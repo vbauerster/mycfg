@@ -78,9 +78,6 @@ bindkey -s '^x_' '/dev/null'
 
 # [ -f ~/.iterm2_shell_integration.zsh ] && source ~/.iterm2_shell_integration.zsh
 
-# https://github.com/junegunn/fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # Source functions
 [ -f ~/.myfuncs.zsh ] && source ~/.myfuncs.zsh
 

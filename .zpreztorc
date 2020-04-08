@@ -47,6 +47,7 @@ zstyle ':prezto:load' pmodule \
   'autosuggestions' \
   'zoxide' \
   'broot' \
+  'fzf' \
   'prompt'
 
 #
