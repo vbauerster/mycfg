@@ -542,3 +542,36 @@ alias global ge! git-edit-force
 
 # https://github.com/robertmeta/kakfiles/blob/7d0079b2d8a578ec1dd606ccb536681836b2649e/kakrc#L211
 define-command broot -params .. -file-completion %(connect-terminal broot %arg(@)) -docstring "Open with broot"
+
+# https://github.com/robertmeta/kakfiles/blob/8c07cb92bc2d363fd2597bdb7fb94b93f55c5112/kakrc#L189
+define-command github-url \
+    -docstring "github-url: copy the canonical GitHub URL to the system clipboard" \
+    %{ evaluate-commands %sh{
+        # use the remote configured for fetching
+        fetch_remote=$(git config --get "branch.$(git symbolic-ref --short HEAD).remote" || printf origin)
+        base_url=$(git remote get-url "$fetch_remote" | sed -e "s|^git@github.com:|https://github.com/|")
+        # assume the master branch; this is what I want 95% of the time
+        master_commit=$(git ls-remote "$fetch_remote" master | awk '{ print $1 }')
+        relative_path=$(git ls-files --full-name "$kak_bufname")
+        selection_start="${kak_selection_desc%,*}"
+        selection_end="${kak_selection_desc##*,}"
+
+        if [ "$selection_start" == "$selection_end" ]; then
+            github_url=$(printf "%s/blob/%s/%s" "${base_url%.git}" "$master_commit" "$relative_path")
+        else
+            start_line="${selection_start%\.*}"
+            end_line="${selection_end%\.*}"
+
+            # highlight the currently selected line(s)
+            if [ "$start_line" == "$end_line" ]; then
+                github_url=$(printf "%s/blob/%s/%s#L%s" "${base_url%.git}" "$master_commit" "$relative_path" "${start_line}")
+            else
+                github_url=$(printf "%s/blob/%s/%s#L%s-L%s" "${base_url%.git}" "$master_commit" "$relative_path" "${start_line}" "${end_line}")
+            fi
+        fi
+        # printf "echo -debug %s\n" "$github_url"
+        # printf "execute-keys -draft '!printf %s $github_url | $kak_opt_system_clipboard_copy<ret>'\n"
+        printf "execute-keys -draft '!printf %s $github_url | pbcopy<ret>'\n"
+        printf "echo -markup %%{{Information}copied canonical GitHub URL to system clipboard}\n"
+    }
+}
