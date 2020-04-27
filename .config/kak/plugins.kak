@@ -190,7 +190,8 @@ plug "ul/kak-tree" config %{
         map window syntax-tree u ':tree-select- parameter_list<a-b><left>'              -docstring 'parameter_list'
         map window syntax-tree r ':tree-select- return_statement<a-b><left>'            -docstring 'return_statement'
         map window syntax-tree s ':tree-select- expression_switch_statement<a-b><left>' -docstring 'switch statement'
-        map window syntax-tree c ':tree-select- expression_case<a-b><left>'             -docstring 'case clause'
+        map window syntax-tree c ':tree-select- expression_case<a-b><left>'             -docstring 'expression_case'
+        map window syntax-tree C ':tree-select- communication_case<a-b><left>'          -docstring 'communication_case'
     }
     hook global WinSetOption filetype=(rust) %{
         map window lang-mode t ': enter-user-mode syntax-tree<ret>' -docstring 'tree select'
