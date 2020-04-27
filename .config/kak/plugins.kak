@@ -274,7 +274,8 @@ plug "ul/kak-lsp" do %{
         map -docstring 'lsp-references-previous-match'  window lsp '[' "<esc>: lsp-references-previous-match;enter-user-mode lsp<ret>"
         map -docstring 'find next error or warning'     window lsp 'n' "<esc>: lsp-find-error --include-warnings<ret>"           
         map -docstring 'find previous error or warning' window lsp 'p' "<esc>: lsp-find-error --previous --include-warnings<ret>"
-        map -docstring 'restart lsp'                    window lsp 'R' "<esc>: lsp-stop;lsp-start<ret>"
+        map -docstring 'jump *references*'              window lsp '<c-r>' "<esc>: jump *references*<ret>"
+        # map -docstring 'restart lsp'                    window lsp 'R' "<esc>: lsp-stop;lsp-start<ret>"
         map -docstring 'lsp command prompt'             window lsp '<space>' "<esc>:lsp-"
         map -docstring 'LSP mode'                       window user 'a' ': enter-user-mode lsp<ret>'
 
