@@ -63,12 +63,11 @@ map -docstring "align cusors"              global normal '<minus>'   '&'
 map -docstring "copy indentation"          global normal '<a-minus>' '<a-&>'
 map -docstring "extend sel to whole lines" global normal '&'         '<a-x>'
 map -docstring "crop sel to whole lines"   global normal '%'         '<a-X>'
-# map -docstring "extend to surrounding obj" global normal '<plus>'    '}'
-# map -docstring "extend to inner surr obj"  global normal '<a-plus>'  '<a-}>'
 map -docstring "space as leader"           global normal '<space>'   ','
 map -docstring "drop all but main sel"     global normal 'q'         '<space>'
 map -docstring "drop main selection"       global normal '<c-q>'     '<a-space>'
 map -docstring "comment line"              global normal '#'         ': comment-line<ret>'
+map -docstring "keys help"                 global normal '<F1>'      ': doc keys<ret>'
 map -docstring "save buffer"               global normal '<F2>'      ': w<ret>'
 
 map -docstring "choose register"     global normal 'Y' '"'
@@ -90,10 +89,9 @@ map global normal X ': extend-line-up %val{count}<ret>'
 
 map global normal '<a-&>' '<c-s>%'
 map global normal D h<a-d>
-map global normal <plus> ': set current jumpclient '
-map global normal <a-plus> ': rename-client '
+# map global normal <plus> <a-.>
 # experimental:
-map global normal <ret> 'A'
+# map global normal <ret> 'A'
 # map global normal 'A' '<c-s>%'
 
 # stop c and d from yanking
@@ -156,6 +154,7 @@ map -docstring "search mode"      global user   '/' ': enter-user-mode search<re
 declare-user-mode toggle
 map -docstring "colorscheme"   global toggle 'c' ': enter-user-mode themes<ret>'
 map -docstring "buffer toggle" global toggle 'b' ': enter-user-mode buffer-toggle<ret>'
+map -docstring "jumpclient"    global toggle 'j' ': set current jumpclient '
 map -docstring "toggle"        global normal '=' ': enter-user-mode toggle<ret>'
 # map -docstring 'search highlight' global toggle  's' ': search-highlighting-enable<ret>'
 
@@ -257,17 +256,19 @@ map global user 'm' ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
 # <c-o>    ; # silent: stop completion
 # <c-x>    ; # complete here
 # <c-v>    ; # raw insert, use vim binding
-map global insert '<a-&>' '<a-;>' -docstring "escape to normal mode for single command"
-map global insert '<c-a>' '<a-;>' -docstring "escape to normal mode for single command"
+map global insert '<a-[>' '<a-;>' -docstring "escape to normal mode for single command"
 # map global insert '<a-a>' '<a-;>:' -docstring "escape to prompt mode for single command"
 map global insert '<c-y>' '<a-;>!pbpaste<ret>'
-map global insert '<c-e>' '<esc>A'
+map global insert '<c-a>' '<esc>I'
+map global insert '<c-e>' '<end>'
 map global insert '<a-o>' '<c-o><c-x>l'
 map global insert '<a-h>' '<a-;>h'
-map global insert '<a-l>' '<a-;>l'
+map global insert '<a-]>' '<a-;>l'
 map global insert '<a-c>' '<esc><a-c>'
 map global insert '<a-d>' '<esc><a-d>'
 map global insert '<a-i>' '<esc>: count-insert '
+map global insert '<c-ret>' '<esc>o'
+map global insert '<c-d>' '<a-;>d'
 # map global insert '<a-\>' '\n'
 
 # Hooks
