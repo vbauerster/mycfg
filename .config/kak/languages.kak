@@ -30,7 +30,7 @@ hook global WinSetOption filetype=(go) %{
 
 # Rust
 # ‾‾‾‾
-hook global WinSetOption filetype=(rust) %{
+hook global WinSetOption filetype=(rust) %[
     # set-option buffer matching_pairs '(' ')' '[' ']' '{' '}'
     set-register @ 'A;<esc>'
     evaluate-commands %sh{
@@ -55,15 +55,19 @@ hook global WinSetOption filetype=(rust) %{
     #         execute-keys a
     #     }
     # }
-    hook window InsertChar \? %{ try %{
+    hook window InsertChar \? %[ try %[
         execute-keys -draft hH <a-k>\Q{?\E<ret>
-        execute-keys <left>:<right>}
-    }}
-    hook window InsertChar '#' %{ try %{
+        execute-keys <left>:<right>
+    ]]
+    hook window InsertChar '#' %[ try %[
         execute-keys -draft hH <a-k>\Q{#\E<ret>
-        execute-keys <left>:<right>?}
+        execute-keys <left>:<right>?
+    ]]
+    hook -group pairwise window InsertChar \| %{ try %{
+        execute-keys -draft h2H <a-k>\Q|||\E<ret>
+        execute-keys <backspace><left>
     }}
-}
+]
 
 # Makefile
 # ‾‾‾‾‾‾‾‾
