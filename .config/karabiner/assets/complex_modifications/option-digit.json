@@ -1,0 +1,113 @@
+{
+  "title": "Option (alt) at digits row",
+  "rules": [
+    {
+      "description": "Change 4 to left_option if pressed with other keys (Post 4 when pressed alone)",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "4",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_option",
+              "lazy": true
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "4"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Change 9 to right_option if pressed with other keys (Post 9 when pressed alone)",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "9",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "right_option",
+              "lazy": true
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "9"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Change 2 to left_option if pressed with other keys (Post 2 when pressed alone)",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "2",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "left_option",
+              "lazy": true
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "2"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Change 0 to right_option if pressed with other keys (Post 0 when pressed alone)",
+      "manipulators": [
+        {
+          "from": {
+            "key_code": "0",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "right_option",
+              "lazy": true
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "0"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    }
+  ]
+}
