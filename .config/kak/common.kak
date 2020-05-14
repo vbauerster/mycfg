@@ -191,6 +191,7 @@ map -docstring "replace selection with sysclipboard" global clipboard 'r' '|pbpa
 map -docstring "import from sysclipboard"            global clipboard 'm' ': clipboard-import<ret>'
 map -docstring "export to sysclipboard"              global clipboard 'x' ': clipboard-export<ret>'
 map -docstring "tmux-clipboard menu"                 global clipboard 't' ': enter-user-mode tmux-clipboard<ret>'
+map -docstring "comment and paste line"              global clipboard '#' %{: exec -save-regs '"' xy:<lt>space>comment-line<lt>ret><lt>a-p><ret>}
 map -docstring "clipboard mode"                      global user      'y' ': enter-user-mode clipboard<ret>'
 
 declare-user-mode tmux-clipboard
