@@ -194,8 +194,7 @@ map -docstring "tmux-clipboard menu"                 global clipboard 't' ': ent
 map -docstring "clipboard mode"                      global user      'y' ': enter-user-mode clipboard<ret>'
 
 declare-user-mode tmux-clipboard
-# map -docstring 'yank to tmux buffer'                global tmux-clipboard 'y' '<a-|>tmux setb -b kak "$kak_selection"<ret>'
-map -docstring "yank to tmux buffer"                 global tmux-clipboard 'y' '<a-|>tmux setb "$kak_selection"<ret>'
+map -docstring "yank to tmux buffer"                 global tmux-clipboard 'y' '<a-|>tmux setb -- "$kak_selection"<ret>'
 map -docstring "paste (insert) from tmux buffer"     global tmux-clipboard 'P' '!tmux showb<ret>'
 map -docstring "paste (append) from tmux buffer"     global tmux-clipboard 'p' '<a-!>tmux showb<ret>'
 map -docstring "replace selection with tmux buffer"  global tmux-clipboard 'r' '|tmux showb<ret>'
