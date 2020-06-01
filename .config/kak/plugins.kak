@@ -423,6 +423,10 @@ plug "andreyorst/langmap.kak" domain gitlab.com defer langmap %{
     # map -docstring "toggle layout (C-\)" global prompt '' '<a-;>: toggle-langmap prompt<ret>'
 }
 
+plug "jbomanson/search-doc.kak" config %{
+    require-module search-doc
+}
+
 # plug "andreyorst/powerline.kak" domain gitlab.com defer powerline %{
 #     set-option global powerline_ignore_warnings true
 #     set-option global powerline_format 'git bufname langmap smarttab mode_info filetype client session position'
