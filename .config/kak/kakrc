@@ -4,7 +4,8 @@ evaluate-commands %sh{
         common.kak
         languages.kak
         plugins.kak
-        go-decls.kak
+        scripts/go-decls.kak
+        scripts/colorscheme-browser.kak
     "
 
     for file in $config_files; do
