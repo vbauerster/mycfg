@@ -14,14 +14,14 @@ npad[25] = 'pad4'
 npad[29] = 'pad6'
 npad[27] = 'pad8'
 
-local modalKey = hs.hotkey.modal.new({'ctrl', 'alt', 'cmd'}, 'n', 'Npad on')
+local modalKey = hs.hotkey.modal.new({'ctrl', 'alt', 'cmd'}, 'return', 'Npad on')
 local doExit = function()
     modalKey:exit()
     hs.alert.show('Npad off', 0.5)
 end
 modalKey:bind({}, 'escape', doExit)
 
-local exitTimer = hs.timer.delayed.new(3, doExit)
+local exitTimer = hs.timer.delayed.new(5, doExit)
 
 modalKey:bind({'ctrl', 'alt', 'cmd'}, 'n', function() exitTimer:start() end)
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 osascript - <<EOF
 tell application "System Events" 
-    key code 37 using {control down, option down, command down}
+    key code 36 using {control down, option down, command down}
 end tell
 EOF
