@@ -54,6 +54,10 @@ plug "delapouite/kakoune-buffers" config %{
     map global user '.' ': enter-user-mode buffers<ret>' -docstring 'buffers'
 }
 
+plug "occivink/kakoune-buffer-switcher" config %{
+    alias global bs buffer-switcher
+}
+
 plug "delapouite/kakoune-cd" config %{
     map global cd o '<esc>: print-working-directory<ret>' -docstring 'print working dir'
     map global goto o '<esc>: enter-user-mode cd<ret>'    -docstring 'kakoune-cd'
