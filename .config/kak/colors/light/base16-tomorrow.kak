@@ -78,7 +78,7 @@ evaluate-commands %sh{
     face global value     ${base09}
     face global meta      ${base0C}
     face global builtin   ${base05}+b
-    face global module    ${base0A}
+    face global module    ${muted_indigo}
     face global comment   ${base03}+i
     face global documentation comment
     face global function  ${base0D}
