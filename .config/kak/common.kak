@@ -74,11 +74,11 @@ map -docstring "record macro"        global normal <a-@> <Q>
 map -docstring "play recorded macro" global normal <@> <q>
 
 # Avoid escape key
-map -docstring "avoid escape key" global prompt '<c-g>' '<esc>'
+map -docstring "avoid escape key" global prompt '<a-c>' '<esc>'
 # map -docstring "avoid escape key" global normal '<c-g>' '<esc>'
 # map -docstring "avoid escape key" global insert '<c-g>' '<esc>'
 
-map global normal '<c-g>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match"
+map global normal '<a-g>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match"
 # map global normal '0' ': zero select-or-add-cursor<ret>'
 # map global normal <*> ': smart-select word<ret>*'
 
