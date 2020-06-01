@@ -20,12 +20,12 @@ hook global WinSetOption filetype=(go) %{
     # hook buffer BufWritePre .* %{ format }
     map buffer lang-mode o %{:grep ^func|^import|^var|^package|^const|^goto|^struct|^type %val{bufname} -H<ret>} -docstring "Show outline"
 
-    define-command -docstring "Dim all error checks" go-err-chk-dim %{
-        add-highlighter window/GoErrCheck regex 'if err != nil .*?\{.*?\}' 0:comment
-    }
-    define-command -docstring "Undim all error checks on" go-err-chk-on %{
-        remove-highlighter window/GoErrCheck
-    }
+    # define-command -docstring "Dim all error checks" go-err-chk-dim %{
+    #     add-highlighter window/GoErrCheck regex 'if err != nil .*?\{.*?\}' 0:comment
+    # }
+    # define-command -docstring "Undim all error checks on" go-err-chk-on %{
+    #     remove-highlighter window/GoErrCheck
+    # }
 }
 
 # Rust
