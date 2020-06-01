@@ -171,15 +171,15 @@ map -docstring "window top"                     global goto 'k'     't'
 map -docstring "window bottom"                  global goto 'j'     'b'
 map -docstring "buffer bottom"                  global goto 'G'     'j'
 map -docstring "extend to line end"             global goto '}'     '<esc><a-:>Gl'
-map -docstring "extend to line begin"           global goto '{'     '<esc><a-:>;Gh'
-map -docstring "extend to line non-blank"       global goto '<tab>' '<esc><a-:>;Gi'
+map -docstring "extend to line non-blank"       global goto '{'     '<esc><a-:>;Gi'
+map -docstring "extend to line begin"           global goto '='     '<esc><a-:>;Gh'
 map -docstring "file (recursive)"               global goto 'f'     '<esc>: smart-select-file; search-file %val{selection}<ret>'
 map -docstring "file (non-recursive)"           global goto '<a-f>'  '<esc>gf'
 map -docstring "search tag in current file"     global goto '['      '<esc><c-s>: smart-select w; symbol<ret>'
 map -docstring "search tag in global tags file" global goto ']'      '<esc><c-s>: smart-select w; ctags-search<ret>'
 # map -docstring 'switch to [+] buffer'         global goto '<plus>' '<esc>: switch-to-modified-buffer<ret>'
-unmap global goto t
-unmap global goto b
+# unmap global goto t
+# unmap global goto b
 
 ## System clipboard
 declare-user-mode clipboard
