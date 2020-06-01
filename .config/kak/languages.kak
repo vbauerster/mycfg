@@ -45,16 +45,10 @@ hook global WinSetOption filetype=(rust) %[
         execute-keys -draft h2H <a-k>\Q)<space><minus>\E<ret>
         execute-keys <gt>
     }}
-    # hook window InsertChar \' %{
-    #     try %{
-    #         execute-keys -draft hH <a-k>\Q<lt>'\E<ret>
-    #         execute-keys a
-    #     }
-    #     try %{
-    #         execute-keys -draft hH <a-k>\Q&'\E<ret>
-    #         execute-keys a
-    #     }
-    # }
+    hook window InsertChar ! %{ try %{
+            execute-keys -draft hH <a-k>\Q&!\E<ret>
+            execute-keys <backspace>'
+    }}
     hook window InsertChar \? %[ try %[
         execute-keys -draft hH <a-k>\Q{?\E<ret>
         execute-keys <left>:<right>
@@ -63,8 +57,12 @@ hook global WinSetOption filetype=(rust) %[
         execute-keys -draft hH <a-k>\Q{#\E<ret>
         execute-keys <left>:<right>?
     ]]
-    hook -group pairwise window InsertChar \| %{ try %{
+    hook window InsertChar \| %{ try %{
         execute-keys -draft h2H <a-k>\Q|||\E<ret>
+        execute-keys <backspace><left>
+    }}
+    hook window InsertChar > %{ try %{
+        execute-keys -draft h2H <a-k>\Q<lt><gt><gt>\E<ret>
         execute-keys <backspace><left>
     }}
 ]

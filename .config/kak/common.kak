@@ -32,7 +32,6 @@ hook global WinCreate .* %{
     # show-trailing-whitespace-enable; face window TrailingWhitespace default,red
     # enable tab complete in insert mode
     tab-completion-enable
-    pairwise-enable
     search-highlighting-enable
 }
 
