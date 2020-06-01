@@ -161,7 +161,7 @@ plug "andreyorst/kakoune-snippet-collection"
 plug "occivink/kakoune-snippets" config %{
     set-option -add global snippets_directories "%opt{plug_install_dir}/kakoune-snippet-collection/snippets"
     set-option global snippets_auto_expand false
-    map global insert '<a-space>' '<a-;>: expand-or-jump<ret>'
+    map global insert '<a-e>' '<a-;>: expand-or-jump<ret>'
     map -docstring 'snippets-' global toggle 's' ': snippets-'
 
     define-command -hidden expand-or-jump %{
