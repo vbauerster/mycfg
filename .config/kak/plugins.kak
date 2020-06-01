@@ -252,23 +252,18 @@ plug "ul/kak-tree" config %{
     }
 }
 
-plug "ul/kak-lsp" do %{
-    # cargo install --force --path . --locked
-} config %{
-    # define-command -docstring 'restart lsp server' lsp-restart %{ lsp-stop; lsp-start }
+# https://github.com/ul/kak-lsp/wiki/Usage-with-plug.kak
+plug "ul/kak-lsp" config %{
     set-option global lsp_diagnostic_line_error_sign '║'
     set-option global lsp_diagnostic_line_warning_sign '┊'
 
-    # define-command ne -docstring 'go to next error/warning from lsp' %{ lsp-find-error --include-warnings }
-    # define-command pe -docstring 'go to previous error/warning from lsp' %{ lsp-find-error --previous --include-warnings }
-    # define-command ee -docstring 'go to current error/warning from lsp' %{ lsp-find-error --include-warnings; lsp-find-error --previous --include-warnings }
-    # map global lsp '<minus>' "<esc>: lsp-disable-window<ret>" -docstring "lsp-disable-window"
-
+    define-command lsp-restart -docstring 'restart lsp server' %{ lsp-stop; lsp-start }
     hook global WinSetOption filetype=(go|rust) %{
-        set-option window lsp_hover_anchor true
         set-option window lsp_auto_highlight_references true
+        set-option window lsp_hover_anchor true
         set-face window DiagnosticError default+u
         set-face window DiagnosticWarning default+u
+        echo -debug "Enabling LSP for filtetype %opt{filetype}"
         lsp-enable-window
         lsp-auto-signature-help-enable
         # lsp-diagnostic-lines-enable
@@ -276,26 +271,35 @@ plug "ul/kak-lsp" do %{
         # lsp-auto-hover-insert-mode-disable
         map -docstring 'lsp-references-next-match'      window lsp ']' "<esc>: lsp-references-next-match;enter-user-mode lsp<ret>"    
         map -docstring 'lsp-references-previous-match'  window lsp '[' "<esc>: lsp-references-previous-match;enter-user-mode lsp<ret>"
-        map -docstring 'find next error or warning'     window lsp 'n' "<esc>: lsp-find-error --include-warnings<ret>"           
-        map -docstring 'find previous error or warning' window lsp 'p' "<esc>: lsp-find-error --previous --include-warnings<ret>"
-        map -docstring 'jump *references*'              window lsp '<c-r>' "<esc>: jump *references*<ret>"
-        # map -docstring 'restart lsp'                    window lsp 'R' "<esc>: lsp-stop;lsp-start<ret>"
-        map -docstring 'lsp command prompt'             window lsp '<space>' "<esc>:lsp-"
+        map -docstring 'find next error/warning'        window lsp 'n' "<esc>: lsp-find-error --include-warnings<ret>"           
+        map -docstring 'find previous error/warning'    window lsp 'p' "<esc>: lsp-find-error --previous --include-warnings<ret>"
+        map -docstring 'jump *references*'              window lsp '<a-r>' "<esc>: jump *references*<ret>"
+        map -docstring 'lsp command prompt'             window lsp '<ret>' "<esc>:lsp-"
         map -docstring 'LSP mode'                       window user 'a' ': enter-user-mode lsp<ret>'
 
         # map -docstring "format and write"               window lsp 'w' "<esc>: lsp-formatting-sync;write<ret>"
         # https://github.com/ul/kak-lsp/issues/273
-        hook -group lsp-formatting window BufWritePre .* lsp-formatting-sync
+        hook window BufWritePre .* lsp-formatting-sync
     }
 
     hook global WinSetOption filetype=(rust) %{
         # bug https://github.com/ul/kak-lsp/issues/217#issuecomment-512793942
         set-option window lsp_server_configuration rust.clippy_preference="on"
 
-        # hook -group lsp buffer BufWritePre .* %{
-        #     evaluate-commands %sh{
-        #         test -f rustfmt.toml && printf lsp-formatting-sync
-        #     }
+        hook window -group rust-inlay-hints BufReload .* rust-analyzer-inlay-hints
+        hook window -group rust-inlay-hints NormalIdle .* rust-analyzer-inlay-hints
+        hook window -group rust-inlay-hints InsertIdle .* rust-analyzer-inlay-hints
+        hook -once -always window WinSetOption filetype=.* %{
+            remove-hooks window rust-inlay-hints
+        }
+        # set-face global InlayHint rgb:A3B3FF
+        set-face global InlayHint rgb:eab700
+
+        # hook window -group semantic-tokens BufReload .* lsp-semantic-tokens
+        # hook window -group semantic-tokens NormalIdle .* lsp-semantic-tokens
+        # hook window -group semantic-tokens InsertIdle .* lsp-semantic-tokens
+        # hook -once -always window WinSetOption filetype=.* %{
+        #     remove-hooks window semantic-tokens
         # }
     }
 
@@ -303,7 +307,7 @@ plug "ul/kak-lsp" do %{
     #     hook -group lsp buffer BufWritePre .* lsp-formatting-sync
     # }
 
-    hook -group lsp global KakEnd .* lsp-exit
+    hook global KakEnd .* lsp-exit
 }
 
 plug "andreyorst/tagbar.kak" domain gitlab.com defer tagbar %{
@@ -348,12 +352,12 @@ plug "alexherbo2/connect.kak" config %{
 
 # plug "alexherbo2/explore.kak"
 
-plug "alexherbo2/word-select.kak" config %{
-    map global normal w ': word-select-next-word<ret>'
-    map global normal <a-w> ': word-select-next-big-word<ret>'
-    map global normal b ': word-select-previous-word<ret>'
-    map global normal <a-b> ': word-select-previous-big-word<ret>'
-}
+# plug "alexherbo2/word-select.kak" config %{
+#     map global normal w ': word-select-next-word<ret>'
+#     map global normal <a-w> ': word-select-next-big-word<ret>'
+#     map global normal b ': word-select-previous-word<ret>'
+#     map global normal <a-b> ': word-select-previous-big-word<ret>'
+# }
 
 plug "alexherbo2/split-object.kak" config %{
     map -docstring "split object" global normal <a-I> ': enter-user-mode split-object<ret>'
@@ -460,6 +464,3 @@ plug "jbomanson/search-doc.kak" config %{
 #       manual-indent-remove-filetype-hooks
 #     }
 # }
-
-# source "%val{config}/scripts/bc.kak"
-source "%val{config}/scripts/colorscheme-browser.kak"
