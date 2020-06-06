@@ -33,8 +33,8 @@
     staaash = stash --all
     mgnff = merge --no-ff
 [core]
-    editor = $EDITOR
-    excludesfile = /Users/vbauer/.gitignore_global
+    editor = ${EDITOR:-vim}
+    excludesfile = $HOME/.gitignore_global
     pager = delta --light
 [filter "lfs"]
     clean = git-lfs clean %f
