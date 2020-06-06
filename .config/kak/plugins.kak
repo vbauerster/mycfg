@@ -27,6 +27,7 @@ plug "occivink/kakoune-vertical-selection" config %{
 }
 
 plug "delapouite/kakoune-text-objects" config %{
+    # unmap 'vertical selection'
     unmap global object 'v'
 }
 
@@ -338,11 +339,12 @@ plug "delapouite/kakoune-auto-percent" config %{
 
 plug 'delapouite/kakoune-palette'
 
+plug "alexherbo2/prelude.kak"
+
 plug "alexherbo2/auto-pairs.kak" config %{
     map -docstring "auto-pairs toggles" global toggle ')' ': auto-pairs-'
 }
 
-plug "alexherbo2/prelude.kak"
 plug "alexherbo2/connect.kak" config %{
     # require-module connect-lf
     # define-command ranger -params .. -file-completion %(connect ranger %arg(@))
@@ -414,8 +416,6 @@ plug "alexherbo2/surround.kak" config %{
 }
 
 plug "andreyorst/langmap.kak" domain gitlab.com defer langmap %{
-    # declare-option -docstring 'English key layout for Dvorak keyboards' str-list langmap_us_dvorak 'en' %{`~1!2@3#4$5%6^7&8*9(0)[{]}\|'",<.>pPyYfFgGcCrRlL/?=+aAoOeEuUiIdDhHtTnNsS-_;:qQjJkKxXbBmMwWvVzZ}
- # declare-option -docstring 'Russian key layout for jcuken keyboards'    str-list langmap_ru_jcuken 'ru' %{ёЁ1!2"3№4;5%6:7?8*9(0)-_=+\/йЙцЦуУкКеЕнНгГшШщЩзЗхХъЪфФыЫвВаАпПрРоОлЛдДжЖэЭяЯчЧсСмМиИтТьЬбБюЮ.,}
     declare-option -docstring 'English key layout for Programming Dvorak keyboards' \
     str-list langmap_us_programming_dvorak 'en' %{$~&%[7{5}3(1=9*0)2+4]6!8#`\|;:,<.>pPyYfFgGcCrRlL/?@^aAoOeEuUiIdDhHtTnNsS-_'"qQjJkKxXbBmMwWvVzZ}
     #                                           %{ёЁ1!2"3№4;5%6:7?8*9(0)-_=+\/йЙцЦуУкКеЕнНгГшШщЩзЗхХъЪфФыЫвВаАпПрРоОлЛдДжЖэЭяЯчЧсСмМиИтТьЬбБюЮ.,}
