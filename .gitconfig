@@ -16,7 +16,7 @@
     ci = commit -v
     commend = commit --amend --no-edit
     uu = status --short --branch
-    pp = pull
+    pp = pull --ff-only
     bb = branch -v
     bba = branch -av
     bbh = for-each-ref --sort=committerdate refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
