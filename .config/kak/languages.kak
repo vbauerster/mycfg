@@ -32,7 +32,7 @@ hook global WinSetOption filetype=(go) %{
 # ‾‾‾‾
 hook global WinSetOption filetype=(rust) %[
     # set-option buffer matching_pairs '(' ')' '[' ']' '{' '}'
-    set-register @ 'A;<esc>'
+    set-register @ 'A;<esc>h'
     evaluate-commands %sh{
         # if [ -n "$(command -v fd)" ]; then
         #     echo "set-option buffer fzf_file_command %{fd --no-ignore --type f --follow --exclude .git --exclude target .}"
