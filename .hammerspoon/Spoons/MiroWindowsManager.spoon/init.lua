@@ -24,7 +24,7 @@
 --- Download: [https://github.com/miromannino/miro-windows-manager/raw/master/MiroWindowsManager.spoon.zip](https://github.com/miromannino/miro-windows-manager/raw/master/MiroWindowsManager.spoon.zip)
 ---
 
-local modalKey = hs.hotkey.modal.new({'ctrl', 'alt', 'cmd'}, 'w', 'WM mode enter')
+local modalKey = hs.hotkey.modal.new({'ctrl', 'alt', 'cmd'}, 'w', 'WM on')
 modalKey:bind({}, 'escape', function() modalKey:exit() end)
 modalKey:bind({}, 'q', function() modalKey:exit() end)
 
@@ -38,7 +38,7 @@ end
 
 function modalKey:exited()
     exitTimer:stop()
-    hs.alert.show('WM mode quit', 0.5)
+    hs.alert.show('WM off', 0.5)
 end
 
 -- Move a window between monitors
