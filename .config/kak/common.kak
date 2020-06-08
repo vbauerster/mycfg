@@ -115,7 +115,7 @@ map global view a <esc><a-a>         -docstring "<a-a>"
 
 ## Some User
 map -docstring "command prompt"  global user '<space>' ':'
-map -docstring "require module"  global user ';' ': require-module '
+map -docstring "require module"  global user ';'       ': require-module '
 map -docstring "Reload buffer"   global user 'R'       ': e!<ret>'
 map -docstring "man"             global user 'k'       ': smart-select w; man-selection-with-count<ret>'
 map -docstring "tmux-focus"      global user 'o'       ': tmux-focus '
@@ -190,7 +190,7 @@ map -docstring "replace selection with sysclipboard" global clipboard 'r' '|pbpa
 map -docstring "import from sysclipboard"            global clipboard 'm' ': clipboard-import<ret>'
 map -docstring "export to sysclipboard"              global clipboard 'x' ': clipboard-export<ret>'
 map -docstring "tmux-clipboard menu"                 global clipboard 't' ': enter-user-mode tmux-clipboard<ret>'
-map -docstring "comment and paste line"              global clipboard '#' %{: exec -save-regs '"' <lt>a-s>_xy:<lt>space>comment-line<lt>ret><lt>space><lt>a-p><lt>a-_><ret>}
+map -docstring "comment and paste"                   global clipboard '#' %{: exec -save-regs '"' <lt>a-s>gixy:<lt>space>comment-line<lt>ret><lt>space><lt>a-p><lt>a-_><ret>}
 map -docstring "clipboard mode"                      global user      'y' ': enter-user-mode clipboard<ret>'
 
 declare-user-mode tmux-clipboard
@@ -229,9 +229,9 @@ map -docstring "ModeChange debug off" global echo-mode 'M' ': rmhooks window ech
 map -docstring "echo mode"            global user      'e' ': enter-user-mode echo-mode<ret>'
 
 declare-user-mode tig
-map -docstring "tig buffile history"         global tig h %{: tmux-terminal-window tig %val{bufname}<ret>}
+map -docstring "tig buffile history"         global tig h %{: t tig %val{bufname}<ret>}
 map -docstring "tig blame"                   global tig b %{: tmux-terminal-window tig blame "+%val{cursor_line}" -- %val{bufname}<ret>}
-map -docstring "tig status (for committing)" global tig <space> %{: tmux-terminal-window tig status<ret>}
+map -docstring "tig status (for committing)" global tig <space> %{: t tig status<ret>}
 
 declare-user-mode git
 map -docstring "show gutter"        global git 'g' ': git show-diff<ret>'
@@ -255,20 +255,21 @@ map global user 'm' ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
 # <c-o>    ; # silent: stop completion
 # <c-x>    ; # complete here
 # <c-v>    ; # raw insert, use vim binding
-map global insert '<a-[>' '<a-;>' -docstring "escape to normal mode for single command"
-# map global insert '<a-a>' '<a-;>:' -docstring "escape to prompt mode for single command"
+# map global insert '<a-c>' '<esc><a-c>'
+map global insert '<a-g>' '<esc>:'
+map global insert '<a-c>' '<esc>'
+map global insert '<a-[>' '<esc>'
+map global insert '<a-]>' '<esc>'
 map global insert '<c-y>' '<a-;>!pbpaste<ret>'
 map global insert '<c-a>' '<esc>I'
 map global insert '<c-e>' '<end>'
-map global insert '<a-o>' '<c-o><c-x>l'
 map global insert '<a-h>' '<a-;>h'
-map global insert '<a-]>' '<a-;>l'
-map global insert '<a-c>' '<esc><a-c>'
-map global insert '<a-d>' '<esc><a-d>'
-map global insert '<a-i>' '<esc>: count-insert '
-map global insert '<c-ret>' '<esc>o'
-map global insert '<c-d>' '<a-;>d'
-# map global insert '<a-\>' '\n'
+map global insert '<a-n>' '<a-;>l'
+map global insert '<c-d>' '<del>'
+map global insert '<c-i>' '<esc>: count-insert '
+map global insert '<a-u>' '<esc><c-s>b<a-`><c-o>i'
+map global insert '<a-plus>' '<c-o><c-x>l'
+map global insert '<a-r>' '<c-r>"'
 
 # Hooks
 # ‾‾‾‾‾
@@ -283,16 +284,16 @@ map global insert '<c-d>' '<a-;>d'
 hook global BufOpenFile .* %{
     evaluate-commands %sh{
         if [ $(git rev-parse --show-toplevel 2>/dev/null) ]; then
+            echo "hook buffer -group fly-git BufReload .* %{ git show-diff }"
             echo "hook buffer -group fly-git NormalIdle .* %{ git show-diff }"
-            echo "hook buffer -group fly-git InsertIdle .* %{ git show-diff }"
         fi
     }
 }
 
 # Custom text objects
 # ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-map global object w 'c\s,\s<ret>' -docstring 'select between whitespace'
 map global object q '"'           -docstring 'double quote string'
+# map global object w 'c\s,\s<ret>' -docstring 'select between whitespace'
 
 # Scratch buffer
 # ‾‾‾‾‾‾‾‾‾‾‾‾‾‾
