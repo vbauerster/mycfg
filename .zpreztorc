@@ -39,9 +39,9 @@ zstyle ':prezto:load' pmodule \
   'utility' \
   'completion' \
   'homebrew' \
-  'osx' \
+  'pacman' \
   'archive' \
-  'docker' \
+  'tmux' \
   'syntax-highlighting' \
   'history-substring-search' \
   'autosuggestions' \
@@ -219,7 +219,8 @@ zstyle ':prezto:module:syntax-highlighting' highlighters \
 # zstyle ':prezto:module:tmux:auto-start' local 'yes'
 
 # Auto start a session when Zsh is launched in a SSH connection.
-# zstyle ':prezto:module:tmux:auto-start' remote 'yes'
+zstyle ':prezto:module:tmux:auto-start' remote 'yes'
+# zstyle ':prezto:module:tmux:session' name 'prezto'
 
 # Integrate with iTerm2.
 # zstyle ':prezto:module:tmux:iterm' integrate 'yes'
