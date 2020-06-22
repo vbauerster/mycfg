@@ -268,7 +268,7 @@ map global insert '<a-l>' '<a-;>l'
 map global insert '<c-d>' '<del>'
 map global insert '<c-i>' '<esc>: count-insert '
 map global insert '<a-u>' '<esc><c-s>b<a-`><c-o>i'
-map global insert '<a-plus>' '<c-o><c-x>l'
+map global insert '<a-minus>' '<c-o><c-x>l'
 map global insert '<a-r>' '<c-r>"'
 
 # Hooks
