@@ -216,30 +216,41 @@ map -docstring "import from sysclipboard"            global clipboard 'm' ': cli
 map -docstring "export to sysclipboard"              global clipboard 'x' ': clipboard-export<ret>'
 map -docstring "tmux-clipboard menu"                 global clipboard 't' ': enter-user-mode tmux-clipboard<ret>'
 map -docstring "comment and paste"                   global clipboard '#' %{: exec -save-regs '"' <lt>a-s>gixy:<lt>space>comment-line<lt>ret><lt>space><lt>a-p><lt>a-_><ret>}
-map -docstring "clipboard mode"                      global user      'y' ': enter-user-mode clipboard<ret>'
+# map -docstring "dump"                                global clipboard 'd' %{: echo -to-file '%sh(dirname "$kak_buffile")<a-!>/' -- %reg{dquote}}
+
+# https://discuss.kakoune.com/t/clipboard-integration-with-registermodified/1150
+hook global RegisterModified '"' %{
+    nop %sh{
+        tmux setb -b kak -- "$kak_main_reg_dquote"
+    }
+}
+
+# hook global RegisterModified '"' %{ echo -debug yanked %reg{dquote} }
 
 declare-user-mode tmux-clipboard
-map -docstring "yank to tmux buffer"                 global tmux-clipboard 'y' '<a-|>tmux setb -- "$kak_selection"<ret>'
-map -docstring "paste (insert) from tmux buffer"     global tmux-clipboard 'P' '!tmux showb<ret>'
-map -docstring "paste (append) from tmux buffer"     global tmux-clipboard 'p' '<a-!>tmux showb<ret>'
-map -docstring "replace selection with tmux buffer"  global tmux-clipboard 'r' '|tmux showb<ret>'
-map -docstring "choose-buffer into "" reg"           global tmux-clipboard 'm' ': tmux-choose-buffer<ret>'
+map -docstring "yank to new buffer"        global tmux-clipboard y '<a-|>tmux setb -- "$kak_selection"<ret>'
+map -docstring "choose-buffer into "" reg" global tmux-clipboard m ': tmux-choose-buffer<ret>'
+map -docstring "dump kak buffer"           global tmux-clipboard d %{<a-|>tmux saveb -b kak '%sh(dirname "$kak_buffile")<a-!>/'<left>}
+map -docstring "choose-buffer and dump"    global tmux-clipboard D %{<a-|>tmux choose-buffer "saveb -b '%%%%' '%sh(dirname ""$kak_buffile"")<a-!>/'"<left><left>}
+# map -docstring "paste (insert) from buffer"     global tmux-clipboard 'P' '!tmux showb<ret>'
+# map -docstring "paste (append) from buffer"     global tmux-clipboard 'p' '<a-!>tmux showb<ret>'
+# map -docstring "replace selection with buffer"  global tmux-clipboard 'r' '|tmux showb<ret>'
 
 declare-user-mode anchor
+map -docstring "anchor mode"                global normal ','       ': enter-user-mode anchor<ret>'
 map -docstring "slice by word"              global anchor ','       ': slice-by-word<ret>'
 map -docstring "flip cursor and anchor"     global anchor '.'       '<a-;>'
 map -docstring "ensure anchor after cursor" global anchor 'h'       '<a-:><a-;>'
 map -docstring "ensure cursor after anchor" global anchor 'l'       '<a-:>'
 map -docstring "selection hull"             global anchor 'm'       ': selection-hull<ret>'
 map -docstring "select cursor and anchor"   global anchor 's'       '<a-S>'
-map -docstring "reduce and insert"          global anchor 'c'       '<esc>;i'
-map -docstring "reduce and append"          global anchor 'a'       '<esc>;a'
+map -docstring "reduce and insert"          global anchor <space>   '<esc>;i'
 map -docstring "next selection (centered)"  global anchor 'n'       '<esc>nvv: enter-user-mode anchor<ret>'
 map -docstring "prev selection (centered)"  global anchor 'p'       '<esc><a-n>vv: enter-user-mode anchor<ret>'
-map -docstring "anchor mode"                global normal ','       ': enter-user-mode anchor<ret>'
 # map -docstring "anchor mode (lock)"         global normal '<a-,>'   ': enter-user-mode -lock anchor<ret>'
 
 declare-user-mode echo-mode
+map -docstring "echo mode"            global user      'e' ': enter-user-mode echo-mode<ret>'
 map -docstring "opt"                  global echo-mode 'o' ':echo %opt{}<left>'
 map -docstring "opt debug"            global echo-mode 'O' ':echo -debug %opt{}<left>'
 map -docstring "reg"                  global echo-mode 'r' ':echo %reg{}<left>'
