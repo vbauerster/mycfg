@@ -50,83 +50,102 @@ hook global InsertChar \. %{ try %{
 
 # Aliases
 # ‾‾‾‾‾‾‾
+alias global bd delete-buffer
+alias global f findit
+alias global ge git-edit
+alias global qa quit
+alias global qa! quit!
+alias global wqa write-all-quit
+alias global wqa! write-all-quit
+alias global wq write-quit
+alias global wq! write-quit!
 alias global u enter-user-mode
-alias global h doc
 
 ## Maps.
-# map -docstring "command prompt"            global normal '%'         ':'
-# map -docstring "clear anchor"              global normal '&'         ';'
-# map -docstring "flip cursor and anchor"    global normal '<a-&>'     '<a-;>'
-# map -docstring "cursor after anchor"       global normal '<a-%>'     '<a-:>'
-map -docstring "align cusors"              global normal '<minus>'   '&'
-map -docstring "copy indentation"          global normal '<a-minus>' '<a-&>'
-map -docstring "extend sel to whole lines" global normal '&'         '<a-x>'
-map -docstring "crop sel to whole lines"   global normal '%'         '<a-X>'
-map -docstring "space as leader"           global normal '<space>'   ','
-map -docstring "drop all but main sel"     global normal 'q'         '<space>'
-map -docstring "drop main selection"       global normal '<c-q>'     '<a-space>'
-map -docstring "comment line"              global normal '#'         ': comment-line<ret>'
-map -docstring "keys help"                 global normal '<F1>'      ': doc keys<ret>'
-map -docstring "save buffer"               global normal '<F2>'      ': w<ret>'
+map -docstring "space as leader"       global normal <space> <,>
+map -docstring "drop all but main sel" global normal q <space>
+map -docstring "drop main sel"         global normal Q <a-space>
+map -docstring "drop main sel"         global normal <c-q> <a-space>
+map -docstring "play recorded macro"   global normal <@> q
+map -docstring "record macro"          global normal <a-@> Q
+map -docstring "align cusors"          global normal <plus> <&>
+map -docstring "copy indentation"      global normal <a-plus> <a-&>
+map -docstring "choose register"       global normal <a-r> <">
+map -docstring "comment line"          global normal <#>  ': comment-line<ret>'
+map -docstring "keys help"             global normal <F1> ': doc keys<ret>'
+map -docstring "save buffer"           global normal <F2> ': w<ret>'
 
-map -docstring "choose register"     global normal 'Y' '"'
-map -docstring "record macro"        global normal <a-@> <Q>
-map -docstring "play recorded macro" global normal <@> <q>
+map global normal <minus> %{:findit <tab>} -docstring "Quick find"
+map global normal <a-minus> %{:broot -gc :gs<ret>} -docstring "Broot git status"
+map global normal <down> %{: grep-next-match<ret>} -docstring "Next grep match"
+map global normal <left> %{: buffer-previous<ret>} -docstring "Prev buffer"
+map global normal <right> %{: buffer-next<ret>} -docstring "Next buffer"
+map global normal <up> %{: grep-previous-match<ret>} -docstring "Prev grep match"
 
-# Avoid escape key
-map -docstring "avoid escape key" global prompt '<a-c>' '<esc>'
-# map -docstring "avoid escape key" global normal '<c-g>' '<esc>'
-# map -docstring "avoid escape key" global insert '<c-g>' '<esc>'
+map global normal <a-g> ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match"
 
-map global normal '<a-g>' ': select-or-add-cursor<ret>' -docstring "add cursor on current word, and jump to the next match"
-# map global normal '0' ': zero select-or-add-cursor<ret>'
-# map global normal <*> ': smart-select word<ret>*'
+map global normal <%> <c-s><%>
 
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-make-x-select-lines-downward-and-x-select-lines-upward
+map global normal <&> ': extend-line-up %val{count}<ret>'
 map global normal x ': extend-line-down %val{count}<ret>'
-map global normal X ': extend-line-up %val{count}<ret>'
+map global normal X <a-X>
+# map -docstring "extend block" global normal <&> <a-x>
+# map -docstring "inner block"  global normal <%> <a-X>
 
-map global normal '<a-&>' '<c-s>%'
+map global normal <c-x> ': split<ret>'
 map global normal D h<a-d>
-# map global normal <plus> <a-.>
-# experimental:
-# map global normal <ret> 'A'
-# map global normal 'A' '<c-s>%'
 
 # stop c and d from yanking
-# map global normal d <a-d>
-# map global normal c <a-c>
-# map global normal <a-d> d
-# map global normal <a-c> c
+map global normal d <a-d>
+map global normal c <a-c>
+map global normal <a-d> d
+map global normal <a-c> c
+
+map global normal <a-j> <a-J>
+map global normal <a-J> <a-j>
 
 map global normal <c-j> <esc>C<space>     -docstring "C<space>"
 map global normal <c-k> <esc><a-C><space> -docstring "<a-C><space>"
-# map global normal <c-J> <esc>4j           -docstring "4j"
-# map global normal <c-K> <esc>4k           -docstring "4k"
 
-map global view e jv                 -docstring "🔼"
-map global view y kv                 -docstring "🔽"
-# map global view j <esc>C<space>      -docstring "C<space>"
-# map global view k <esc><a-C><space>  -docstring "<a-C><space>"
-map global view j <esc>4jv           -docstring "4j (sticky)"
-map global view k <esc>4kv           -docstring "4k (sticky)"
-map global view i <esc><a-i>         -docstring "<a-i>"
-map global view a <esc><a-a>         -docstring "<a-a>"
+map global view e jv         -docstring "scroll ↑"
+map global view y kv         -docstring "scroll ↓"
+map global view j <esc>4jv   -docstring "4j (sticky)"
+map global view k <esc>4kv   -docstring "4k (sticky)"
+map global view i <esc><a-i> -docstring "<a-i>"
+map global view a <esc><a-a> -docstring "<a-a>"
 
 ## Some User
-map -docstring "command prompt"  global user '<space>' ':'
-map -docstring "require module"  global user ';'       ': require-module '
-map -docstring "Reload buffer"   global user 'R'       ': e!<ret>'
-map -docstring "man"             global user 'k'       ': smart-select w; man-selection-with-count<ret>'
-map -docstring "tmux-focus"      global user 'o'       ': focus '
-map -docstring "quit!"           global user 'Q'       ':q!<ret>'
-map -docstring "grep next"       global user ']'       ': grep-next-match<ret>'
-map -docstring "grep prev"       global user '['       ': grep-previous-match<ret>'
-map -docstring "format buffer"   global user '='       ': format-buffer<ret>'
-map -docstring "tabs to spaces"  global user <@> <@>
-map -docstring "spaces to tabs"  global user <a-@> <a-@>
-# map -docstring "enter-user-mode" global user u ':u '
-# map -docstring "count insert"    global user i %{ : count-insert %val{count}<ret> }
+map global user . ': evaluate-selection<ret>' -docstring "source selection"
+map global user <%> ': evaluate-buffer<ret>' -docstring "source buffer"
+map global user <ret> ': w<ret>' -docstring "save buffer"
+map global user <a-u> ': e!<ret>' -docstring "reload buffer"
+map global user <space> <:> -docstring "command prompt"
+map global user k ': smart-select w; man-selection-with-count<ret>' -docstring "man"
+map global user o ': focus ' -docstring "tmux-focus"
+map global user = ': format-buffer<ret>' -docstring "format buffer"
+# map global user ']'       ': grep-next-match<ret>' -docstring "grep next"
+# map global user '['       ': grep-previous-match<ret>' -docstring "grep prev"
+
+declare-user-mode lang-mode
+map global user m ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
+
+declare-user-mode tmux-window
+map global tmux-window O %{: nop %sh{tmux resize-pane -Z}<ret>} -docstring "Zoom window"
+map global tmux-window o %{: nop %sh{tmux last-pane -Z}<ret>} -docstring "Last window"
+map global tmux-window e %{: nop %sh{tmux select-layout -E}<ret>} -docstring "Equalize layout"
+map global tmux-window t %{: nop %sh{tmux select-layout tiled}<ret>} -docstring "Tiled layout"
+map global tmux-window h %{: nop %sh{tmux select-layout even-horizontal}<ret>} -docstring "Even horizontal layout"
+map global tmux-window <a-h> %{: nop %sh{tmux select-layout main-horizontal}<ret>} -docstring "Main horizontal layout"
+map global tmux-window v %{: nop %sh{tmux select-layout even-vertical}<ret>} -docstring "Even vertical layout"
+map global tmux-window <a-v> %{: nop %sh{tmux select-layout main-vertical}<ret>} -docstring "Main vertical layout"
+map global tmux-window n %{: nop %sh{tmux next-layout}; enter-user-mode tmux-window<ret>} -docstring "Next layout"
+map global tmux-window p %{: nop %sh{tmux previous-layout}; enter-user-mode tmux-window<ret>} -docstring "Previous layout"
+map global tmux-window <left> %{: nop %sh{tmux resize-pane -L 2}; enter-user-mode tmux-window<ret>} -docstring "Resize left"
+map global tmux-window <right> %{: nop %sh{tmux resize-pane -R 2}; enter-user-mode tmux-window<ret>} -docstring "Resize right"
+map global tmux-window <down> %{: nop %sh{tmux resize-pane -D 2}; enter-user-mode tmux-window<ret>} -docstring "Resize down"
+map global tmux-window <up> %{: nop %sh{tmux resize-pane -U}; enter-user-mode tmux-window<ret>} -docstring "Resize up"
+map global user w ': enter-user-mode tmux-window<ret>' -docstring "window keymap mode"
 
 ## Spell
 # https://discuss.kakoune.com/t/useful-user-modes/730/4
