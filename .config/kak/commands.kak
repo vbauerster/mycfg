@@ -330,18 +330,14 @@ define-command -docstring "export to the system clipboard" clipboard-export %{
   echo -markup "{Information}exported "" register to system clipboard"
 }
 define-command -docstring "choose from tmux buffer into "" reg" tmux-choose-buffer %{
-    # evaluate-commands -no-hooks %sh{
-    #     output="${TMPDIR:-/tmp}/tmux-buffer"
-    #     tmux choose-buffer "save-buffer -b '%%' ${output}"
-    #     printf "set-register dquote %%sh{cat %s}\n" ${output}
-    #     printf "echo -debug %%sh{cat %s}\n" ${output}
-    # }
     evaluate-commands -no-hooks %sh{
-        output=$(mktemp -d -t kak-temp-XXXXXXXX)/fifo
-        mkfifo ${output}
-        tmux choose-buffer "save-buffer -b '%%' ${output}"
-        echo "edit! -fifo ${output} *tmux-buffer*
-              hook buffer BufClose .* %{ nop %sh{ rm -r $(dirname ${output})} }"
+        output=$(mktemp -d)
+        # https://hackaday.com/2017/07/21/linux-fu-better-bash-scripting
+        trap 'rm -Rf "$output"; exit' INT TERM EXIT
+        fifo="$output/buffer.tmp"
+        mkfifo "$fifo"
+        tmux choose-buffer "save-buffer -b '%%' ""$fifo""" && pbcopy < "$fifo"
+        echo "clipboard-import"
     }
 }
 
