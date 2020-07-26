@@ -340,32 +340,20 @@ map global prompt -docstring 'Expand to the buffer directory' <a-.> '%sh(dirname
 ## Git
 ## ‾‾‾
 hook global BufOpenFile .* %{
-    evaluate-commands %sh{
-        if [ $(git rev-parse --show-toplevel 2>/dev/null) ]; then
-            echo "hook buffer -group fly-git BufReload .* %{ git show-diff }"
-            echo "hook buffer -group fly-git NormalIdle .* %{ git show-diff }"
+    evaluate-commands -draft %sh{
+        cd $(dirname "$kak_buffile")
+        if [ $(git rev-parse --git-dir 2>/dev/null) ]; then
+            echo "hook buffer -group git-show-diff BufReload .* %{ git show-diff }"
+            echo "hook buffer -group git-show-diff BufWritePost .* %{ git show-diff }"
+            echo "echo -debug git-show-diff HOOK SET"
         fi
     }
 }
 
 # Custom text objects
 # ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-map global object q '"'           -docstring 'double quote string'
-# map global object w 'c\s,\s<ret>' -docstring 'select between whitespace'
-
-# Scratch buffer
-# ‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-
-## Delete the `*scratch*' buffer as soon as another is created, but only if it's empty
-## ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
-# hook global BufCreate '^\*scratch\*$' %{
-#     execute-keys -buffer *scratch* '%d'
-#     hook -once -always global BufCreate '^(?!\*scratch\*).*$' %{ try %{
-#         # throw if the buffer has something other than newlines in the beginning of lines
-#         execute-keys -buffer *scratch* '%s\A\n\z<ret>'
-#         delete-buffer *scratch*
-#     }}
-# }
+# map global object q '"'           -docstring 'double quote string'
+map global object h 'c\s,\s<ret>' -docstring "select between whitespace"
 
 # hook -group pairwise global InsertChar \) %{ try %{
 #     execute-keys -draft hH <a-k>\Q()\E<ret>
