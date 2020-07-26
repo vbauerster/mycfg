@@ -33,6 +33,7 @@ hook global WinSetOption filetype=(go) %{
 hook global WinSetOption filetype=(rust) %[
     # set-option buffer matching_pairs '(' ')' '[' ']' '{' '}'
     set-register @ 'A;<esc>h'
+    map window insert <a-ret> <end><semicolon><ret>
     evaluate-commands %sh{
         # if [ -n "$(command -v fd)" ]; then
         #     echo "set-option buffer fzf_file_command %{fd --no-ignore --type f --follow --exclude .git --exclude target .}"
@@ -45,8 +46,8 @@ hook global WinSetOption filetype=(rust) %[
         execute-keys -draft h2H <a-k>\Q)<space><minus>\E<ret>
         execute-keys <gt>
     }}
-    hook window InsertChar ! %{ try %{
-            execute-keys -draft hH <a-k>\Q&!\E<ret>
+    hook window InsertChar @ %{ try %{
+            execute-keys -draft hH <a-k>\Q&@\E<ret>
             execute-keys <backspace>'
     }}
     hook window InsertChar \? %[ try %[
@@ -108,9 +109,23 @@ hook global BufCreate .*\.conf %{
 # }
 
 # hook global WinSetOption filetype=(json) %{
-#     set buffer formatcmd 'js-beautify'
+#     set buffer formatcmd 'jq'
 # }
-
+hook global WinSetOption filetype=json %{
+    set window indentwidth 2
+    set window formatcmd 'prettier --stdin --parser json'
+    hook buffer BufWritePre .* %{format}
+}
+hook global WinSetOption filetype=markdown %{
+    set window formatcmd 'prettier --stdin --parser markdown'
+    hook buffer BufWritePre .* %{format}
+    # map window user o %{: grep HACK|TODO|FIXME|XXX|NOTE|^# %val{bufname} -H<ret>} -docstring "Show outline"
+}
+hook global WinSetOption filetype=html %{
+    set window indentwidth 2
+    set window formatcmd 'prettier --stdin --parser html'
+    hook buffer BufWritePre .* %{format}
+}
 hook global WinSetOption filetype=(yaml) %{
     set-option buffer tabstop 2
     set-option buffer indentwidth 2
