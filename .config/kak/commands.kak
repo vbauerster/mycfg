@@ -428,7 +428,7 @@ define-command man-selection-with-count %{
 # https://github.com/mawww/kakoune/wiki/Selections#how-to-select-the-smallest-single-selection-containing-every-selection
 # https://github.com/shachaf/kak/blob/c2b4a7423f742858f713f7cfe2511b4f9414c37e/kakrc#L302
 define-command selection-hull \
-  -docstring 'The smallest single selection containing every selection.' \
+  -docstring "The smallest single selection containing every selection." \
   %{
   eval -save-regs 'ab' %{
     exec '"aZ' '<space>"bZ'
@@ -499,7 +499,9 @@ Takes all the same switches as edit.} \
 # Misc
 # ‾‾‾‾
 
-define-command mkdir %{ nop %sh{ mkdir -p $(dirname $kak_buffile) } } -docstring "Creates the directory up to this file"
+define-command read-only %{
+  edit -readonly %val{bufname}
+}
 
 define-command rm %{
     nop %sh{ rm -f "$kak_buffile" }
