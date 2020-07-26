@@ -131,6 +131,7 @@ declare-user-mode lang-mode
 map global user m ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
 
 declare-user-mode tmux-window
+map global user w ': enter-user-mode tmux-window<ret>' -docstring "window keymap mode"
 map global tmux-window O %{: nop %sh{tmux resize-pane -Z}<ret>} -docstring "Zoom window"
 map global tmux-window o %{: nop %sh{tmux last-pane -Z}<ret>} -docstring "Last window"
 map global tmux-window e %{: nop %sh{tmux select-layout -E}<ret>} -docstring "Equalize layout"
@@ -145,11 +146,11 @@ map global tmux-window <left> %{: nop %sh{tmux resize-pane -L 2}; enter-user-mod
 map global tmux-window <right> %{: nop %sh{tmux resize-pane -R 2}; enter-user-mode tmux-window<ret>} -docstring "Resize right"
 map global tmux-window <down> %{: nop %sh{tmux resize-pane -D 2}; enter-user-mode tmux-window<ret>} -docstring "Resize down"
 map global tmux-window <up> %{: nop %sh{tmux resize-pane -U}; enter-user-mode tmux-window<ret>} -docstring "Resize up"
-map global user w ': enter-user-mode tmux-window<ret>' -docstring "window keymap mode"
 
 ## Spell
 # https://discuss.kakoune.com/t/useful-user-modes/730/4
 declare-user-mode spell
+map global user  s ': enter-user-mode spell<ret>' -docstring "spell keymap mode"
 # map -docstring "next error"      global spell 'n' ': spell-next<ret>'
 # map -docstring "replace word"    global spell 's' '_: spell-replace<ret>'
 # map -docstring "exit spell mode" global spell 'c' ': spell-clear<ret>'
@@ -157,24 +158,29 @@ declare-user-mode spell
 map global spell r ': spell ru<ret>' -docstring 'RU'
 map global spell e ': spell en<ret>' -docstring 'ENG'
 map global spell f ': spell-next<ret>_: enter-user-mode spell<ret>' -docstring 'next'
-map global spell s ': spell-replace<ret><ret> : enter-user-mode spell<ret>' -docstring 'lucky fix'
+map global spell u ': spell-replace<ret><ret> : enter-user-mode spell<ret>' -docstring 'lucky fix'
 map global spell a ': spell-replace<ret>' -docstring 'manual fix'
 map global spell c ': spell-clear<ret>' -docstring 'clear'
-map global user  s ': enter-user-mode spell<ret>' -docstring "spell mode"
 
-declare-user-mode search
-map -docstring "regex disabled"   global search '/' ': exec /<ret>\Q\E<left><left>'
-map -docstring "case insensitive" global search 'i' '/(?i)'
-map -docstring "select all"       global search 'a' ': smart-select w<ret>*%s<ret>'
-map -docstring "search mode"      global user   '/' ': enter-user-mode search<ret>'
+declare-user-mode grep
+map global user / ": enter-user-mode grep<ret>"   -docstring "grep keymap mode"
+map global grep l %{: grep '' %val{bufname} -H<left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left><left>} -docstring "Local grep"
+map global grep g %{<A-i>w"gy<esc>: grep <C-r>g<ret>: try %{delete-buffer *grep*:<C-r>g}<ret> : try %{rename-buffer *grep*:<C-r>g}<ret> : try %{mark-pattern set <C-r>g}<ret>} -docstring "Grep for word under cursor, persist results"
+map global grep i %{:grep -i ''<left>} -docstring 'case insensitive'
+# map global grep g %{:grep -i '' -g '*.go'<left><left><left><left><left><left><left><left><left><left><left>} -docstring 'just go'
 
 # https://discuss.kakoune.com/t/rfr-best-way-to-add-a-toggle/580/2
 declare-user-mode toggle
-map -docstring "colorscheme"   global toggle 'c' ': enter-user-mode themes<ret>'
-map -docstring "buffer toggle" global toggle 'b' ': enter-user-mode buffer-toggle<ret>'
-map -docstring "jumpclient"    global toggle 'j' ': set current jumpclient '
-map -docstring "toggle"        global normal '=' ': enter-user-mode toggle<ret>'
-# map -docstring 'search highlight' global toggle  's' ': search-highlighting-enable<ret>'
+map -docstring "toggle"           global normal '=' ': enter-user-mode toggle<ret>'
+map -docstring "case"             global toggle '=' '<a-`>'
+map -docstring "to spaces"        global toggle <space> <@>
+map -docstring "to tabs"          global toggle <tab> <a-@>
+map -docstring "require module"   global toggle '!' ': require-module '
+map -docstring "jumpclient"       global toggle '*' ': set current jumpclient '
+map -docstring "colorscheme"      global toggle 'c' ': enter-user-mode themes<ret>'
+map -docstring "buffer settings"  global toggle 'b' ': enter-user-mode buffer-toggle<ret>'
+map -docstring "search highlight" global toggle 'h' ': search-highlighting-'
+map -docstring "autowrap"         global toggle 'w' ': autowrap-'
 
 declare-user-mode buffer-toggle
 map -docstring "set filetype"    global buffer-toggle 'b' ':set buffer filetype '
@@ -184,6 +190,7 @@ map -docstring "set indentwidth" global buffer-toggle 'i' ':set buffer indentwid
 declare-user-mode themes
 map -docstring "grayscale-light" global themes 'g' ': colorscheme base16-grayscale-light<ret>'
 map -docstring "color-light"     global themes 'c' ': colorscheme base16-tomorrow<ret>'
+map -docstring "edit colors"     global themes 'e' %{: e %val{config}<a-!>/colors/}
 
 ## Goto
 map -docstring "window top"                     global goto 'k'     't'
@@ -197,11 +204,10 @@ map -docstring "file (non-recursive)"           global goto '<a-f>'  '<esc>gf'
 map -docstring "search tag in current file"     global goto '['      '<esc><c-s>: smart-select w; symbol<ret>'
 map -docstring "search tag in global tags file" global goto ']'      '<esc><c-s>: smart-select w; ctags-search<ret>'
 # map -docstring 'switch to [+] buffer'         global goto '<plus>' '<esc>: switch-to-modified-buffer<ret>'
-# unmap global goto t
-# unmap global goto b
 
 ## System clipboard
 declare-user-mode clipboard
+map -docstring "clipboard mode"                      global user      'y' ': enter-user-mode clipboard<ret>'
 map -docstring "yank to sysclipboard"                global clipboard 'y' '<a-|>pbcopy<ret>'
 map -docstring "paste (insert) from sysclipboard"    global clipboard 'P' '!pbpaste<ret>'
 map -docstring "paste (append) from sysclipboard"    global clipboard 'p' '<a-!>pbpaste<ret>'
