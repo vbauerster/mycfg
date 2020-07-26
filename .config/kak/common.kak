@@ -262,30 +262,45 @@ map -docstring "val"                  global echo-mode 'v' ':echo %val{}<left>'
 map -docstring "val debug"            global echo-mode 'V' ':echo -debug %val{}<left>'
 map -docstring "ModeChange debug on"  global echo-mode 'm' ': hook -group echo-mode window ModeChange .* %{ echo -debug ModeChange %val{hook_param} }<ret>'
 map -docstring "ModeChange debug off" global echo-mode 'M' ': rmhooks window echo-mode<ret>'
-map -docstring "echo mode"            global user      'e' ': enter-user-mode echo-mode<ret>'
 
 declare-user-mode tig
 map -docstring "tig buffile history"         global tig h %{: t tig %val{bufname}<ret>}
 map -docstring "tig blame"                   global tig b %{: tmux-terminal-window tig blame "+%val{cursor_line}" -- %val{bufname}<ret>}
 map -docstring "tig status (for committing)" global tig <space> %{: t tig status<ret>}
 
-declare-user-mode git
-map -docstring "show gutter"        global git 'g' ': git show-diff<ret>'
-map -docstring "hide gutter"        global git 'G' ': git-hide-diff<ret>'
-map -docstring "status"             global git 's' ': git status<ret>'
-map -docstring "blame (toggle)"     global git 'b' ': git-toggle-blame<ret>'
-map -docstring "log"                global git 'l' ': git log<ret>'
-map -docstring "commit"             global git 'c' ': git commit<ret>'
-map -docstring "diff"               global git 'd' ': git diff<ret>'
-map -docstring "show blamed commit" global git 'w' ': git-show-blamed-commit<ret>'
-map -docstring "log blame"          global git 'L' ': git-log-lines<ret>'
-map -docstring "tig mode"           global git 't' '<esc>: enter-user-mode tig<ret>'
-map -docstring 'next-hunk'          global git ']' "<esc>: git next-hunk;execute-keys 'vv';enter-user-mode git<ret>"    
-map -docstring 'prev-hunk'          global git '[' "<esc>: git prev-hunk;execute-keys 'vv';enter-user-mode git<ret>"
-map -docstring "git mode"           global user 'g' ': enter-user-mode git<ret>'
+# declare-user-mode git
+# map -docstring "show gutter"        global git 'g' ': git show-diff<ret>'
+# map -docstring "hide gutter"        global git 'G' ': git-hide-diff<ret>'
+# map -docstring "status"             global git 's' ': git status<ret>'
+# map -docstring "log"                global git 'l' ': git log<ret>'
+# map -docstring "commit"             global git 'c' ': git commit<ret>'
+# map -docstring "diff"               global git 'd' ': git diff<ret>'
+# map -docstring "show blamed commit" global git 'w' ': git-show-blamed-commit<ret>'
+# map -docstring "log blame"          global git 'L' ': git-log-lines<ret>'
+# map -docstring "tig mode"           global git 't' '<esc>: enter-user-mode tig<ret>'
+# map -docstring 'next-hunk'          global git ']' "<esc>: git next-hunk;execute-keys 'vv';enter-user-mode git<ret>"
+# map -docstring 'prev-hunk'          global git '[' "<esc>: git prev-hunk;execute-keys 'vv';enter-user-mode git<ret>"
+# map -docstring "git mode"           global user 'g' ': enter-user-mode git<ret>'
 
-declare-user-mode lang-mode
-map global user 'm' ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
+declare-user-mode git
+map global user -docstring "Enable Git keymap mode for next key" g ": enter-user-mode git<ret>"
+map global git -docstring "toggle blame gutter" <semicolon> ': git-toggle-blame<ret>'
+map global git -docstring "show diff gutter" <tab> ": git show-diff<ret>"
+map global git -docstring "jump *git*" <a-g> ': jump *git*<ret>'
+map global git -docstring "git - Explore the repository history" g ": repl tig<ret>"
+map global git -docstring "git - Explore the buffer history" G ': connect-terminal tig -- "%val{buffile}"<ret>'
+map global git -docstring "commit - Record changes to the repository" c ": git commit<ret>"
+map global git -docstring "blame - Show what revision and author last modified each line of the current file" b ': connect-terminal tig blame "+%val{cursor_line}" -- "%val{buffile}"<ret>'
+map global git -docstring "blame - Show commit" B ': git-show-blamed-commit<ret>'
+map global git -docstring "diff - Show changes between HEAD and working tree" d ": git diff<ret>,wO"
+map global git -docstring "github - Copy canonical GitHub URL to system clipboard" h ": github-url<ret>"
+map global git -docstring "log - Show commit logs for the current file" l ': repl "tig log -- %val{buffile}"<ret>'
+map global git -docstring "status - Show the working tree status" u ': repl "tig status"<ret>'
+map global git -docstring "status - Show the working tree status" U ': repl "tig status"<ret>,wO'
+map global git -docstring "staged - Show staged (cached) changes" t ": git diff --staged<ret>"
+map global git -docstring "write - Write and stage the current file" w ": write<ret>: git add<ret>: git update-diff<ret>"
+map global git -docstring "next-hunk" <]> "<esc>: git next-hunk;execute-keys 'vv';enter-user-mode git<ret>"
+map global git -docstring "prev-hunk" <[> "<esc>: git prev-hunk;execute-keys 'vv';enter-user-mode git<ret>"
 
 # Insert mode
 # <c-o>    ; # silent: stop completion
@@ -294,9 +309,8 @@ map global user 'm' ': enter-user-mode lang-mode<ret>' -docstring "lang mode"
 # map global insert '<a-c>' '<esc><a-c>'
 map global insert '<a-g>' '<esc>:'
 map global insert '<a-c>' '<esc>'
-map global insert '<a-[>' '<esc>'
-map global insert '<a-]>' '<esc>'
-map global insert '<c-y>' '<a-;>!pbpaste<ret>'
+map global insert '<a-[>' '<a-;>'
+map global insert '<a-#>' '<esc>x_<a-c>' -docstring "uncomment line start"
 map global insert '<c-a>' '<esc>I'
 map global insert '<c-e>' '<end>'
 map global insert '<a-h>' '<a-;>h'
@@ -304,8 +318,16 @@ map global insert '<a-l>' '<a-;>l'
 map global insert '<c-d>' '<del>'
 map global insert '<c-i>' '<esc>: count-insert '
 map global insert '<a-u>' '<esc><c-s>b<a-`><c-o>i'
+map global insert '<a-O>' '<esc><c-s>O'
 map global insert '<a-minus>' '<c-o><c-x>l'
 map global insert '<a-r>' '<c-r>"'
+map global insert '<c-y>' '<a-;>!pbpaste<ret>'
+
+# Prompt mode
+map global prompt -docstring 'Case insensitive search' <a-i> '<home>(?i)<end>'
+map global prompt -docstring 'Regex disabled search' <a-x> '<home>\Q<end>\E<left><left>'
+map global prompt -docstring 'Paste form default reg' <a-r> '<c-r>"'
+map global prompt -docstring 'Expand to the buffer directory' <a-.> '%sh(dirname "$kak_buffile")<a-!>'
 
 # Hooks
 # ‾‾‾‾‾
