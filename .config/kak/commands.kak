@@ -575,9 +575,27 @@ define-command github-url \
                 github_url=$(printf "%s/blob/%s/%s#L%s-L%s" "${base_url%.git}" "$master_commit" "$relative_path" "${start_line}" "${end_line}")
             fi
         fi
-        # printf "echo -debug %s\n" "$github_url"
-        # printf "execute-keys -draft '!printf %s $github_url | $kak_opt_system_clipboard_copy<ret>'\n"
-        printf "execute-keys -draft '!printf %s $github_url | pbcopy<ret>'\n"
+        printf "echo -debug %s\n" "$github_url"
+        printf "execute-keys -draft '!printf %s $github_url | $kak_opt_system_clipboard_copy<ret>'\n"
         printf "echo -markup %%{{Information}copied canonical GitHub URL to system clipboard}\n"
     }
+}
+def findit -params 1 -shell-script-candidates %{ rg --files } %{ edit %arg{1} } -docstring "Uses rg to find file"
+def git-edit -params 1 -shell-script-candidates %{ git ls-files } %{ edit %arg{1} } -docstring "Uses git ls-files to find files"
+def mkdir %{ nop %sh{ mkdir -p $(dirname $kak_buffile) } } -docstring "Creates the directory up to this file"
+def delete-buffers-matching -params 1 %{ evaluate-commands -buffer * %{ evaluate-commands %sh{ case "$kak_buffile" in $1) echo "delete-buffer" esac } } }
+def toggle-highlighter -params .. -docstring 'toggle-highlighter <argument>…: toggle an highlighter' %{
+    try %{
+        addhl window/%arg{@} %arg{@}
+        echo -markup {green} %arg{@}
+    } catch %{
+        rmhl window/%arg{@}
+        echo -markup {red} %arg{@}
+    }
+}
+def ide %{
+    rename-client main
+    set global jumpclient main
+    new rename-client tools
+    set global toolsclient tools
 }
