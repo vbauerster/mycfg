@@ -534,14 +534,22 @@ define-command \
     }
 }
 
-# https://discuss.kakoune.com/t/rfr-roll-back-through-old-versions-of-a-file-in-git/743
-define-command git-edit-force 'edit!; nop %sh(git reset -- "$kak_buffile"); git checkout'
-alias global ge! git-edit-force
+# https://discuss.kakoune.com/t/split/1079
+declare-option -hidden str split_bufname
+define-command -docstring "open the current buffer in a new client" split %{
+    set-option global split_bufname %val{bufname}
 
-# https://github.com/robertmeta/kakfiles/blob/7d0079b2d8a578ec1dd606ccb536681836b2649e/kakrc#L211
-define-command broot -params .. -file-completion %(connect-terminal broot %arg(@)) -docstring "Open with broot"
+    new 'edit %opt{split_bufname};' "select %val{selections_desc}"
+    # NOTE:
+    # %opt{split_bufname} must be single-quoted so it will be expanded
+    # by the new client, ensuring it will treat it as a single argument
+    # even if it has whitespace in it.
+    # %val{selections_desc} must be double-quoted so it will be expanded
+    # by this client into multiple arguments. The select command expects
+    # each selection description to be a separate argument.
+}
 
-# https://github.com/robertmeta/kakfiles/blob/8c07cb92bc2d363fd2597bdb7fb94b93f55c5112/kakrc#L189
+# https://github.com/robertmeta/kakfiles/blob/1659f1a9358a2728ab5419427634ded7d79ea976/kakrc#L189
 define-command github-url \
     -docstring "github-url: copy the canonical GitHub URL to the system clipboard" \
     %{ evaluate-commands %sh{
